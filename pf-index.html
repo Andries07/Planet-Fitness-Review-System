@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<title>Planet Fitness — Member Feedback</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap"/>
+<style>
+/* ═══════════════════════════════════════════════════════
+   PLANET FITNESS SA — MEMBER EXPERIENCE
+   Redesigned: ultra-fast, single-screen flows
+   Machine QR = ~15 seconds. Club = ~45 seconds.
+═══════════════════════════════════════════════════════ */
+:root{
+  --navy:    #0A1628;
+  --navy2:   #0D1F3C;
+  --blue:    #0057B8;
+  --blue2:   #0070E0;
+  --elec:    #00A3FF;
+  --white:   #FFFFFF;
+  --off:     #F4F7FB;
+  --grey:    #E4E9F2;
+  --muted:   #7A8BA0;
+  --text:    #1A2535;
+  --ok:      #16A34A;
+  --ok2:     #22C55E;
+  --warn:    #CA8A04;
+  --danger:  #DC2626;
+  --urgent:  #EA580C;
+  --fh:'Barlow Condensed',sans-serif;
+  --fb:'DM Sans',sans-serif;
+  --r:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--text);-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+
+/* ── PAGES ── */
+.page{display:none;min-height:100dvh;flex-direction:column}
+.page.active{display:flex}
+
+/* ══════════════════════════════════
+   SHARED HEADER
+══════════════════════════════════ */
+.ph{
+  background:var(--navy);
+  padding:12px 16px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  flex-shrink:0;position:sticky;top:0;z-index:40;
+}
+.ph-back{
+  width:34px;height:34px;background:rgba(255,255,255,0.08);
+  border:none;border-radius:8px;color:#fff;font-size:17px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .15s;
+}
+.ph-back:hover{background:rgba(255,255,255,0.15)}
+.ph-body{flex:1}
+.ph-title{font-family:var(--fh);font-size:17px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.3px;line-height:1}
+.ph-sub{font-size:11px;color:var(--elec);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-top:2px}
+
+/* ══ LOGO SLOT ══
+   Replace .ph-logo-slot content with:
+   <img src="YOUR_PF_LOGO_URL" alt="Planet Fitness" style="height:28px;object-fit:contain"/>
+   Current: SVG placeholder mark
+*/
+.ph-logo-slot{
+  width:34px;height:34px;
+  background:var(--blue);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.ph-logo-slot svg{width:18px;height:18px;fill:white}
+
+/* Scrollable body */
+.ps{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ps::-webkit-scrollbar{width:3px}
+.ps::-webkit-scrollbar-thumb{background:var(--grey);border-radius:2px}
+
+/* ══════════════════════════════════
+   SPLASH
+══════════════════════════════════ */
+#pg-splash{
+  background:var(--navy);
+  align-items:center;justify-content:center;
+  padding:28px 20px;
+  position:relative;overflow:hidden;
+}
+#pg-splash::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 55% at 50% -5%,rgba(0,87,184,.45) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 35% at 105% 95%,rgba(0,163,255,.12) 0%,transparent 60%);
+  pointer-events:none;
+}
+.sp-inner{position:relative;z-index:2;width:100%;max-width:460px;text-align:center}
+
+/* ══ LOGO PLACEMENT — SPLASH ══
+   Replace this entire .sp-logo-wrap block with your actual PF logo:
+   <div class="sp-logo-wrap">
+     <img src="YOUR_PF_LOGO_PNG_URL" alt="Planet Fitness"
+          style="height:56px;object-fit:contain;filter:brightness(0) invert(1)"/>
+   </div>
+   The filter makes a dark logo white on the navy background.
+   For white/light logos, remove the filter.
+   Recommended logo URL: host in your GitHub /images/ folder as pf-logo.png
+*/
+.sp-logo-wrap{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-bottom:32px;
+}
+.sp-logo-mark{
+  width:52px;height:52px;background:var(--blue);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+}
+.sp-logo-mark svg{width:30px;height:30px;fill:white}
+.sp-logo-text{text-align:left}
+.sp-logo-text .l1{font-family:var(--fh);font-size:24px;font-weight:900;color:#fff;letter-spacing:.5px;line-height:1}
+.sp-logo-text .l2{font-size:10px;color:var(--elec);letter-spacing:3px;text-transform:uppercase;font-weight:600;margin-top:2px}
+
+.sp-hl{
+  font-family:var(--fh);
+  font-size:clamp(38px,10vw,60px);font-weight:900;
+  color:#fff;line-height:.95;letter-spacing:-.3px;
+  text-transform:uppercase;margin-bottom:14px;
+}
+.sp-hl em{font-style:normal;color:var(--elec)}
+.sp-sub{font-size:14px;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:32px;max-width:320px;margin-left:auto;margin-right:auto}
+
+/* Splash action cards */
+.sp-cards{display:grid;gap:10px;margin-bottom:28px}
+.sp-card{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:var(--r);
+  padding:16px 18px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:background .18s,border-color .18s,transform .12s;
+  text-align:left;
+}
+.sp-card:active{transform:scale(.98)}
+.sp-card:hover{background:rgba(0,87,184,.25);border-color:rgba(0,163,255,.35)}
+.sp-card-icon{
+  width:42px;height:42px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+.sp-card-body{flex:1}
+.sp-card-title{font-family:var(--fh);font-size:17px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.3px;line-height:1;margin-bottom:2px}
+.sp-card-desc{font-size:11px;color:rgba(255,255,255,.5);line-height:1.4}
+.sp-card-arr{color:var(--elec);font-size:20px}
+.sp-footer{font-size:10px;color:rgba(255,255,255,.25);line-height:1.6}
+
+/* ══════════════════════════════════════════════════════
+   MACHINE REPORT — single screen, ~15 sec
+   This is the fastest flow. QR scan → tap condition →
+   tap issue if needed → optional mobile → submit.
+══════════════════════════════════════════════════════ */
+#pg-machine{background:var(--off)}
+
+/* Machine hero — compact */
+.mh{
+  background:linear-gradient(150deg,var(--navy) 0%,var(--navy2) 55%,#0A2550 100%);
+  padding:16px 18px 18px;
+  position:relative;overflow:hidden;
+}
+.mh::after{
+  content:'';position:absolute;bottom:-20px;right:-20px;
+  width:120px;height:120px;
+  background:radial-gradient(circle,rgba(0,163,255,.15) 0%,transparent 70%);
+  pointer-events:none;
+}
+.mh-inner{display:flex;gap:14px;align-items:flex-start;position:relative;z-index:2}
+
+/* ══ MACHINE IMAGE PLACEMENT ══
+   In MACHINES data object (bottom of this file), set image_url to a hosted photo URL.
+   Example: image_url:"https://yourusername.github.io/pf-experience/images/treadmill.jpg"
+   Ideal size: 200×200px square, JPEG or PNG.
+   The img frame below will display it automatically.
+   GitHub folder: /images/machines/treadmill.jpg, legpress.jpg, etc.
+*/
+.mh-img{
+  width:76px;height:76px;
+  background:rgba(255,255,255,.08);
+  border:1.5px solid rgba(255,255,255,.15);
+  border-radius:10px;overflow:hidden;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;
+}
+.mh-img img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+.mh-meta{flex:1}
+.mh-cat{
+  display:inline-block;
+  background:rgba(0,163,255,.18);border:1px solid rgba(0,163,255,.3);
+  border-radius:12px;padding:2px 8px;
+  font-size:9px;font-weight:700;color:var(--elec);letter-spacing:1.2px;text-transform:uppercase;
+  margin-bottom:5px;
+}
+.mh-name{font-family:var(--fh);font-size:22px;font-weight:900;color:#fff;text-transform:uppercase;line-height:1;margin-bottom:3px}
+.mh-loc{font-size:11px;color:rgba(255,255,255,.5);line-height:1.35}
+.mh-asset{font-size:10px;color:rgba(0,163,255,.65);font-weight:600;margin-top:3px;font-family:monospace}
+
+/* Machine body */
+.mb{padding:14px 16px 20px}
+
+/* ── CONDITION BUTTONS — big tap targets ── */
+.cond-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.cond-btn{
+  background:#fff;border:2px solid var(--grey);border-radius:10px;
+  padding:10px 4px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;
+}
+.cond-btn .ci{font-size:20px;line-height:1}
+.cond-btn .cl{font-size:8px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;text-align:center;line-height:1.2}
+.cond-btn.s5{background:#ECFDF5;border-color:#16A34A}.cond-btn.s5 .cl{color:#16A34A}
+.cond-btn.s4{background:#F0FDF4;border-color:#22C55E}.cond-btn.s4 .cl{color:#22C55E}
+.cond-btn.s3{background:#FEFCE8;border-color:#CA8A04}.cond-btn.s3 .cl{color:#92400E}
+.cond-btn.s2{background:#FFF7ED;border-color:#EA580C}.cond-btn.s2 .cl{color:#C2410C}
+.cond-btn.s1{background:#FEF2F2;border-color:#DC2626}.cond-btn.s1 .cl{color:#DC2626}
+
+/* Issue chips — appear conditionally */
+.iss-wrap{display:none;margin-bottom:12px}
+.iss-wrap.show{display:block}
+.iss-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.iss-chips{display:flex;flex-wrap:wrap;gap:6px}
+.iss-chip{
+  background:#fff;border:2px solid var(--grey);border-radius:7px;
+  padding:7px 11px;font-size:12px;font-weight:600;color:var(--text);
+  cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:5px;
+}
+.iss-chip:hover{border-color:var(--urgent);color:var(--urgent)}
+.iss-chip.active{background:#FFF7ED;border-color:var(--urgent);color:var(--urgent)}
+.iss-chip.red:hover,.iss-chip.red.active{border-color:var(--danger);color:var(--danger);background:#FEF2F2}
+
+/* Inline contact — mobile only, compact */
+.contact-inline{
+  background:#fff;border:1px solid var(--grey);border-radius:var(--r);
+  padding:12px 14px;margin-bottom:12px;
+}
+.contact-inline-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.contact-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pfi{
+  width:100%;background:var(--off);border:1.5px solid var(--grey);border-radius:8px;
+  padding:9px 11px;font-family:var(--fb);font-size:13px;color:var(--text);
+  outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;caret-color:var(--blue);
+}
+.pfi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,87,184,.1);background:#fff}
+.pfi::placeholder{color:#B0BCCC;font-size:12px}
+.pfia{/* full width input */width:100%}
+.opt-tag{
+  font-size:9px;font-weight:700;color:var(--muted);background:var(--grey);
+  border-radius:3px;padding:1px 5px;margin-left:5px;text-transform:uppercase;letter-spacing:.4px;
+}
+.popia-row{
+  display:flex;align-items:flex-start;gap:8px;
+  margin-top:8px;padding:8px 10px;
+  background:rgba(0,87,184,.04);border:1px solid rgba(0,87,184,.10);border-radius:8px;
+}
+.popia-row input[type=checkbox]{width:15px;height:15px;flex-shrink:0;accent-color:var(--blue);margin-top:1px;cursor:pointer}
+.popia-row label{font-size:11px;color:var(--text);line-height:1.4;cursor:pointer}
+.popia-row label strong{color:var(--blue)}
+
+/* Submit button */
+.sub-btn{
+  width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  border:none;border-radius:var(--r);
+  font-family:var(--fb);font-size:15px;font-weight:700;
+  color:#fff;cursor:pointer;
+  box-shadow:0 4px 18px rgba(0,87,184,.35);
+  transition:opacity .15s,transform .1s;
+}
+.sub-btn:active{transform:scale(.98);opacity:.9}
+.sub-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.status-txt{font-size:11px;color:var(--danger);font-weight:600;text-align:center;min-height:14px;margin-bottom:6px}
+
+/* ══════════════════════════════════════════════════════
+   CLUB FEEDBACK — condensed, 3-section single page
+   Step 1: 5 quick ratings (all on one scroll)
+   Step 2: Area + optional comment + contact
+   Submit on Step 2
+══════════════════════════════════════════════════════ */
+#pg-club{background:var(--off)}
+
+/* Club hero — compact */
+.ch{
+  background:linear-gradient(155deg,var(--navy) 0%,var(--navy2) 60%,var(--blue) 100%);
+  padding:18px 18px 22px;position:relative;overflow:hidden;
+}
+.ch::before{
+  content:'';position:absolute;top:0;right:0;
+  width:150px;height:150px;
+  background:radial-gradient(circle,rgba(0,163,255,.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* ══ LOGO IN CLUB HERO ══
+   To add the Planet Fitness logo in the club hero banner:
+   Replace the .ch-logo-slot div with:
+   <img src="YOUR_PF_LOGO_URL" alt="Planet Fitness"
+        style="height:32px;object-fit:contain;filter:brightness(0) invert(1);margin-bottom:10px;display:block"/>
+   Position: top of .ch, before .ch-tag
+*/
+.ch-logo-slot{
+  /* Placeholder — replace with <img> tag as described above */
+  margin-bottom:10px;
+}
+
+.ch-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(0,163,255,.14);border:1px solid rgba(0,163,255,.28);
+  border-radius:16px;padding:4px 10px;margin-bottom:10px;
+}
+.ch-tag span{font-size:11px;font-weight:600;color:var(--elec);letter-spacing:.4px}
+.ch-title{font-family:var(--fh);font-size:clamp(24px,6vw,36px);font-weight:900;color:#fff;text-transform:uppercase;line-height:1;margin-bottom:4px;position:relative;z-index:2}
+.ch-sub{font-size:12px;color:rgba(255,255,255,.58);line-height:1.45;position:relative;z-index:2}
+
+/* Step pills */
+.step-pills{
+  display:flex;gap:6px;padding:12px 16px;
+  background:#fff;border-bottom:1px solid var(--grey);
+  flex-shrink:0;
+}
+.step-pill{
+  flex:1;height:4px;border-radius:2px;
+  background:var(--grey);transition:background .25s;
+}
+.step-pill.done{background:var(--ok)}
+.step-pill.active{background:var(--blue)}
+
+/* Club scroll body */
+.cb{padding:14px 16px 24px}
+
+/* Rating card */
+.rc{
+  background:#fff;border:1px solid var(--grey);border-radius:var(--r);
+  padding:14px;margin-bottom:10px;
+  box-shadow:0 1px 6px rgba(0,0,0,.04);
+}
+.rc-q{font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;line-height:1.3}
+.rc-q .qn{
+  display:inline-block;background:var(--blue);color:#fff;
+  font-size:9px;font-weight:700;border-radius:3px;padding:1px 5px;
+  margin-right:5px;font-family:var(--fh);letter-spacing:.5px;vertical-align:middle;
+}
+
+/* 5-option rating row */
+.rg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.rb{
+  background:#fff;border:2px solid var(--grey);border-radius:10px;
+  padding:9px 4px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:all .13s;-webkit-tap-highlight-color:transparent;
+}
+.rb .re{font-size:18px;line-height:1}
+.rb .rl{font-size:8px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;text-align:center;line-height:1.2}
+.rb.s5{background:#ECFDF5;border-color:#16A34A}.rb.s5 .rl{color:#16A34A}
+.rb.s4{background:#F0FDF4;border-color:#22C55E}.rb.s4 .rl{color:#22C55E}
+.rb.s3{background:#FEFCE8;border-color:#CA8A04}.rb.s3 .rl{color:#92400E}
+.rb.s2{background:#FFF7ED;border-color:#EA580C}.rb.s2 .rl{color:#C2410C}
+.rb.s1{background:#FEF2F2;border-color:#DC2626}.rb.s1 .rl{color:#DC2626}
+
+/* Area chips */
+.ac-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.ac{
+  background:#fff;border:2px solid var(--grey);border-radius:16px;
+  padding:7px 12px;font-size:12px;font-weight:500;color:var(--text);
+  cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent;
+}
+.ac:hover{border-color:var(--blue);color:var(--blue)}
+.ac.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+/* Comment textarea */
+.pft{
+  width:100%;background:var(--off);border:1.5px solid var(--grey);border-radius:8px;
+  padding:10px 12px;font-family:var(--fb);font-size:13px;color:var(--text);
+  outline:none;resize:vertical;min-height:70px;
+  transition:border-color .15s;-webkit-appearance:none;caret-color:var(--blue);
+}
+.pft:focus{border-color:var(--blue);background:#fff}
+.pft::placeholder{color:#B0BCCC;font-size:12px}
+
+/* Step nav footer */
+.step-nav{
+  position:sticky;bottom:0;
+  background:#fff;border-top:1px solid var(--grey);
+  padding:12px 16px;display:flex;gap:8px;justify-content:flex-end;z-index:30;
+}
+.btn-back{
+  padding:10px 18px;background:transparent;border:2px solid var(--grey);
+  border-radius:9px;font-family:var(--fb);font-size:13px;font-weight:600;
+  color:var(--muted);cursor:pointer;transition:all .13s;
+}
+.btn-back:hover{border-color:var(--blue);color:var(--blue)}
+.btn-next{
+  padding:10px 24px;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  border:none;border-radius:9px;
+  font-family:var(--fb);font-size:13px;font-weight:700;
+  color:#fff;cursor:pointer;
+  box-shadow:0 3px 12px rgba(0,87,184,.3);
+  transition:all .13s;
+}
+.btn-next:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(0,87,184,.38)}
+.btn-next:active{transform:none}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* ══════════════════════════════════
+   AREA PAGE — also condensed
+══════════════════════════════════ */
+#pg-area{background:var(--off)}
+.ah{
+  background:linear-gradient(145deg,var(--navy) 0%,#112244 100%);
+  padding:18px;
+}
+.ah-icon{font-size:36px;margin-bottom:8px}
+.ah-title{font-family:var(--fh);font-size:26px;font-weight:900;color:#fff;text-transform:uppercase;margin-bottom:3px}
+.ah-club{font-size:11px;color:var(--elec);font-weight:600;letter-spacing:.4px}
+
+/* ══════════════════════════════════
+   SUCCESS PAGE
+══════════════════════════════════ */
+#pg-success{
+  background:var(--navy);
+  align-items:center;justify-content:center;
+  text-align:center;padding:40px 24px;
+  position:relative;overflow:hidden;
+}
+#pg-success::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(0,200,150,.14) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 40% at 50% 100%,rgba(0,87,184,.22) 0%,transparent 60%);
+  pointer-events:none;
+}
+.suc-inner{position:relative;z-index:2;max-width:360px;width:100%}
+.suc-icon{
+  width:80px;height:80px;
+  background:linear-gradient(135deg,#00C896,#00A875);
+  border-radius:50%;margin:0 auto 20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;
+  box-shadow:0 0 0 14px rgba(0,200,150,.1);
+  animation:pgrow 2s ease-in-out infinite;
+}
+@keyframes pgrow{0%,100%{box-shadow:0 0 0 14px rgba(0,200,150,.1)}50%{box-shadow:0 0 0 22px rgba(0,200,150,.05)}}
+.suc-title{font-family:var(--fh);font-size:38px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:-.2px;margin-bottom:10px}
+.suc-msg{font-size:14px;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:24px}
+.suc-meta{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+  border-radius:10px;padding:14px;margin-bottom:24px;
+  font-size:12px;color:rgba(255,255,255,.45);line-height:1.7;
+}
+.suc-meta strong{color:rgba(255,255,255,.8)}
+.sev-badge{display:inline-flex;align-items:center;gap:4px;border-radius:5px;padding:2px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;font-family:var(--fh)}
+.sev-info{background:#EFF6FF;color:var(--blue)}.sev-attention{background:#FEF9C3;color:#92400E}
+.sev-urgent{background:#FFF7ED;color:#C2410C}.sev-critical{background:#FEF2F2;color:#991B1B}
+.btn-home{
+  padding:12px 28px;background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.18);
+  border-radius:9px;font-family:var(--fb);font-size:13px;font-weight:600;
+  color:#fff;cursor:pointer;transition:all .18s;
+}
+.btn-home:hover{background:rgba(255,255,255,.16)}
+
+/* Loading */
+#pg-loading{background:var(--navy);align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.spinner{width:44px;height:44px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--elec);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-msg{font-size:12px;color:rgba(255,255,255,.45);letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
+
+/* ══════════════════════════════════
+   ADMIN PAGE
+══════════════════════════════════ */
+#pg-admin{background:var(--off)}
+.adm{padding:16px}
+.adm-h{font-family:var(--fh);font-size:18px;font-weight:800;text-transform:uppercase;color:var(--text);margin-bottom:10px;margin-top:16px}
+.adm-h:first-child{margin-top:0}
+.adm-card{background:#fff;border:1px solid var(--grey);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.04)}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--grey);font-size:12px}
+.dr:last-child{border-bottom:none}
+.dk{color:var(--muted);font-weight:500}.dv{color:var(--text);font-weight:600;text-align:right;max-width:58%;word-break:break-all}
+.adm-badge{padding:2px 8px;border-radius:5px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;font-family:var(--fh)}
+.ab-blue{background:#EFF6FF;color:var(--blue)}.ab-grey{background:var(--grey);color:var(--muted)}.ab-ok{background:#ECFDF5;color:#16A34A}.ab-warn{background:#FFF7ED;color:#C2410C}
+.mg2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.mtile{background:var(--off);border:1px solid var(--grey);border-radius:8px;padding:9px;font-size:11px}
+.mtile-n{font-weight:700;color:var(--text);margin-bottom:1px}.mtile-c{color:var(--muted);font-size:10px}
+.adm-footer{padding:16px;text-align:center;font-size:11px;color:var(--muted);line-height:1.6}
+
+/* ── RESPONSIVE ── */
+@media(max-width:380px){
+  .rg{gap:4px}.rb{padding:8px 3px}.rb .re{font-size:16px}
+  .cond-row{gap:4px}.cond-btn{padding:8px 3px}.cond-btn .ci{font-size:17px}
+  .contact-row{grid-template-columns:1fr}
+}
+@media(min-width:600px){
+  .sp-inner,.suc-inner{max-width:500px}
+  .mb,.cb{padding:18px 22px 28px}
+}
+</style>
+</head>
+<body>
+
+<!-- Hidden SVG mark used as logo fallback throughout -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="pfm" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M12 2 L13.8 8.2 L20 8.2 L15.1 11.8 L16.9 18 L12 14.4 L7.1 18 L8.9 11.8 L4 8.2 L10.2 8.2 Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<!-- ═════════════════════════════════
+     SPLASH PAGE
+═════════════════════════════════ -->
+<div class="page active" id="pg-splash">
+  <div class="sp-inner">
+
+    <!-- ══ LOGO — SPLASH ══════════════════════════════════════════
+         HOW TO ADD YOUR LOGO HERE:
+         Replace the .sp-logo-wrap block below with:
+
+         <div class="sp-logo-wrap">
+           <img src="https://yourusername.github.io/pf-experience/images/pf-logo.png"
+                alt="Planet Fitness"
+                style="height:60px;object-fit:contain;filter:brightness(0) invert(1)"/>
+         </div>
+
+         • For a white logo on dark background: no filter needed
+         • For a dark/coloured logo: add  filter:brightness(0) invert(1)  to make it white
+         • Host the file at /images/pf-logo.png in your GitHub repo
+    ═══════════════════════════════════════════════════════════ -->
+    <div class="sp-logo-wrap">
+      <div class="sp-logo-mark"><svg viewBox="0 0 24 24"><use href="#pfm"/></svg></div>
+      <div class="sp-logo-text">
+        <div class="l1">PLANET FITNESS</div>
+        <div class="l2">South Africa</div>
+      </div>
+    </div>
+
+    <div class="sp-hl">That's Why<br/>We <em>Listen.</em></div>
+    <p class="sp-sub">Quick feedback — under 30 seconds. Help us keep your club at its best.</p>
+
+    <div class="sp-cards">
+      <div class="sp-card" onclick="goClub('PF-DEMO-001')">
+        <div class="sp-card-icon">⭐</div>
+        <div class="sp-card-body">
+          <div class="sp-card-title">Rate My Visit</div>
+          <div class="sp-card-desc">Overall experience — cleanliness, equipment, staff</div>
+        </div>
+        <div class="sp-card-arr">›</div>
+      </div>
+      <div class="sp-card" onclick="goMachine('PF-DEMO-001','TM-01')">
+        <div class="sp-card-icon">🔧</div>
+        <div class="sp-card-body">
+          <div class="sp-card-title">Report Equipment Issue</div>
+          <div class="sp-card-desc">Machine broken, dirty or faulty — tap to report instantly</div>
+        </div>
+        <div class="sp-card-arr">›</div>
+      </div>
+      <div class="sp-card" onclick="goArea('PF-DEMO-001','changerooms')">
+        <div class="sp-card-icon">🚿</div>
+        <div class="sp-card-body">
+          <div class="sp-card-title">Area Feedback</div>
+          <div class="sp-card-desc">Change rooms, bathrooms, studio, pool</div>
+        </div>
+        <div class="sp-card-arr">›</div>
+      </div>
+    </div>
+    <!-- Admin access: add ?admin=1 to URL, or tap 5× on the footer -->
+    <div class="sp-footer" id="sp-footer" onclick="adminTap()">Demo concept for Planet Fitness South Africa. Not an official product.</div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════
+     LOADING
+═════════════════════════════════ -->
+<div class="page" id="pg-loading">
+  <div class="spinner"></div>
+  <div class="load-msg">Submitting…</div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════
+     MACHINE REPORT — SINGLE SCREEN, ~15 SECONDS
+     Flow: Hero → tap condition (5 big buttons) →
+           issue chips appear if needed → mobile → submit
+═════════════════════════════════════════════════════════ -->
+<div class="page" id="pg-machine">
+  <div class="ph">
+    <button class="ph-back" onclick="goSplash()">←</button>
+    <div class="ph-body">
+      <div class="ph-title">Equipment Report</div>
+      <div class="ph-sub" id="mhdr-club">Planet Fitness</div>
+    </div>
+    <!-- ══ LOGO — PAGE HEADER ══════════════════════════════════
+         Replace .ph-logo-slot with:
+         <img src="YOUR_LOGO_URL" alt="PF"
+              style="height:26px;object-fit:contain;filter:brightness(0) invert(1)"/>
+    ═══════════════════════════════════════════════════════ -->
+    <div class="ph-logo-slot"><svg viewBox="0 0 24 24"><use href="#pfm"/></svg></div>
+  </div>
+
+  <div class="ps">
+    <!-- Machine identity hero -->
+    <div class="mh">
+      <div class="mh-inner">
+        <!-- Machine image loads automatically from MACHINES[id].image_url -->
+        <div class="mh-img" id="m-img-frame"><span id="m-img-emoji">🏋️</span></div>
+        <div class="mh-meta">
+          <div class="mh-cat" id="m-cat">Cardio</div>
+          <div class="mh-name" id="m-name">Treadmill 01</div>
+          <div class="mh-loc" id="m-loc">Cardio Floor — window row</div>
+          <div class="mh-asset" id="m-asset">Asset: PF-TM-001</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb">
+      <!-- Q1 — condition: 5 big tappable buttons, no label clutter -->
+      <div class="rc" style="margin-bottom:10px">
+        <div class="rc-q"><span class="qn">Q1</span>How is this machine right now?</div>
+        <div class="cond-row" id="cond-row">
+          <div class="cond-btn" onclick="mCond(5,this)"><span class="ci">✅</span><span class="cl">Works<br/>Great</span></div>
+          <div class="cond-btn" onclick="mCond(4,this)"><span class="ci">👍</span><span class="cl">Works<br/>Fine</span></div>
+          <div class="cond-btn" onclick="mCond(3,this)"><span class="ci">⚠️</span><span class="cl">Slight<br/>Issue</span></div>
+          <div class="cond-btn" onclick="mCond(2,this)"><span class="ci">😟</span><span class="cl">Poor<br/>Condition</span></div>
+          <div class="cond-btn" onclick="mCond(1,this)"><span class="ci">🚫</span><span class="cl">Not<br/>Working</span></div>
+        </div>
+      </div>
+
+      <!-- Q2 — issue type: appears only if condition ≤ 3 -->
+      <div class="iss-wrap" id="iss-wrap">
+        <div class="rc">
+          <div class="rc-q"><span class="qn">Q2</span>What's the issue?</div>
+          <div class="iss-chips" id="iss-chips">
+            <div class="iss-chip" onclick="mIssue('not-working',this)">🚫 Not working</div>
+            <div class="iss-chip" onclick="mIssue('partial',this)">⚠️ Partially working</div>
+            <div class="iss-chip" onclick="mIssue('dirty',this)">🧹 Dirty</div>
+            <div class="iss-chip" onclick="mIssue('damaged',this)">🔨 Damaged</div>
+            <div class="iss-chip red" onclick="mIssue('safety',this)">🚨 Safety concern</div>
+            <div class="iss-chip" onclick="mIssue('screen',this)">📺 Screen issue</div>
+            <div class="iss-chip" onclick="mIssue('noise',this)">🔊 Unusual noise</div>
+            <div class="iss-chip" onclick="mIssue('cable',this)">🔗 Cable / belt issue</div>
+            <div class="iss-chip" onclick="mIssue('missing-part',this)">🔩 Missing part</div>
+            <div class="iss-chip" onclick="mIssue('other',this)">✏️ Other</div>
+          </div>
+          <!-- "Other" free-text — shows only when Other is selected -->
+          <div id="m-other-wrap" style="display:none;margin-top:10px">
+            <textarea class="pft" id="m-other-txt" placeholder="Please describe the issue…" maxlength="500" style="min-height:60px"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact — name, surname, mobile, email — all optional -->
+      <div class="contact-inline">
+        <div class="contact-inline-label">Your details <span class="opt-tag">Optional — for follow-up only</span></div>
+        <div class="contact-row" style="margin-bottom:8px">
+          <input class="pfi" id="mc-name" placeholder="Name" maxlength="60" autocomplete="off"/>
+          <input class="pfi" id="mc-surname" placeholder="Surname" maxlength="60" autocomplete="off"/>
+        </div>
+        <div class="contact-row" style="margin-bottom:0">
+          <input class="pfi" id="mc-mobile" placeholder="Mobile (10 digits)" maxlength="10" inputmode="numeric" autocomplete="off"/>
+          <input class="pfi" id="mc-email" placeholder="Email address" inputmode="email" autocomplete="off"/>
+        </div>
+        <div id="mc-popia-wrap" style="display:none;margin-top:0">
+          <div class="popia-row" style="margin-top:8px">
+            <input type="checkbox" id="mc-popia"/>
+            <label for="mc-popia">May Planet Fitness contact me about this report. <strong>POPIA consent.</strong></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-txt" id="m-status"></div>
+      <button class="sub-btn" id="m-sub" onclick="submitMachine()">Submit Report →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════
+     CLUB FEEDBACK — 2-step, condensed, ~45 seconds
+     Step 1: 4 quick ratings on one scroll
+     Step 2: Area + optional comment + optional contact
+═════════════════════════════════════════════════════════ -->
+<div class="page" id="pg-club">
+  <div class="ph">
+    <button class="ph-back" onclick="goSplash()">←</button>
+    <div class="ph-body">
+      <div class="ph-title" id="chdr-title">Club Experience</div>
+      <div class="ph-sub" id="chdr-sub">Rate your visit</div>
+    </div>
+    <div class="ph-logo-slot"><svg viewBox="0 0 24 24"><use href="#pfm"/></svg></div>
+  </div>
+
+  <!-- Step progress pills -->
+  <div class="step-pills">
+    <div class="step-pill active" id="sp1"></div>
+    <div class="step-pill" id="sp2"></div>
+  </div>
+
+  <div class="ps">
+    <!-- Hero -->
+    <div class="ch">
+      <!-- ══ LOGO IN CLUB HERO — see comment in .ch-logo-slot CSS above ══ -->
+      <div class="ch-logo-slot"></div>
+      <div class="ch-tag"><span id="ch-club-name">Planet Fitness</span></div>
+      <div class="ch-title">How was<br/>your visit?</div>
+      <div class="ch-sub">Quick ratings — takes about 30 seconds.</div>
+    </div>
+
+    <!-- STEP 1: All 4 ratings on one scroll -->
+    <div id="cs1">
+      <div class="cb">
+        <div class="rc">
+          <div class="rc-q"><span class="qn">Q1</span>Overall — how was your visit today?</div>
+          <div class="rg" id="rg-overall">
+            <div class="rb" onclick="cRate('overall',5,this)"><span class="re">😄</span><span class="rl">Very Good</span></div>
+            <div class="rb" onclick="cRate('overall',4,this)"><span class="re">🙂</span><span class="rl">Good</span></div>
+            <div class="rb" onclick="cRate('overall',3,this)"><span class="re">😐</span><span class="rl">Average</span></div>
+            <div class="rb" onclick="cRate('overall',2,this)"><span class="re">🙁</span><span class="rl">Poor</span></div>
+            <div class="rb" onclick="cRate('overall',1,this)"><span class="re">😠</span><span class="rl">Very Poor</span></div>
+          </div>
+        </div>
+        <div class="rc">
+          <div class="rc-q"><span class="qn">Q2</span>How clean was the club?</div>
+          <div class="rg" id="rg-clean">
+            <div class="rb" onclick="cRate('clean',5,this)"><span class="re">✨</span><span class="rl">Spotless</span></div>
+            <div class="rb" onclick="cRate('clean',4,this)"><span class="re">👌</span><span class="rl">Clean</span></div>
+            <div class="rb" onclick="cRate('clean',3,this)"><span class="re">😐</span><span class="rl">Average</span></div>
+            <div class="rb" onclick="cRate('clean',2,this)"><span class="re">🙁</span><span class="rl">Dirty</span></div>
+            <div class="rb" onclick="cRate('clean',1,this)"><span class="re">😤</span><span class="rl">Very Dirty</span></div>
+          </div>
+        </div>
+        <div class="rc">
+          <div class="rc-q"><span class="qn">Q3</span>How was the equipment condition?</div>
+          <div class="rg" id="rg-equip">
+            <div class="rb" onclick="cRate('equip',5,this)"><span class="re">💪</span><span class="rl">Excellent</span></div>
+            <div class="rb" onclick="cRate('equip',4,this)"><span class="re">👍</span><span class="rl">Good</span></div>
+            <div class="rb" onclick="cRate('equip',3,this)"><span class="re">😐</span><span class="rl">Average</span></div>
+            <div class="rb" onclick="cRate('equip',2,this)"><span class="re">⚠️</span><span class="rl">Poor</span></div>
+            <div class="rb" onclick="cRate('equip',1,this)"><span class="re">🚫</span><span class="rl">Broken</span></div>
+          </div>
+        </div>
+        <div class="rc">
+          <div class="rc-q"><span class="qn">Q4</span>How helpful was the team?</div>
+          <div class="rg" id="rg-staff">
+            <div class="rb" onclick="cRate('staff',5,this)"><span class="re">🌟</span><span class="rl">Excellent</span></div>
+            <div class="rb" onclick="cRate('staff',4,this)"><span class="re">😊</span><span class="rl">Good</span></div>
+            <div class="rb" onclick="cRate('staff',3,this)"><span class="re">😐</span><span class="rl">Average</span></div>
+            <div class="rb" onclick="cRate('staff',2,this)"><span class="re">🙁</span><span class="rl">Poor</span></div>
+            <div class="rb" onclick="cRate('staff',1,this)"><span class="re">😠</span><span class="rl">Very Poor</span></div>
+          </div>
+        </div>
+        <div class="status-txt" id="cs1-status"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2: Area + comment + contact + submit -->
+    <div id="cs2" style="display:none">
+      <div class="cb">
+        <div class="rc">
+          <div class="rc-q"><span class="qn">Q5</span>Which area are you mainly rating?</div>
+          <div class="ac-wrap" id="ac-wrap">
+            <!-- Injected by JS from AREAS data -->
+          </div>
+        </div>
+
+        <div class="rc">
+          <div class="rc-q">Tell us more <span class="opt-tag">Optional</span></div>
+          <textarea class="pft" id="c-comment" placeholder="Any specific feedback — cleanliness, equipment, staff, facilities…" maxlength="1500"></textarea>
+        </div>
+
+        <div class="contact-inline">
+          <div class="contact-inline-label">Contact details <span class="opt-tag">Optional — for follow-up only</span></div>
+          <div class="contact-row" style="margin-bottom:8px">
+            <input class="pfi" id="cc-name" placeholder="Your name" maxlength="60" autocomplete="off"/>
+            <input class="pfi" id="cc-mobile" placeholder="Mobile (10 digits)" maxlength="10" inputmode="numeric" autocomplete="off"/>
+          </div>
+          <input class="pfi pfia" id="cc-email" placeholder="Email address (optional)" inputmode="email" autocomplete="off" style="margin-bottom:0"/>
+          <div id="cc-popia-wrap" style="display:none;margin-top:8px">
+            <div class="popia-row">
+              <input type="checkbox" id="cc-popia"/>
+              <label for="cc-popia">May Planet Fitness contact me about this feedback. <strong>POPIA consent.</strong></label>
+            </div>
+            <div class="popia-row" style="margin-top:6px">
+              <input type="checkbox" id="cc-mkt"/>
+              <label for="cc-mkt">I'd like to receive club news &amp; offers from Planet Fitness. <strong>Optional.</strong></label>
+            </div>
+          </div>
+        </div>
+        <div class="status-txt" id="cs2-status"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step nav -->
+  <div class="step-nav">
+    <button class="btn-back" id="c-back" style="display:none" onclick="cStepBack()">← Back</button>
+    <button class="btn-next" id="c-next" onclick="cStepNext()">Next →</button>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════
+     AREA PAGE — condensed
+═════════════════════════════════ -->
+<div class="page" id="pg-area">
+  <div class="ph">
+    <button class="ph-back" onclick="goSplash()">←</button>
+    <div class="ph-body">
+      <div class="ph-title" id="ahdr-title">Area Feedback</div>
+      <div class="ph-sub" id="ahdr-sub">Planet Fitness</div>
+    </div>
+    <div class="ph-logo-slot"><svg viewBox="0 0 24 24"><use href="#pfm"/></svg></div>
+  </div>
+  <div class="ps">
+    <div class="ah">
+      <div class="ah-icon" id="a-icon">🚿</div>
+      <div class="ah-title" id="a-title">Change Rooms</div>
+      <div class="ah-club" id="a-club">Planet Fitness — Demo</div>
+    </div>
+    <div class="cb" style="padding:14px 16px 24px">
+      <div class="rc">
+        <div class="rc-q"><span class="qn">Q1</span>How was this area today?</div>
+        <div class="rg" id="rg-area">
+          <div class="rb" onclick="aRate(5,this)"><span class="re">✨</span><span class="rl">Spotless</span></div>
+          <div class="rb" onclick="aRate(4,this)"><span class="re">👌</span><span class="rl">Clean</span></div>
+          <div class="rb" onclick="aRate(3,this)"><span class="re">😐</span><span class="rl">Average</span></div>
+          <div class="rb" onclick="aRate(2,this)"><span class="re">🙁</span><span class="rl">Needs Work</span></div>
+          <div class="rb" onclick="aRate(1,this)"><span class="re">😠</span><span class="rl">Unacceptable</span></div>
+        </div>
+      </div>
+      <div class="rc">
+        <div class="rc-q"><span class="qn">Q2</span>What best describes the area?</div>
+        <div class="ac-wrap" id="area-desc-chips">
+          <div class="ac" onclick="aDesc('clean',this)">✅ Clean &amp; ready</div>
+          <div class="ac" onclick="aDesc('attention',this)">⚠️ Needs attention</div>
+          <div class="ac" onclick="aDesc('dirty',this)">🧹 Not clean enough</div>
+          <div class="ac" onclick="aDesc('wet-floor',this)">💧 Wet floor hazard</div>
+          <div class="ac" onclick="aDesc('bad-smell',this)">👃 Unpleasant odour</div>
+          <div class="ac" onclick="aDesc('no-supplies',this)">🧴 Supplies empty</div>
+          <div class="ac" onclick="aDesc('no-water',this)">🚱 No drinking water</div>
+          <div class="ac" onclick="aDesc('no-hot-water',this)">🚿 No hot water</div>
+          <div class="ac" onclick="aDesc('broken',this)">🔧 Something broken</div>
+          <div class="ac" onclick="aDesc('poor-lighting',this)">💡 Poor lighting</div>
+          <div class="ac" onclick="aDesc('overcrowded',this)">👥 Too crowded</div>
+          <div class="ac" onclick="aDesc('temperature',this)">🌡️ Too hot / cold</div>
+          <div class="ac" style="border-color:#FECACA;color:#DC2626" onclick="aDesc('safety',this)">🚨 Safety concern</div>
+          <div class="ac" onclick="aDesc('other',this)">✏️ Other</div>
+        </div>
+      </div>
+      <div class="rc">
+        <div class="rc-q">Any details? <span class="opt-tag">Optional</span></div>
+        <textarea class="pft" id="a-comment" placeholder="Help our team fix this faster…" maxlength="1000"></textarea>
+      </div>
+      <div class="status-txt" id="a-status"></div>
+      <button class="sub-btn" onclick="submitArea()">Submit Feedback →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════
+     SUCCESS PAGE
+═════════════════════════════════ -->
+<div class="page" id="pg-success">
+  <div class="suc-inner">
+    <!-- ══ LOGO — SUCCESS PAGE ══════════════════════════════════
+         Add PF logo above the tick:
+         <img src="YOUR_LOGO_URL" alt="Planet Fitness"
+              style="height:36px;object-fit:contain;filter:brightness(0) invert(1);margin-bottom:20px;display:block;margin-left:auto;margin-right:auto"/>
+    ═══════════════════════════════════════════════════════ -->
+    <div class="suc-icon">✓</div>
+    <div class="suc-title" id="suc-title">Thank You!</div>
+    <p class="suc-msg" id="suc-msg">Your feedback helps us keep your club at its best.</p>
+    <div class="suc-meta" id="suc-meta"></div>
+    <button class="btn-home" onclick="goSplash()">← Back to Home</button>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════
+     ADMIN DEMO CONFIG
+═════════════════════════════════ -->
+<div class="page" id="pg-admin">
+  <div class="ph">
+    <button class="ph-back" onclick="goSplash()">←</button>
+    <div class="ph-body">
+      <div class="ph-title">Demo Config</div>
+      <div class="ph-sub">Club data model &amp; setup guide</div>
+    </div>
+    <div class="ph-logo-slot"><svg viewBox="0 0 24 24"><use href="#pfm"/></svg></div>
+  </div>
+  <div class="ps">
+    <div class="adm">
+
+      <div class="adm-h">Logo Placement Guide</div>
+      <div class="adm-card">
+        <div class="dr"><span class="dk">Splash page logo</span><span class="dv"><span class="adm-badge ab-blue">Replace sp-logo-wrap</span></span></div>
+        <div class="dr"><span class="dk">Page header (all pages)</span><span class="dv"><span class="adm-badge ab-blue">Replace ph-logo-slot</span></span></div>
+        <div class="dr"><span class="dk">Club hero banner</span><span class="dv"><span class="adm-badge ab-blue">Replace ch-logo-slot</span></span></div>
+        <div class="dr"><span class="dk">Success page</span><span class="dv"><span class="adm-badge ab-blue">Above suc-icon div</span></span></div>
+        <div class="dr"><span class="dk">Machine images</span><span class="dv"><span class="adm-badge ab-grey">MACHINES[id].image_url</span></span></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.6">
+          Host logo at: <code style="background:var(--off);padding:1px 4px;border-radius:3px">/images/pf-logo.png</code> in your GitHub repo.<br/>
+          For dark logos on navy: add <code style="background:var(--off);padding:1px 4px;border-radius:3px">filter:brightness(0) invert(1)</code> to the img tag.<br/>
+          Recommended logo height: 32–60px depending on placement.
+        </div>
+      </div>
+
+      <div class="adm-h">Demo Club</div>
+      <div class="adm-card">
+        <div class="dr"><span class="dk">Club ID</span><span class="dv">PF-DEMO-001</span></div>
+        <div class="dr"><span class="dk">Name</span><span class="dv">Planet Fitness Sandton</span></div>
+        <div class="dr"><span class="dk">Province</span><span class="dv">Gauteng</span></div>
+        <div class="dr"><span class="dk">Alerts → Manager</span><span class="dv">manager@pf-demo.co.za</span></div>
+        <div class="dr"><span class="dk">Alerts → Maintenance</span><span class="dv">maintenance@pf-demo.co.za</span></div>
+        <div class="dr"><span class="dk">Alerts → Critical</span><span class="dv">escalation@pf-demo.co.za</span></div>
+      </div>
+
+      <div class="adm-h">Alert Routing</div>
+      <div class="adm-card">
+        <div class="dr"><span class="dk">Safety concern</span><span class="dv"><span class="adm-badge" style="background:#FEF2F2;color:#991B1B">Critical — All groups</span></span></div>
+        <div class="dr"><span class="dk">Machine not working</span><span class="dv"><span class="adm-badge ab-warn">Urgent — Maintenance + Mgr</span></span></div>
+        <div class="dr"><span class="dk">Very poor visit</span><span class="dv"><span class="adm-badge ab-warn">Urgent — Manager</span></span></div>
+        <div class="dr"><span class="dk">Dirty bathrooms</span><span class="dv"><span class="adm-badge ab-warn">Urgent — Manager + Clean</span></span></div>
+        <div class="dr"><span class="dk">Poor rating</span><span class="dv"><span class="adm-badge" style="background:#FEF9C3;color:#92400E">Attention — Manager</span></span></div>
+        <div class="dr"><span class="dk">Good rating</span><span class="dv"><span class="adm-badge ab-blue">Info — Daily digest only</span></span></div>
+      </div>
+
+      <div class="adm-h">Example QR URLs</div>
+      <div class="adm-card">
+        <div class="dr"><span class="dk">Club feedback</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001</span></div>
+        <div class="dr"><span class="dk">Treadmill 01</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&machine=TM-01</span></div>
+        <div class="dr"><span class="dk">Leg Press</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&machine=LP-01</span></div>
+        <div class="dr"><span class="dk">Bathrooms</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&area=bathrooms</span></div>
+        <div class="dr"><span class="dk">Change Rooms</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&area=changerooms</span></div>
+        <div class="dr"><span class="dk">Studio</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&area=studio</span></div>
+      </div>
+
+      <div class="adm-h">Areas (14)</div>
+      <div class="adm-card" id="adm-areas"></div>
+
+      <div class="adm-h">Machines (24)</div>
+      <div class="mg2" id="adm-machines"></div>
+
+      <div class="adm-footer">
+        Demo concept built for Planet Fitness South Africa.<br/>
+        Not an official Planet Fitness product.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  PLANET FITNESS SA — MEMBER EXPERIENCE
+//  Redesigned for speed: Machine ~15s, Club ~45s
+// ═══════════════════════════════════════════════════════════════
+
+/* ── APPS SCRIPT URL ──────────────────────────────────────────
+   Replace YOUR_DEPLOYMENT_ID with your deployed Apps Script URL
+   Example: https://script.google.com/macros/s/AKfy.../exec
+─────────────────────────────────────────────────────────────── */
+var GAS_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+
+/* ════════════════════════════════════════════════════════════
+   EMAIL CONFIG — ADD / REMOVE / CHANGE EMAILS HERE
+   ════════════════════════════════════════════════════════════
+   Each club has 4 email groups. Each is an array — add as many
+   addresses as you need, separated by commas.
+
+   manager_emails     → receives ALL alerts (attention/urgent/critical)
+                        also receives daily, weekly, monthly, yearly summaries
+   maintenance_emails → receives machine/equipment alerts (urgent/critical)
+   escalation_emails  → receives CRITICAL alerts only (safety, severe issues)
+   cleanliness_emails → receives cleanliness/facilities alerts
+
+   HOW TO ADD AN EMAIL:
+     manager_emails:["ops@pf.co.za", "gm@pf.co.za"],
+
+   HOW TO REMOVE AN EMAIL:
+     Delete it from the array. If only one left, keep the square brackets:
+     manager_emails:["ops@pf.co.za"],
+
+   HOW TO ADD A NEW CLUB:
+     Copy the entire "PF-DEMO-001": {...} block,
+     paste it below (still inside the outer { }),
+     change the ID and all values.
+     Then add its areas to AREAS and machines to MACHINES below.
+
+   ALSO update the Clubs tab in Google Sheets with the same emails
+   so the daily/weekly/monthly/yearly summary triggers reach the right people.
+════════════════════════════════════════════════════════════ */
+var CLUBS = {
+  "PF-DEMO-001": {
+    club_id:"PF-DEMO-001", club_name:"Planet Fitness Sandton", display_name:"Sandton",
+    province:"Gauteng", city:"Sandton, Johannesburg",
+    manager_emails:["manager@pf-demo.co.za"],
+    maintenance_emails:["maintenance@pf-demo.co.za"],
+    escalation_emails:["escalation@pf-demo.co.za"],
+    cleanliness_emails:["cleaning@pf-demo.co.za"],
+    active:true
+  }
+};
+
+/* ════════════════════════════════════════
+   DATA — AREAS
+════════════════════════════════════════ */
+var AREAS = {
+  "reception":    {id:"reception",   club_id:"PF-DEMO-001", name:"Reception",              type:"reception",  icon:"🏢", sort:1},
+  "cardio":       {id:"cardio",      club_id:"PF-DEMO-001", name:"Cardio Floor",           type:"equipment",  icon:"🏃", sort:2},
+  "weights":      {id:"weights",     club_id:"PF-DEMO-001", name:"Strength / Weights",     type:"equipment",  icon:"🏋️", sort:3},
+  "functional":   {id:"functional",  club_id:"PF-DEMO-001", name:"Functional Training",    type:"equipment",  icon:"⚡", sort:4},
+  "studio":       {id:"studio",      club_id:"PF-DEMO-001", name:"Group Exercise Studio",  type:"class",      icon:"🎵", sort:5},
+  "cycling":      {id:"cycling",     club_id:"PF-DEMO-001", name:"Indoor Cycling Studio",  type:"class",      icon:"🚴", sort:6},
+  "yoga":         {id:"yoga",        club_id:"PF-DEMO-001", name:"Yoga / Heated Studio",   type:"class",      icon:"🧘", sort:7},
+  "recovery":     {id:"recovery",    club_id:"PF-DEMO-001", name:"Recovery / Stretch",     type:"wellness",   icon:"🤸", sort:8},
+  "changerooms":  {id:"changerooms", club_id:"PF-DEMO-001", name:"Change Rooms",           type:"facilities", icon:"🚿", sort:9},
+  "bathrooms":    {id:"bathrooms",   club_id:"PF-DEMO-001", name:"Bathrooms",              type:"facilities", icon:"🚻", sort:10},
+  "steam":        {id:"steam",       club_id:"PF-DEMO-001", name:"Steam Room / Sauna",     type:"facilities", icon:"♨️", sort:11},
+  "pool":         {id:"pool",        club_id:"PF-DEMO-001", name:"Pool Area",              type:"facilities", icon:"🏊", sort:12},
+  "lounge":       {id:"lounge",      club_id:"PF-DEMO-001", name:"Lounge / Juice Bar",     type:"lounge",     icon:"☕", sort:13},
+  "concierge":    {id:"concierge",   club_id:"PF-DEMO-001", name:"Concierge / Service",    type:"reception",  icon:"💬", sort:14}
+};
+
+/* ════════════════════════════════════════
+   DATA — MACHINES (24 seeded)
+   image_url: set to your hosted image URL, e.g.:
+   "https://yourusername.github.io/pf-experience/images/machines/treadmill.jpg"
+════════════════════════════════════════ */
+var MACHINES = {
+  "TM-01":{id:"TM-01",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Treadmill 01",          category:"Cardio",           asset:"PF-TM-001", loc:"Window row, position 1",     emoji:"🏃", image_url:""},
+  "TM-02":{id:"TM-02",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Treadmill 02",          category:"Cardio",           asset:"PF-TM-002", loc:"Window row, position 2",     emoji:"🏃", image_url:""},
+  "TM-03":{id:"TM-03",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Treadmill 03",          category:"Cardio",           asset:"PF-TM-003", loc:"Window row, position 3",     emoji:"🏃", image_url:""},
+  "TM-04":{id:"TM-04",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Treadmill 04",          category:"Cardio",           asset:"PF-TM-004", loc:"Centre row, position 1",     emoji:"🏃", image_url:""},
+  "UB-01":{id:"UB-01",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Upright Bike 01",       category:"Cardio",           asset:"PF-UB-001", loc:"Bike cluster, left",         emoji:"🚴", image_url:""},
+  "UB-02":{id:"UB-02",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Upright Bike 02",       category:"Cardio",           asset:"PF-UB-002", loc:"Bike cluster, right",        emoji:"🚴", image_url:""},
+  "RW-01":{id:"RW-01",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Rower 01",              category:"Cardio",           asset:"PF-RW-001", loc:"Rower bay, position 1",      emoji:"🚣", image_url:""},
+  "EL-01":{id:"EL-01",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Elliptical 01",         category:"Cardio",           asset:"PF-EL-001", loc:"Elliptical row, left",       emoji:"🏃", image_url:""},
+  "PC-01":{id:"PC-01",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Stair Climber 01",      category:"Cardio",           asset:"PF-PC-001", loc:"Cardio floor, centre",       emoji:"🪜", image_url:""},
+  "KM-01":{id:"KM-01",club_id:"PF-DEMO-001",area_id:"cardio",    name:"Ski Erg 01",            category:"Cardio",           asset:"PF-KM-001", loc:"Cardio annexe, end row",     emoji:"⛷️", image_url:""},
+  "LP-01":{id:"LP-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Leg Press 01",          category:"Strength",         asset:"PF-LP-001", loc:"Strength floor, area B",     emoji:"🦵", image_url:""},
+  "CP-01":{id:"CP-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Chest Press 01",        category:"Strength",         asset:"PF-CP-001", loc:"Strength floor, area A",     emoji:"💪", image_url:""},
+  "CS-01":{id:"CS-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Cable Station 01",      category:"Strength",         asset:"PF-CS-001", loc:"Cable rig, left station",    emoji:"🔗", image_url:""},
+  "CS-02":{id:"CS-02",club_id:"PF-DEMO-001",area_id:"weights",   name:"Cable Station 02",      category:"Strength",         asset:"PF-CS-002", loc:"Cable rig, right station",   emoji:"🔗", image_url:""},
+  "SM-01":{id:"SM-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Smith Machine 01",      category:"Strength",         asset:"PF-SM-001", loc:"Power rack zone, left",      emoji:"🏋️", image_url:""},
+  "LD-01":{id:"LD-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Lat Pulldown 01",       category:"Strength",         asset:"PF-LD-001", loc:"Back machine cluster",       emoji:"💪", image_url:""},
+  "SR-01":{id:"SR-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Seated Row 01",         category:"Strength",         asset:"PF-SR-001", loc:"Back machine cluster",       emoji:"💪", image_url:""},
+  "SP-01":{id:"SP-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Shoulder Press 01",     category:"Strength",         asset:"PF-SP-001", loc:"Press machine row",          emoji:"💪", image_url:""},
+  "FT-A": {id:"FT-A", club_id:"PF-DEMO-001",area_id:"functional",name:"Functional Rig A",      category:"Functional",       asset:"PF-FT-001A",loc:"Functional zone, station A", emoji:"⚡", image_url:""},
+  "FT-B": {id:"FT-B", club_id:"PF-DEMO-001",area_id:"functional",name:"Functional Rig B",      category:"Functional",       asset:"PF-FT-001B",loc:"Functional zone, station B", emoji:"⚡", image_url:""},
+  "BB-01":{id:"BB-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Booty Builder 01",      category:"Glute / Specialty",asset:"PF-BB-001", loc:"Specialty machines row",     emoji:"🍑", image_url:""},
+  "HG-01":{id:"HG-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Hip Thrust Machine 01", category:"Glute / Specialty",asset:"PF-HG-001", loc:"Specialty machines row",     emoji:"🏋️", image_url:""},
+  "IB-01":{id:"IB-01",club_id:"PF-DEMO-001",area_id:"reception", name:"InBody Station",        category:"Assessment",       asset:"PF-IB-001", loc:"Near reception desk",        emoji:"📊", image_url:""},
+  "AB-01":{id:"AB-01",club_id:"PF-DEMO-001",area_id:"weights",   name:"Ab Crunch Machine 01",  category:"Core",             asset:"PF-AB-001", loc:"Core / stretch zone",        emoji:"💪", image_url:""}
+};
+
+/* ════════════════════════════════════════
+   STATE
+════════════════════════════════════════ */
+var S = {
+  clubId:"PF-DEMO-001", machineId:null, areaId:null,
+  machineCondition:null, machineIssue:null,
+  clubRatings:{}, selectedArea:null, areaClean:null, areaDesc:null,
+  clubStep:1, src:"club"
+};
+
+/* ════════════════════════════════════════
+   ROUTING
+════════════════════════════════════════ */
+function show(id){
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
+  var el=document.getElementById(id); if(el){el.classList.add("active"); window.scrollTo(0,0);}
+}
+function goSplash(){show("pg-splash")}
+function goAdmin(){buildAdmin();show("pg-admin")}
+
+function goClub(cid){
+  S.clubId=cid||"PF-DEMO-001"; S.clubRatings={}; S.selectedArea=null; S.clubStep=1; S.src="club";
+  var club=CLUBS[S.clubId]||{};
+  document.getElementById("chdr-title").textContent=club.display_name||"Club";
+  document.getElementById("ch-club-name").textContent=club.display_name||"Planet Fitness";
+  buildAreaChips();
+  setClubStep(1);
+  show("pg-club");
+}
+
+function goMachine(cid,mid){
+  S.clubId=cid||"PF-DEMO-001"; S.machineId=mid||"TM-01";
+  S.machineCondition=null; S.machineIssue=null; S.src="machine";
+  var m=MACHINES[S.machineId]||MACHINES["TM-01"];
+  var club=CLUBS[S.clubId]||{};
+  document.getElementById("mhdr-club").textContent=club.display_name||"Planet Fitness";
+  document.getElementById("m-cat").textContent=m.category;
+  document.getElementById("m-name").textContent=m.name;
+  document.getElementById("m-loc").textContent=m.loc;
+  document.getElementById("m-asset").textContent="Asset: "+m.asset;
+  // Image or emoji
+  var frame=document.getElementById("m-img-frame");
+  var emo=document.getElementById("m-img-emoji");
+  if(m.image_url){
+    frame.innerHTML='<img src="'+m.image_url+'" alt="'+m.name+'"/>';
+  } else {
+    frame.innerHTML='<span style="font-size:32px">'+m.emoji+'</span>';
+  }
+  // Reset
+  resetBtns("cond-row","cond-btn");
+  document.querySelectorAll(".iss-chip").forEach(function(c){c.classList.remove("active")});
+  document.getElementById("iss-wrap").classList.remove("show");
+  document.getElementById("mc-name").value="";
+  document.getElementById("mc-surname").value="";
+  document.getElementById("mc-mobile").value="";
+  document.getElementById("mc-email").value="";
+  var otherWrap=document.getElementById("m-other-wrap");
+  var otherTxt=document.getElementById("m-other-txt");
+  if(otherWrap) otherWrap.style.display="none";
+  if(otherTxt) otherTxt.value="";
+  document.getElementById("mc-popia-wrap").style.display="none";
+  document.getElementById("mc-popia").checked=false;
+  document.getElementById("m-status").textContent="";
+  document.getElementById("m-sub").disabled=false;
+  show("pg-machine");
+}
+
+function goArea(cid,aid){
+  S.clubId=cid||"PF-DEMO-001"; S.areaId=aid||"changerooms";
+  S.areaClean=null; S.areaDesc=null; S.src="area";
+  var area=AREAS[S.areaId]||AREAS["changerooms"];
+  var club=CLUBS[S.clubId]||{};
+  document.getElementById("ahdr-title").textContent=area.name;
+  document.getElementById("ahdr-sub").textContent=club.display_name||"Planet Fitness";
+  document.getElementById("a-icon").textContent=area.icon;
+  document.getElementById("a-title").textContent=area.name;
+  document.getElementById("a-club").textContent=(club.club_name||"Planet Fitness")+" — Demo";
+  resetBtns("rg-area","rb");
+  document.querySelectorAll("#area-desc-chips .ac").forEach(function(c){c.classList.remove("active")});
+  document.getElementById("a-comment").value="";
+  document.getElementById("a-status").textContent="";
+  show("pg-area");
+}
+
+/* URL routing on load */
+(function(){
+  var p=new URLSearchParams(window.location.search);
+  var club=p.get("club")||"PF-DEMO-001";
+  var machine=p.get("machine");
+  var area=p.get("area");
+  if(machine) goMachine(club,machine);
+  else if(area) goArea(club,area);
+  else if(p.get("club")) goClub(club);
+})();
+
+/* ════════════════════════════════════════
+   MACHINE FLOW
+════════════════════════════════════════ */
+function mCond(score,el){
+  S.machineCondition=score;
+  resetBtns("cond-row","cond-btn");
+  el.classList.add("s"+score);
+  // Show issue chips only if condition is 3 or below
+  document.getElementById("iss-wrap").classList[score<=3?"add":"remove"]("show");
+}
+
+function mIssue(val,el){
+  var was=el.classList.contains("active");
+  document.querySelectorAll(".iss-chip").forEach(function(c){c.classList.remove("active")});
+  var otherWrap=document.getElementById("m-other-wrap");
+  if(!was){
+    el.classList.add("active");
+    S.machineIssue=val;
+    if(otherWrap) otherWrap.style.display=(val==="other")?"block":"none";
+  } else {
+    S.machineIssue=null;
+    if(otherWrap) otherWrap.style.display="none";
+  }
+}
+
+function submitMachine(){
+  var btn=document.getElementById("m-sub");
+  var st=document.getElementById("m-status");
+  if(!S.machineCondition){st.textContent="Please rate the machine condition.";return;}
+  st.textContent=""; btn.disabled=true;
+
+  var m=MACHINES[S.machineId]||{};
+  var club=CLUBS[S.clubId]||{};
+  var name=(document.getElementById("mc-name").value||"").trim();
+  var surname=(document.getElementById("mc-surname").value||"").trim();
+  var mobile=(document.getElementById("mc-mobile").value||"").trim();
+  var email=(document.getElementById("mc-email").value||"").trim();
+  var popia=(document.getElementById("mc-popia").checked);
+  var otherTxt=(document.getElementById("m-other-txt")||{}).value||"";
+  var comment=S.machineIssue==="other"?otherTxt.trim():"";
+
+  // Daily limit: one machine report per machineId per day (localStorage)
+  var limitKey="pf_m_"+S.clubId+"_"+S.machineId+"_"+todayKey();
+  if(localStorage.getItem(limitKey)){
+    st.textContent="You've already submitted a report for this machine today. Thank you!";
+    btn.disabled=false; return;
+  }
+
+  var sub={
+    src:"machine", clubId:S.clubId, machineId:S.machineId,
+    machineName:m.name, machineCategory:m.category, machineAsset:m.asset, machineLoc:m.loc,
+    areaId:m.area_id, areaType:"equipment",
+    ratings:{}, machineCondition:S.machineCondition,
+    issueType:S.machineIssue||"", comment:comment,
+    contact:{name,surname,mobile,email}, contactPerm:popia, marketingPerm:false,
+    submittedAt:new Date().toISOString()
+  };
+  sub.severity=calcSev(sub);
+  sub.recipients=getRecips(sub,club);
+  sub.alertEmail=buildEmail(sub,club);
+  sub.customerEmail=(email&&popia)?buildCustomerEmail(sub,club):null;
+
+  send(sub,function(){
+    localStorage.setItem(limitKey,"1");
+    var extra=sub.severity==="critical"?"Our maintenance team has been notified immediately.":sub.severity==="urgent"?"Our team will attend to this as a priority.":"This has been logged for our maintenance team.";
+    showSuccess("Reported!",extra,sub);
+  });
+}
+
+/* ════════════════════════════════════════
+   CLUB FLOW
+════════════════════════════════════════ */
+function cRate(key,score,el){
+  S.clubRatings[key]=score;
+  var rg=el.parentNode;
+  rg.querySelectorAll(".rb").forEach(function(b){b.className="rb"});
+  el.classList.add("s"+score);
+}
+
+function buildAreaChips(){
+  var wrap=document.getElementById("ac-wrap"); wrap.innerHTML="";
+  Object.values(AREAS).filter(function(a){return a.club_id===S.clubId}).sort(function(a,b){return a.sort-b.sort}).forEach(function(area){
+    var d=document.createElement("div"); d.className="ac"; d.textContent=area.icon+" "+area.name;
+    d.onclick=function(){
+      wrap.querySelectorAll(".ac").forEach(function(c){c.classList.remove("active")});
+      d.classList.add("active"); S.selectedArea=area.id;
+    };
+    wrap.appendChild(d);
+  });
+}
+
+function setClubStep(step){
+  S.clubStep=step;
+  var s1=document.getElementById("cs1"), s2=document.getElementById("cs2");
+  var p1=document.getElementById("sp1"), p2=document.getElementById("sp2");
+  var back=document.getElementById("c-back"), next=document.getElementById("c-next");
+  var ps=document.querySelector("#pg-club .ps");
+  if(ps) ps.scrollTop=0;
+  if(step===1){
+    s1.style.display="block"; s2.style.display="none";
+    p1.className="step-pill active"; p2.className="step-pill";
+    back.style.display="none"; next.textContent="Next →"; next.disabled=false;
+  } else {
+    s1.style.display="none"; s2.style.display="block";
+    p1.className="step-pill done"; p2.className="step-pill active";
+    back.style.display="block"; next.textContent="Submit Feedback ✓"; next.disabled=false;
+    setupContactWatcher();
+  }
+}
+
+function setupContactWatcher(){
+  var fields=["cc-name","cc-mobile","cc-email"];
+  var wrap=document.getElementById("cc-popia-wrap");
+  function chk(){var has=fields.some(function(id){return(document.getElementById(id)||{}).value;});wrap.style.display=has?"block":"none";}
+  fields.forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener("input",chk);});
+  chk();
+}
+
+function cStepNext(){
+  if(S.clubStep===1){
+    if(!S.clubRatings["overall"]){document.getElementById("cs1-status").textContent="Please rate your overall visit to continue.";return;}
+    document.getElementById("cs1-status").textContent="";
+    setClubStep(2);
+  } else {
+    // Validate contact if entered
+    var name=(document.getElementById("cc-name").value||"").trim();
+    var mobile=(document.getElementById("cc-mobile").value||"").trim();
+    var email=(document.getElementById("cc-email").value||"").trim();
+    if((name||mobile||email)&&!document.getElementById("cc-popia").checked){
+      document.getElementById("cs2-status").textContent="Please tick POPIA consent to submit with your details."; return;
+    }
+    if(mobile&&!/^\d{10}$/.test(mobile)){document.getElementById("cs2-status").textContent="Mobile must be 10 digits.";return;}
+    if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){document.getElementById("cs2-status").textContent="Please enter a valid email.";return;}
+    document.getElementById("cs2-status").textContent="";
+    submitClub();
+  }
+}
+function cStepBack(){setClubStep(1)}
+
+function submitClub(){
+  var club=CLUBS[S.clubId]||{};
+  var comment=(document.getElementById("c-comment").value||"").trim();
+  var name=(document.getElementById("cc-name").value||"").trim();
+  var mobile=(document.getElementById("cc-mobile").value||"").trim();
+  var email=(document.getElementById("cc-email").value||"").trim();
+  var cp=(document.getElementById("cc-popia")||{}).checked||false;
+  var mp=(document.getElementById("cc-mkt")||{}).checked||false;
+
+  // Daily limit: one club review per clubId per day
+  var limitKey="pf_c_"+S.clubId+"_"+todayKey();
+  if(localStorage.getItem(limitKey)){
+    document.getElementById("cs2-status").textContent="You've already submitted club feedback today. Thank you!";
+    document.getElementById("c-next").disabled=false; return;
+  }
+
+  var sub={
+    src:"club", clubId:S.clubId, areaId:S.selectedArea,
+    areaType:S.selectedArea&&AREAS[S.selectedArea]?AREAS[S.selectedArea].type:"",
+    ratings:S.clubRatings, comment:comment, issueType:"",
+    contact:{name,mobile,email}, contactPerm:cp, marketingPerm:mp,
+    submittedAt:new Date().toISOString()
+  };
+  sub.severity=calcSev(sub);
+  sub.recipients=getRecips(sub,club);
+  sub.alertEmail=buildEmail(sub,club);
+  sub.customerEmail=(email&&cp&&sub.severity!=="info")?buildCustomerEmail(sub,club):null;
+
+  send(sub,function(){
+    localStorage.setItem(limitKey,"1");
+    showSuccess("Thank You!","Your feedback helps us keep "+club.display_name+" at its best.",sub);
+  });
+}
+
+/* ════════════════════════════════════════
+   AREA FLOW
+════════════════════════════════════════ */
+function aRate(score,el){
+  S.areaClean=score;
+  resetBtns("rg-area","rb");
+  el.classList.add("s"+score);
+}
+function aDesc(val,el){
+  var was=el.classList.contains("active");
+  document.querySelectorAll("#area-desc-chips .ac").forEach(function(c){c.classList.remove("active")});
+  if(!was){el.classList.add("active");S.areaDesc=val;}else S.areaDesc=null;
+}
+function submitArea(){
+  var st=document.getElementById("a-status");
+  if(!S.areaClean){st.textContent="Please rate this area to continue.";return;}
+  st.textContent="";
+  var area=AREAS[S.areaId]||{};
+  var club=CLUBS[S.clubId]||{};
+  var comment=(document.getElementById("a-comment").value||"").trim();
+
+  // Daily limit: one area review per areaId per day
+  var limitKey="pf_a_"+S.clubId+"_"+S.areaId+"_"+todayKey();
+  if(localStorage.getItem(limitKey)){
+    st.textContent="You've already submitted feedback for this area today. Thank you!"; return;
+  }
+
+  var sub={
+    src:"area", clubId:S.clubId, areaId:S.areaId,
+    areaType:area.type||"facilities", areaName:area.name||S.areaId,
+    ratings:{cleanliness:S.areaClean}, issueType:S.areaDesc==="safety"?"safety":S.areaDesc||"",
+    comment:comment, contact:{}, contactPerm:false, marketingPerm:false,
+    submittedAt:new Date().toISOString()
+  };
+  sub.severity=calcSev(sub);
+  sub.recipients=getRecips(sub,club);
+  sub.alertEmail=buildEmail(sub,club);
+  sub.customerEmail=null;
+
+  send(sub,function(){
+    localStorage.setItem(limitKey,"1");
+    showSuccess("Thank You!","Your area feedback has been logged and will be actioned.",sub);
+  });
+}
+
+/* ════════════════════════════════════════
+   SUCCESS
+════════════════════════════════════════ */
+function showSuccess(title,msg,sub){
+  document.getElementById("suc-title").textContent=title;
+  document.getElementById("suc-msg").textContent=msg;
+  var sev=sub.severity||"info";
+  var sevLabels={info:"Info",attention:"Attention",urgent:"Urgent",critical:"Critical"};
+  var club=CLUBS[sub.clubId]||{};
+  var meta="<strong>Club:</strong> "+(club.club_name||sub.clubId);
+  if(sub.machineName) meta+="<br/><strong>Machine:</strong> "+sub.machineName;
+  if(sub.areaName||AREAS[sub.areaId]) meta+="<br/><strong>Area:</strong> "+(sub.areaName||(AREAS[sub.areaId]||{}).name||"");
+  meta+="<br/><strong>Severity:</strong> <span class='sev-badge sev-"+sev+"'>"+sevLabels[sev]+"</span>";
+  document.getElementById("suc-meta").innerHTML=meta;
+  show("pg-success");
+}
+
+/* ════════════════════════════════════════
+   SEVERITY + ROUTING
+════════════════════════════════════════ */
+var CRIT_WORDS=["unsafe","injured","injury","sparks","shock","snapped","blood","leak","slip","dangerous","fire","burnt"];
+function calcSev(s){
+  var sev="info";
+  var ov=(s.ratings&&s.ratings.overall)||5;
+  var cl=(s.ratings&&(s.ratings.cleanliness||s.ratings["area-clean"]))||5;
+  var cond=s.machineCondition||5;
+  var issue=s.issueType||"";
+  var comment=(s.comment||"").toLowerCase();
+  var atype=s.areaType||"";
+  for(var i=0;i<CRIT_WORDS.length;i++){if(comment.indexOf(CRIT_WORDS[i])!==-1||issue==="safety")return"critical";}
+  if(cond<=1||issue==="not-working"||issue==="damaged")sev="urgent";
+  if(ov<=1)sev="urgent";
+  if((atype==="facilities"||atype==="bathrooms"||atype==="changerooms")&&cl<=2)sev="urgent";
+  if(cl<=2&&sev==="info")sev="attention";
+  if(ov<=2&&sev==="info")sev="attention";
+  if((cond===3||cond===2)&&sev==="info")sev="attention";
+  var poor=0; for(var k in s.ratings){if(s.ratings[k]<=2)poor++;} if(poor>=2&&sev==="attention")sev="urgent";
+  return sev;
+}
+function getRecips(sub,club){
+  var set=new Set(club.manager_emails||[]);
+  var sev=sub.severity,src=sub.src,at=sub.areaType||"",it=sub.issueType||"";
+  if(sev==="critical"){(club.maintenance_emails||[]).forEach(function(e){set.add(e)});(club.escalation_emails||[]).forEach(function(e){set.add(e)});}
+  if(sev==="urgent"||sev==="attention"){
+    if(src==="machine"||at==="equipment")(club.maintenance_emails||[]).forEach(function(e){set.add(e)});
+    if(at==="facilities"||it==="dirty"||it==="safety")(club.cleanliness_emails||[]).forEach(function(e){set.add(e)});
+  }
+  return Array.from(set);
+}
+
+/* ════════════════════════════════════════
+   EMAIL BUILDER — Premium PF branded HTML
+════════════════════════════════════════ */
+function buildEmail(sub,club){
+  var sev=sub.severity||"info";
+  var sc={info:"#0057B8",attention:"#B45309",urgent:"#C2410C",critical:"#991B1B"}[sev]||"#0057B8";
+  var sb={info:"#EFF6FF",attention:"#FEF9C3",urgent:"#FFF7ED",critical:"#FEF2F2"}[sev]||"#EFF6FF";
+  var sl={info:"INFO",attention:"ATTENTION NEEDED",urgent:"URGENT",critical:"CRITICAL — ACT NOW"}[sev]||"INFO";
+  var subjects={
+    info:"Member Feedback | "+club.club_name,
+    attention:"Attention Needed | "+club.club_name,
+    urgent:"Urgent Issue | "+(sub.machineName||sub.areaName||club.club_name),
+    critical:"CRITICAL: Safety Concern | "+club.club_name
+  };
+  var subject=subjects[sev];
+  var rl={5:"Very Good",4:"Good",3:"Average",2:"Poor",1:"Very Poor"};
+  var cl2={5:"Working Perfectly",4:"Working Fine",3:"Slight Issue",2:"Poor Condition",1:"Not Working"};
+  var rrows="";
+  var rmap={overall:"Overall Visit",cleanliness:"Cleanliness",equip:"Equipment","area-clean":"Area Cleanliness",staff:"Team Helpfulness"};
+  for(var k in rmap){if(sub.ratings&&sub.ratings[k]){var v=sub.ratings[k];var c=v>=4?"#16A34A":v>=3?"#B45309":v>=2?"#EA580C":"#DC2626";rrows+="<tr><td style='padding:5px 10px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>"+rmap[k]+"</td><td style='padding:5px 10px;font-size:13px;font-weight:700;color:"+c+";border-bottom:1px solid #f0f0f0'>"+rl[v]+"</td></tr>";}}
+  if(sub.machineCondition){var v=sub.machineCondition;var c=v>=4?"#16A34A":v>=3?"#B45309":v>=2?"#EA580C":"#DC2626";rrows+="<tr><td style='padding:5px 10px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>Machine Condition</td><td style='padding:5px 10px;font-size:13px;font-weight:700;color:"+c+";border-bottom:1px solid #f0f0f0'>"+cl2[v]+"</td></tr>";}
+  var mSection="";
+  if(sub.src==="machine"&&sub.machineName){
+    mSection="<div style='background:#F8FAFF;border:1px solid #DBEAFE;border-radius:8px;padding:14px;margin-top:14px'><div style='font-size:10px;font-weight:800;color:#0057B8;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px'>Equipment Detail</div><table style='font-size:13px;color:#111;width:100%'><tr><td style='padding:3px 0;color:#555;width:40%'>Machine</td><td style='font-weight:700'>"+sub.machineName+"</td></tr><tr><td style='padding:3px 0;color:#555'>Category</td><td>"+sub.machineCategory+"</td></tr><tr><td style='padding:3px 0;color:#555'>Asset</td><td style='font-family:monospace'>"+sub.machineAsset+"</td></tr><tr><td style='padding:3px 0;color:#555'>Location</td><td>"+sub.machineLoc+"</td></tr>"+(sub.issueType?"<tr><td style='padding:3px 0;color:#555'>Issue Type</td><td style='font-weight:700;color:#C2410C'>"+sub.issueType+"</td></tr>":"")+"</table></div>";
+  }
+  var cSection="";
+  if(sub.contact&&(sub.contact.name||sub.contact.mobile)){cSection="<div style='background:#ECFDF5;border:1px solid #BBF7D0;border-radius:8px;padding:12px;margin-top:14px'><div style='font-size:10px;font-weight:800;color:#16A34A;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px'>Contact</div>"+(sub.contact.name?"<p style='margin:2px 0;font-size:13px'><b>Name:</b> "+sub.contact.name+"</p>":"")+(sub.contact.mobile?"<p style='margin:2px 0;font-size:13px'><b>Mobile:</b> "+sub.contact.mobile+"</p>":"")+(sub.contact.email?"<p style='margin:2px 0;font-size:13px'><b>Email:</b> "+sub.contact.email+"</p>":"")+"</div>";}
+  var action={info:"No immediate action needed. Feedback logged for daily summary.",attention:"Please review and address if required.",urgent:"Please inspect and resolve as soon as possible.",critical:"IMMEDIATE action required. Inspect, make safe, and escalate now."}[sev];
+  var now=new Date().toLocaleString("en-ZA",{timeZone:"Africa/Johannesburg",hour12:false});
+
+  /* ══ EMAIL LOGO PLACEMENT ══════════════════════════════════
+     To add the PF logo to alert emails, replace the PLANET FITNESS text div with:
+     <img src="YOUR_LOGO_PUBLIC_URL" alt="Planet Fitness"
+          style="height:40px;object-fit:contain;filter:brightness(0) invert(1);display:block;margin-bottom:6px"/>
+     The image URL must be publicly accessible (GitHub Pages works well).
+  ═══════════════════════════════════════════════════════════ */
+  var html="<!DOCTYPE html><html><head><meta charset='UTF-8'/></head><body style='margin:0;padding:0;background:#EEF2F7;font-family:Arial,Helvetica,sans-serif'><table width='100%' cellpadding='0' cellspacing='0' style='background:#EEF2F7;padding:20px 10px'><tr><td align='center'><table width='560' cellpadding='0' cellspacing='0' style='max-width:560px;width:100%;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.09)'><tr><td style='background:linear-gradient(135deg,#0A1628 0%,#0057B8 100%);padding:20px 24px'><table width='100%'><tr><td><div style='font-size:18px;font-weight:900;color:#fff;letter-spacing:.5px'>PLANET FITNESS</div><div style='font-size:10px;color:#00A3FF;letter-spacing:2px;text-transform:uppercase;margin-top:3px'>Member Experience Intelligence</div></td><td align='right'><div style='background:"+sb+";color:"+sc+";font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:5px;white-space:nowrap'>"+sl+"</div></td></tr></table></td></tr><tr><td style='background:#F8FAFF;border-bottom:1px solid #DBEAFE;padding:12px 24px'><table width='100%'><tr><td style='font-size:12px;color:#555'><b style='color:#0057B8'>Club</b><br/>"+club.club_name+"</td><td style='font-size:12px;color:#555'><b style='color:#0057B8'>Source</b><br/>"+(sub.src==="machine"?"Machine QR":sub.src==="area"?"Area QR":"Club Feedback")+"</td><td style='font-size:12px;color:#555;text-align:right'><b style='color:#0057B8'>Reported</b><br/>"+now+" SAST</td></tr></table></td></tr><tr><td style='padding:20px 24px'>"+(rrows?"<div style='margin-bottom:14px'><table style='width:100%;border-collapse:collapse;background:#FAFAFA;border-radius:6px;overflow:hidden'>"+rrows+"</table></div>":"")+(sub.comment?"<div style='background:#FFFBEB;border-left:3px solid #F59E0B;padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:14px'><div style='font-size:10px;font-weight:700;color:#92400E;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px'>Member Comment</div><div style='font-size:13px;color:#111;line-height:1.5;font-style:italic'>\""+sub.comment+"\"</div></div>":"")+mSection+cSection+"<div style='background:"+sb+";border:1px solid "+sc+"20;border-radius:8px;padding:12px;margin-top:14px'><div style='font-size:10px;font-weight:800;color:"+sc+";letter-spacing:2px;text-transform:uppercase;margin-bottom:5px'>Suggested Action</div><div style='font-size:13px;color:#111;line-height:1.45'>"+action+"</div></div></td></tr><tr><td style='background:#F8FAFF;border-top:1px solid #E5EAF2;padding:14px 24px;text-align:center'><div style='font-size:10px;color:#0057B8;font-weight:700;letter-spacing:1px'>PLANET FITNESS SOUTH AFRICA</div><div style='font-size:9px;color:#aaa;margin-top:3px'>Demo concept. Not an official Planet Fitness product.</div></td></tr></table></td></tr></table></body></html>";
+  return{subject,html};
+}
+
+/* ════════════════════════════════════════
+   JSONP SEND
+════════════════════════════════════════ */
+function send(payload,onDone){
+  show("pg-loading");
+  var cb="pfcb_"+Date.now()+"_"+Math.floor(Math.random()*9999);
+  var to;
+  window[cb]=function(res){
+    clearTimeout(to);
+    try{delete window[cb];}catch(e){}
+    if(script&&script.parentNode)script.parentNode.removeChild(script);
+    onDone(res);
+  };
+  to=setTimeout(function(){
+    try{delete window[cb];}catch(e){}
+    onDone({success:false,error:"timeout"});
+  },15000);
+  var p={
+    callback:cb, action:"submit",
+    sourceType:payload.src, clubId:payload.clubId,
+    areaId:payload.areaId||"", machineId:payload.machineId||"",
+    machineName:payload.machineName||"", machineCondition:payload.machineCondition||"",
+    issueType:payload.issueType||"",
+    ratingsJson:JSON.stringify(payload.ratings||{}),
+    comment:payload.comment||"", severity:payload.severity||"info",
+    recipientsJson:JSON.stringify(payload.recipients||[]),
+    alertSubject:payload.alertEmail?payload.alertEmail.subject:"",
+    alertHtml:payload.alertEmail?payload.alertEmail.html:"",
+    customerEmailTo:payload.customerEmail?payload.customerEmail.to:"",
+    customerEmailSubject:payload.customerEmail?payload.customerEmail.subject:"",
+    customerEmailHtml:payload.customerEmail?payload.customerEmail.html:"",
+    contactName:(payload.contact||{}).name||"",
+    contactSurname:(payload.contact||{}).surname||"",
+    contactMobile:(payload.contact||{}).mobile||"",
+    contactEmail:(payload.contact||{}).email||"",
+    contactPerm:payload.contactPerm?"1":"0",
+    marketingPerm:payload.marketingPerm?"1":"0",
+    submittedAt:payload.submittedAt||""
+  };
+  var qs=Object.keys(p).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(p[k])}).join("&");
+  var script=document.createElement("script");
+  script.src=GAS_URL+"?"+qs;
+  script.onerror=function(){clearTimeout(to);try{delete window[cb];}catch(e){}onDone({error:"network"});};
+  document.head.appendChild(script);
+}
+
+/* ════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════ */
+function resetBtns(containerId,btnClass){
+  var c=document.getElementById(containerId);
+  if(c)c.querySelectorAll("."+btnClass).forEach(function(b){b.className=btnClass});
+}
+
+/* Contact watcher for machine page */
+(function(){
+  function w(){
+    var flds=["mc-name","mc-surname","mc-mobile","mc-email"];
+    var wrap=document.getElementById("mc-popia-wrap");
+    function chk(){var has=flds.some(function(id){return(document.getElementById(id)||{}).value;});if(wrap)wrap.style.display=has?"block":"none";}
+    flds.forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener("input",chk);});
+    chk();
+  }
+  window.addEventListener("load",w);
+})();
+
+/* ════════════════════════════════════════
+   TODAY KEY — for daily limit (SAST date)
+════════════════════════════════════════ */
+function todayKey(){
+  return new Date().toLocaleDateString("en-ZA",{timeZone:"Africa/Johannesburg"}).replace(/\//g,"-");
+}
+
+/* ════════════════════════════════════════
+   ADMIN ACCESS — hidden tap-5 on footer
+   Also accessible via ?admin=1 in URL
+════════════════════════════════════════ */
+var _adminTaps=0,_adminTimer=null;
+function adminTap(){
+  _adminTaps++;
+  clearTimeout(_adminTimer);
+  _adminTimer=setTimeout(function(){_adminTaps=0;},2500);
+  if(_adminTaps>=5){_adminTaps=0;goAdmin();}
+}
+// Also honour ?admin=1 URL param
+(function(){if(new URLSearchParams(window.location.search).get("admin")==="1")setTimeout(goAdmin,300);})();
+
+/* ════════════════════════════════════════
+   CUSTOMER BAD-REVIEW EMAIL BUILDER
+   Sent to the customer (if email + consent provided)
+   when a poor/urgent/critical review is logged.
+   Premium PF branded, empathetic tone.
+════════════════════════════════════════ */
+function buildCustomerEmail(sub,club){
+  var sev=sub.severity||"attention";
+  var name=(sub.contact&&sub.contact.name)||"Valued Member";
+  var isMachine=sub.src==="machine";
+  var isArea=sub.src==="area";
+  var srcDesc=isMachine?"equipment issue on <strong>"+sub.machineName+"</strong>":isArea?"concern about the <strong>"+(sub.areaName||"area")+"</strong>":"experience at "+club.club_name;
+  var condLabels={5:"Working Perfectly",4:"Working Fine",3:"Slight Issue",2:"Poor Condition",1:"Not Working"};
+  var ratingLabels={5:"Very Good",4:"Good",3:"Average",2:"Poor",1:"Very Poor"};
+  var issueDisplay=sub.issueType?sub.issueType.replace(/-/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();}):"";
+  var condDisplay=sub.machineCondition?condLabels[sub.machineCondition]:"";
+  var overallDisplay=sub.ratings&&sub.ratings.overall?ratingLabels[sub.ratings.overall]:"";
+  var now=new Date().toLocaleString("en-ZA",{timeZone:"Africa/Johannesburg",hour12:false,day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"});
+  var subject="We've received your feedback — "+club.club_name;
+
+  var feedbackRows="";
+  if(overallDisplay) feedbackRows+="<tr><td style='padding:5px 12px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0;width:45%'>Overall Visit</td><td style='padding:5px 12px;font-size:13px;font-weight:700;color:#C2410C;border-bottom:1px solid #f0f0f0'>"+overallDisplay+"</td></tr>";
+  if(condDisplay)    feedbackRows+="<tr><td style='padding:5px 12px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>Machine Condition</td><td style='padding:5px 12px;font-size:13px;font-weight:700;color:#C2410C;border-bottom:1px solid #f0f0f0'>"+condDisplay+"</td></tr>";
+  if(issueDisplay)   feedbackRows+="<tr><td style='padding:5px 12px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>Issue Reported</td><td style='padding:5px 12px;font-size:13px;font-weight:600;color:#111;border-bottom:1px solid #f0f0f0'>"+issueDisplay+"</td></tr>";
+  if(sub.comment)    feedbackRows+="<tr><td style='padding:5px 12px;color:#555;font-size:13px'>Your Comment</td><td style='padding:5px 12px;font-size:13px;color:#111;font-style:italic'>\""+sub.comment+"\"</td></tr>";
+
+  var html=[
+    "<!DOCTYPE html><html><head><meta charset='UTF-8'/></head>",
+    "<body style='margin:0;padding:0;background:#EEF2F7;font-family:Arial,Helvetica,sans-serif'>",
+    "<table width='100%' cellpadding='0' cellspacing='0' style='background:#EEF2F7;padding:24px 12px'>",
+    "<tr><td align='center'>",
+    "<table width='560' cellpadding='0' cellspacing='0' style='max-width:560px;width:100%;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.10)'>",
+
+    // Header — PF navy/blue gradient
+    "<tr><td style='background:linear-gradient(135deg,#0A1628 0%,#0057B8 100%);padding:24px 28px;text-align:center'>",
+    "<div style='font-size:22px;font-weight:900;color:#fff;letter-spacing:.5px'>PLANET FITNESS</div>",
+    "<div style='font-size:10px;color:#00A3FF;letter-spacing:3px;text-transform:uppercase;margin-top:4px'>"+club.club_name+"</div>",
+    "</td></tr>",
+
+    // Greeting
+    "<tr><td style='padding:28px 28px 0'>",
+    "<p style='font-size:16px;font-weight:700;color:#0A1628;margin:0 0 8px'>Hi "+name+",</p>",
+    "<p style='font-size:14px;color:#444;line-height:1.6;margin:0 0 16px'>Thank you for taking the time to report your "+srcDesc+" at <strong>"+club.club_name+"</strong>.</p>",
+    "<p style='font-size:14px;color:#444;line-height:1.6;margin:0 0 20px'>Your feedback is important to us. We've logged it with our team and will be looking into it as a priority.</p>",
+    "</td></tr>",
+
+    // Feedback summary card
+    feedbackRows?"<tr><td style='padding:0 28px 20px'><div style='background:#F8FAFF;border:1px solid #DBEAFE;border-radius:10px;overflow:hidden'><div style='background:#0057B8;padding:8px 14px'><span style='font-size:10px;font-weight:800;color:#fff;letter-spacing:2px;text-transform:uppercase'>Your Feedback Summary</span></div><table style='width:100%;border-collapse:collapse'>"+feedbackRows+"</table></div></td></tr>":"",
+
+    // What happens next
+    "<tr><td style='padding:0 28px 20px'>",
+    "<div style='background:#EFF6FF;border-left:4px solid #0057B8;padding:14px 16px;border-radius:0 8px 8px 0'>",
+    "<div style='font-size:11px;font-weight:800;color:#0057B8;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px'>What happens next</div>",
+    "<p style='font-size:13px;color:#1A2535;line-height:1.6;margin:0'>Our team at "+club.club_name+" has been notified and will action your report. "+(sev==="critical"||sev==="urgent"?"This has been marked as <strong>high priority</strong> and will be attended to as soon as possible.":"We aim to resolve all reported issues within 24–48 hours.")+"</p>",
+    "</div>",
+    "</td></tr>",
+
+    // Reported at
+    "<tr><td style='padding:0 28px 24px'>",
+    "<p style='font-size:11px;color:#888;margin:0'>Reported: "+now+" SAST &nbsp;·&nbsp; Club: "+club.club_name+"</p>",
+    "</td></tr>",
+
+    // Footer
+    "<tr><td style='background:linear-gradient(135deg,#0A1628 0%,#0D1F3C 100%);padding:20px 28px;text-align:center'>",
+    "<div style='font-size:12px;font-weight:700;color:#fff;letter-spacing:.5px;margin-bottom:4px'>PLANET FITNESS SOUTH AFRICA</div>",
+    "<div style='font-size:11px;color:rgba(255,255,255,.5);line-height:1.5'>That's Why We Train.</div>",
+    "<div style='font-size:10px;color:rgba(255,255,255,.3);margin-top:8px'>Demo concept. Not an official Planet Fitness product.</div>",
+    "</td></tr>",
+
+    "</table></td></tr></table></body></html>"
+  ].join("");
+
+  return{subject,html,to:(sub.contact&&sub.contact.email)||""};
+}
+
+/* ════════════════════════════════════════
+   ADMIN PAGE BUILDER
+════════════════════════════════════════ */
+function buildAdmin(){
+  var aEl=document.getElementById("adm-areas");
+  if(aEl)aEl.innerHTML=Object.values(AREAS).sort(function(a,b){return a.sort-b.sort}).map(function(a){return'<div class="dr"><span class="dk">'+a.icon+' '+a.name+'</span><span class="dv"><span class="adm-badge ab-grey" style="text-transform:capitalize">'+a.type+'</span></span></div>';}).join("");
+  var mEl=document.getElementById("adm-machines");
+  if(mEl)mEl.innerHTML=Object.values(MACHINES).map(function(m){return'<div class="mtile"><div class="mtile-n">'+m.name+'</div><div class="mtile-c">'+m.category+' · '+m.asset+'</div></div>';}).join("");
+}
+</script>
+</body>
+</html>
