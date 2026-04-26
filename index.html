@@ -1189,7 +1189,7 @@ function submitMachine(){
 
   // Daily limit: one machine report per machineId per day (localStorage)
   var limitKey="pf_m_"+S.clubId+"_"+S.machineId+"_"+todayKey();
-  if(localStorage.getItem(limitKey)){
+  if(!isTestMode() && localStorage.getItem(limitKey)){
     st.textContent="You've already submitted a report for this machine today. Thank you!";
     btn.disabled=false; return;
   }
@@ -1209,7 +1209,7 @@ function submitMachine(){
   sub.customerEmail=(email&&popia)?buildCustomerEmail(sub,club):null;
 
   send(sub,function(){
-    localStorage.setItem(limitKey,"1");
+    if(!isTestMode()) localStorage.setItem(limitKey,"1");
     var extra=sub.severity==="critical"?"Our maintenance team has been notified immediately.":sub.severity==="urgent"?"Our team will attend to this as a priority.":"This has been logged for our maintenance team.";
     showSuccess("Reported!",extra,sub);
   });
@@ -1296,7 +1296,7 @@ function submitClub(){
 
   // Daily limit: one club review per clubId per day
   var limitKey="pf_c_"+S.clubId+"_"+todayKey();
-  if(localStorage.getItem(limitKey)){
+ if(!isTestMode() && localStorage.getItem(limitKey)){
     document.getElementById("cs2-status").textContent="You've already submitted club feedback today. Thank you!";
     document.getElementById("c-next").disabled=false; return;
   }
@@ -1314,7 +1314,7 @@ function submitClub(){
   sub.customerEmail=(email&&cp&&sub.severity!=="info")?buildCustomerEmail(sub,club):null;
 
   send(sub,function(){
-    localStorage.setItem(limitKey,"1");
+    if(!isTestMode()) localStorage.setItem(limitKey,"1");
     showSuccess("Thank You!","Your feedback helps us keep "+club.display_name+" at its best.",sub);
   });
 }
@@ -1342,7 +1342,7 @@ function submitArea(){
 
   // Daily limit: one area review per areaId per day
   var limitKey="pf_a_"+S.clubId+"_"+S.areaId+"_"+todayKey();
-  if(localStorage.getItem(limitKey)){
+  if(!isTestMode() && localStorage.getItem(limitKey)){
     st.textContent="You've already submitted feedback for this area today. Thank you!"; return;
   }
 
@@ -1359,7 +1359,7 @@ function submitArea(){
   sub.customerEmail=null;
 
   send(sub,function(){
-    localStorage.setItem(limitKey,"1");
+    if(!isTestMode()) localStorage.setItem(limitKey,"1");
     showSuccess("Thank You!","Your area feedback has been logged and will be actioned.",sub);
   });
 }
@@ -1628,3 +1628,6 @@ function buildAdmin(){
 </script>
 </body>
 </html>
+function isTestMode(){
+  return new URLSearchParams(window.location.search).get("test") === "1";
+}
