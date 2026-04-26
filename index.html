@@ -1625,9 +1625,9 @@ function buildAdmin(){
   var mEl=document.getElementById("adm-machines");
   if(mEl)mEl.innerHTML=Object.values(MACHINES).map(function(m){return'<div class="mtile"><div class="mtile-n">'+m.name+'</div><div class="mtile-c">'+m.category+' · '+m.asset+'</div></div>';}).join("");
 }
-</script>
-</body>
-</html>
 function isTestMode(){
   return new URLSearchParams(window.location.search).get("test") === "1";
 }
+</script>
+</body>
+</html>
