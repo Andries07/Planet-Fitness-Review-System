@@ -1432,8 +1432,7 @@ function calcSev(s){
 
   return sev;
 }
-
-   function getRecips(sub,club){
+function getRecips(sub,club){
   var set = new Set(club.manager_emails || []);
   var sev = sub.severity;
   var src = sub.src;
