@@ -666,6 +666,11 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
             <input type="checkbox" id="mc-popia"/>
             <label for="mc-popia">May Planet Fitness contact me about this report. <strong>POPIA consent.</strong></label>
           </div>
+          <div class="popia-row" style="margin-top:6px">
+            <input type="checkbox" id="mc-mkt"/>
+            <label for="mc-mkt">I'd like to receive club news &amp; offers from Planet Fitness. <strong>Optional.</strong></label>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5">Your information is processed in line with POPIA. You may withdraw consent at any time.</div>
         </div>
       </div>
 
@@ -753,13 +758,42 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
       </div>
     </div>
 
-    <!-- STEP 2: Area + comment + contact + submit -->
+    <!-- STEP 2: Area + instructor + comment + contact + submit -->
     <div id="cs2" style="display:none">
       <div class="cb">
         <div class="rc">
           <div class="rc-q"><span class="qn">Q5</span>Which area are you mainly rating?</div>
           <div class="ac-wrap" id="ac-wrap">
-            <!-- Injected by JS from AREAS data -->
+            <!-- Injected by JS — includes "Entire Club" option -->
+          </div>
+        </div>
+
+        <!-- Instructor section — optional, expands when a trainer is selected -->
+        <div class="rc">
+          <div class="rc-q">Rate a trainer or instructor <span class="opt-tag">Optional</span></div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.4">Were you in a class or session today? Select your trainer below.</div>
+          <div class="ac-wrap" id="c-trainer-chips"></div>
+          <div id="c-trainer-expand" style="display:none;margin-top:12px">
+            <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">How was the session?</div>
+            <div class="rg" id="rg-trainer" style="margin-bottom:12px">
+              <div class="rb" onclick="cRate('trainer',5,this)"><span class="re">🌟</span><span class="rl">Excellent</span></div>
+              <div class="rb" onclick="cRate('trainer',4,this)"><span class="re">😊</span><span class="rl">Good</span></div>
+              <div class="rb" onclick="cRate('trainer',3,this)"><span class="re">😐</span><span class="rl">Average</span></div>
+              <div class="rb" onclick="cRate('trainer',2,this)"><span class="re">🙁</span><span class="rl">Poor</span></div>
+              <div class="rb" onclick="cRate('trainer',1,this)"><span class="re">😠</span><span class="rl">Very Poor</span></div>
+            </div>
+            <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">What stood out?</div>
+            <div class="ac-wrap" id="c-trainer-feedback-chips" style="margin-bottom:10px">
+              <div class="ac" onclick="tFeedback('great-energy',this)">⚡ Great energy</div>
+              <div class="ac" onclick="tFeedback('clear-instruction',this)">📢 Clear instruction</div>
+              <div class="ac" onclick="tFeedback('helpful-support',this)">🤝 Helpful &amp; supportive</div>
+              <div class="ac" onclick="tFeedback('technique-guidance',this)">🎯 Good technique tips</div>
+              <div class="ac" onclick="tFeedback('motivating',this)">💪 Very motivating</div>
+              <div class="ac" onclick="tFeedback('felt-ignored',this)">😶 Felt ignored</div>
+              <div class="ac" onclick="tFeedback('poor-communication',this)">🔇 Poor communication</div>
+              <div class="ac" onclick="tFeedback('unprepared',this)">📋 Seemed unprepared</div>
+            </div>
+            <textarea class="pft" id="c-trainer-comment" placeholder="Any other comments about this trainer or session… (optional)" maxlength="800" style="min-height:60px"></textarea>
           </div>
         </div>
 
@@ -769,12 +803,15 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
         </div>
 
         <div class="contact-inline">
-          <div class="contact-inline-label">Contact details <span class="opt-tag">Optional — for follow-up only</span></div>
+          <div class="contact-inline-label">Your details <span class="opt-tag">Optional — for follow-up only</span></div>
           <div class="contact-row" style="margin-bottom:8px">
-            <input class="pfi" id="cc-name" placeholder="Your name" maxlength="60" autocomplete="off"/>
-            <input class="pfi" id="cc-mobile" placeholder="Mobile (10 digits)" maxlength="10" inputmode="numeric" autocomplete="off"/>
+            <input class="pfi" id="cc-name" placeholder="Name" maxlength="60" autocomplete="off"/>
+            <input class="pfi" id="cc-surname" placeholder="Surname" maxlength="60" autocomplete="off"/>
           </div>
-          <input class="pfi pfia" id="cc-email" placeholder="Email address (optional)" inputmode="email" autocomplete="off" style="margin-bottom:0"/>
+          <div class="contact-row" style="margin-bottom:0">
+            <input class="pfi" id="cc-mobile" placeholder="Mobile (10 digits)" maxlength="10" inputmode="numeric" autocomplete="off"/>
+            <input class="pfi" id="cc-email" placeholder="Email address" inputmode="email" autocomplete="off"/>
+          </div>
           <div id="cc-popia-wrap" style="display:none;margin-top:8px">
             <div class="popia-row">
               <input type="checkbox" id="cc-popia"/>
@@ -784,6 +821,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
               <input type="checkbox" id="cc-mkt"/>
               <label for="cc-mkt">I'd like to receive club news &amp; offers from Planet Fitness. <strong>Optional.</strong></label>
             </div>
+            <div style="font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5">Your information is processed in line with POPIA. You may withdraw consent at any time.</div>
           </div>
         </div>
         <div class="status-txt" id="cs2-status"></div>
@@ -850,6 +888,60 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
         <div class="rc-q">Any details? <span class="opt-tag">Optional</span></div>
         <textarea class="pft" id="a-comment" placeholder="Help our team fix this faster…" maxlength="1000"></textarea>
       </div>
+
+      <!-- Instructor section — optional -->
+      <div class="rc">
+        <div class="rc-q">Rate a trainer or instructor <span class="opt-tag">Optional</span></div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.4">Were you in a class or session in this area? Select your trainer below.</div>
+        <div class="ac-wrap" id="a-trainer-chips"></div>
+        <div id="a-trainer-expand" style="display:none;margin-top:12px">
+          <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">How was the session?</div>
+          <div class="rg" id="rg-a-trainer" style="margin-bottom:12px">
+            <div class="rb" onclick="aTrainerRate(5,this)"><span class="re">🌟</span><span class="rl">Excellent</span></div>
+            <div class="rb" onclick="aTrainerRate(4,this)"><span class="re">😊</span><span class="rl">Good</span></div>
+            <div class="rb" onclick="aTrainerRate(3,this)"><span class="re">😐</span><span class="rl">Average</span></div>
+            <div class="rb" onclick="aTrainerRate(2,this)"><span class="re">🙁</span><span class="rl">Poor</span></div>
+            <div class="rb" onclick="aTrainerRate(1,this)"><span class="re">😠</span><span class="rl">Very Poor</span></div>
+          </div>
+          <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">What stood out?</div>
+          <div class="ac-wrap" id="a-trainer-feedback-chips" style="margin-bottom:10px">
+            <div class="ac" onclick="aTFeedback('great-energy',this)">⚡ Great energy</div>
+            <div class="ac" onclick="aTFeedback('clear-instruction',this)">📢 Clear instruction</div>
+            <div class="ac" onclick="aTFeedback('helpful-support',this)">🤝 Helpful &amp; supportive</div>
+            <div class="ac" onclick="aTFeedback('technique-guidance',this)">🎯 Good technique tips</div>
+            <div class="ac" onclick="aTFeedback('motivating',this)">💪 Very motivating</div>
+            <div class="ac" onclick="aTFeedback('felt-ignored',this)">😶 Felt ignored</div>
+            <div class="ac" onclick="aTFeedback('poor-communication',this)">🔇 Poor communication</div>
+            <div class="ac" onclick="aTFeedback('unprepared',this)">📋 Seemed unprepared</div>
+          </div>
+          <textarea class="pft" id="a-trainer-comment" placeholder="Any other comments about this trainer or session… (optional)" maxlength="800" style="min-height:60px"></textarea>
+        </div>
+      </div>
+
+      <!-- Contact details -->
+      <div class="contact-inline">
+        <div class="contact-inline-label">Your details <span class="opt-tag">Optional — for follow-up only</span></div>
+        <div class="contact-row" style="margin-bottom:8px">
+          <input class="pfi" id="ac-name" placeholder="Name" maxlength="60" autocomplete="off"/>
+          <input class="pfi" id="ac-surname" placeholder="Surname" maxlength="60" autocomplete="off"/>
+        </div>
+        <div class="contact-row" style="margin-bottom:0">
+          <input class="pfi" id="ac-mobile" placeholder="Mobile (10 digits)" maxlength="10" inputmode="numeric" autocomplete="off"/>
+          <input class="pfi" id="ac-email" placeholder="Email address" inputmode="email" autocomplete="off"/>
+        </div>
+        <div id="ac-popia-wrap" style="display:none;margin-top:8px">
+          <div class="popia-row">
+            <input type="checkbox" id="ac-popia"/>
+            <label for="ac-popia">May Planet Fitness contact me about this feedback. <strong>POPIA consent.</strong></label>
+          </div>
+          <div class="popia-row" style="margin-top:6px">
+            <input type="checkbox" id="ac-mkt"/>
+            <label for="ac-mkt">I'd like to receive club news &amp; offers from Planet Fitness. <strong>Optional.</strong></label>
+          </div>
+          <div style="font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5">Your information is processed in line with POPIA. You may withdraw consent at any time.</div>
+        </div>
+      </div>
+
       <div class="status-txt" id="a-status"></div>
       <button class="sub-btn" onclick="submitArea()">Submit Feedback →</button>
     </div>
@@ -1052,13 +1144,31 @@ var MACHINES = {
 };
 
 /* ════════════════════════════════════════
+   DATA — TRAINERS
+   Add/remove trainers here. Each must have club_id matching the club.
+   These appear as pills in the club and area instructor sections.
+════════════════════════════════════════ */
+var TRAINERS = [
+  {trainer_id:"TR-01", club_id:"PF-DEMO-001", name:"Lerato M.",  type:"instructor",  specialisations:["Yoga","Mobility"],          active:true},
+  {trainer_id:"TR-02", club_id:"PF-DEMO-001", name:"Sipho K.",   type:"instructor",  specialisations:["Indoor Cycling","HIIT"],    active:true},
+  {trainer_id:"TR-03", club_id:"PF-DEMO-001", name:"Priya N.",   type:"instructor",  specialisations:["Pilates","Reformer"],       active:true},
+  {trainer_id:"TR-04", club_id:"PF-DEMO-001", name:"Andile T.",  type:"PT",          specialisations:["Strength","Functional"],    active:true},
+  {trainer_id:"TR-05", club_id:"PF-DEMO-001", name:"Carla vdW.", type:"PT",          specialisations:["Biokineticist","Rehab"],    active:true},
+  {trainer_id:"TR-06", club_id:"PF-DEMO-001", name:"Thabo D.",   type:"instructor",  specialisations:["Booty Factory","Strength"], active:true}
+];
+
+/* ════════════════════════════════════════
    STATE
 ════════════════════════════════════════ */
 var S = {
   clubId:"PF-DEMO-001", machineId:null, areaId:null,
   machineCondition:null, machineIssue:null,
   clubRatings:{}, selectedArea:null, areaClean:null, areaDesc:null,
-  clubStep:1, src:"club"
+  clubStep:1, src:"club",
+  // Trainer fields
+  selectedTrainerId:null, selectedTrainerName:null,
+  trainerRating:null, trainerFeedback:null,
+  aTrainerRating:null, aTrainerFeedback:null
 };
 
 /* ════════════════════════════════════════
@@ -1073,6 +1183,7 @@ function goAdmin(){buildAdmin();show("pg-admin")}
 
 function goClub(cid){
   S.clubId=cid||"PF-DEMO-001"; S.clubRatings={}; S.selectedArea=null; S.clubStep=1; S.src="club";
+  S.selectedTrainerId=null; S.selectedTrainerName=null; S.trainerRating=null; S.trainerFeedback=null;
   var club=CLUBS[S.clubId]||{};
   document.getElementById("chdr-title").textContent=club.display_name||"Club";
   document.getElementById("ch-club-name").textContent=club.display_name||"Planet Fitness";
@@ -1121,6 +1232,7 @@ function goMachine(cid,mid){
 function goArea(cid,aid){
   S.clubId=cid||"PF-DEMO-001"; S.areaId=aid||"changerooms";
   S.areaClean=null; S.areaDesc=null; S.src="area";
+  S.aTrainerRating=null; S.aTrainerFeedback=null; S.selectedTrainerId=null; S.selectedTrainerName=null;
   var area=AREAS[S.areaId]||AREAS["changerooms"];
   var club=CLUBS[S.clubId]||{};
   document.getElementById("ahdr-title").textContent=area.name;
@@ -1132,6 +1244,18 @@ function goArea(cid,aid){
   document.querySelectorAll("#area-desc-chips .ac").forEach(function(c){c.classList.remove("active")});
   document.getElementById("a-comment").value="";
   document.getElementById("a-status").textContent="";
+  // Build trainer chips for area
+  buildTrainerChips("a-trainer-chips","a-trainer-expand","area");
+  var ae=document.getElementById("a-trainer-expand"); if(ae) ae.style.display="none";
+  resetBtns("rg-a-trainer","rb");
+  document.querySelectorAll("#a-trainer-feedback-chips .ac").forEach(function(c){c.classList.remove("active")});
+  var atc=document.getElementById("a-trainer-comment"); if(atc) atc.value="";
+  // Reset contact fields
+  ["ac-name","ac-surname","ac-mobile","ac-email"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});
+  var apw=document.getElementById("ac-popia-wrap"); if(apw) apw.style.display="none";
+  var acp=document.getElementById("ac-popia"); if(acp) acp.checked=false;
+  var amkt=document.getElementById("ac-mkt"); if(amkt) amkt.checked=false;
+  setupAreaContactWatcher();
   show("pg-area");
 }
 
@@ -1225,8 +1349,73 @@ function cRate(key,score,el){
   el.classList.add("s"+score);
 }
 
+/* ════════════════════════════════════════
+   TRAINER CHIPS BUILDER
+════════════════════════════════════════ */
+function buildTrainerChips(chipContainerId, expandId, flow){
+  var wrap=document.getElementById(chipContainerId);
+  if(!wrap) return;
+  wrap.innerHTML="";
+  var trainers=TRAINERS.filter(function(t){return t.club_id===S.clubId&&t.active;});
+  trainers.forEach(function(t){
+    var chip=document.createElement("div"); chip.className="ac";
+    chip.textContent="👤 "+t.name;
+    chip.onclick=function(){
+      var wasActive=chip.classList.contains("active");
+      wrap.querySelectorAll(".ac").forEach(function(c){c.classList.remove("active")});
+      var expand=document.getElementById(expandId);
+      if(!wasActive){
+        chip.classList.add("active");
+        S.selectedTrainerId=t.trainer_id; S.selectedTrainerName=t.name;
+        if(expand) expand.style.display="block";
+      } else {
+        S.selectedTrainerId=null; S.selectedTrainerName=null;
+        if(flow==="club"){S.trainerRating=null;S.trainerFeedback=null;}
+        else{S.aTrainerRating=null;S.aTrainerFeedback=null;}
+        if(expand) expand.style.display="none";
+      }
+    };
+    wrap.appendChild(chip);
+  });
+}
+
+function tFeedback(val,el){
+  var was=el.classList.contains("active");
+  document.querySelectorAll("#c-trainer-feedback-chips .ac").forEach(function(c){c.classList.remove("active")});
+  if(!was){el.classList.add("active");S.trainerFeedback=val;}else S.trainerFeedback=null;
+}
+
+function aTrainerRate(score,el){
+  S.aTrainerRating=score;
+  resetBtns("rg-a-trainer","rb");
+  el.classList.add("s"+score);
+}
+function aTFeedback(val,el){
+  var was=el.classList.contains("active");
+  document.querySelectorAll("#a-trainer-feedback-chips .ac").forEach(function(c){c.classList.remove("active")});
+  if(!was){el.classList.add("active");S.aTrainerFeedback=val;}else S.aTrainerFeedback=null;
+}
+
+function setupAreaContactWatcher(){
+  var fields=["ac-name","ac-surname","ac-mobile","ac-email"];
+  var wrap=document.getElementById("ac-popia-wrap");
+  function chk(){var has=fields.some(function(id){return(document.getElementById(id)||{}).value;});if(wrap) wrap.style.display=has?"block":"none";}
+  fields.forEach(function(id){var el=document.getElementById(id);if(el){el.removeEventListener("input",chk);el.addEventListener("input",chk);}});
+  chk();
+}
+
 function buildAreaChips(){
   var wrap=document.getElementById("ac-wrap"); wrap.innerHTML="";
+
+  // "Entire Club" option first
+  var overall=document.createElement("div"); overall.className="ac";
+  overall.textContent="🏟️ Entire Club";
+  overall.onclick=function(){
+    wrap.querySelectorAll(".ac").forEach(function(c){c.classList.remove("active")});
+    overall.classList.add("active"); S.selectedArea=null;
+  };
+  wrap.appendChild(overall);
+
   Object.values(AREAS).filter(function(a){return a.club_id===S.clubId}).sort(function(a,b){return a.sort-b.sort}).forEach(function(area){
     var d=document.createElement("div"); d.className="ac"; d.textContent=area.icon+" "+area.name;
     d.onclick=function(){
@@ -1253,14 +1442,15 @@ function setClubStep(step){
     p1.className="step-pill done"; p2.className="step-pill active";
     back.style.display="block"; next.textContent="Submit Feedback ✓"; next.disabled=false;
     setupContactWatcher();
+    buildTrainerChips("c-trainer-chips","c-trainer-expand","club");
   }
 }
 
 function setupContactWatcher(){
-  var fields=["cc-name","cc-mobile","cc-email"];
+  var fields=["cc-name","cc-surname","cc-mobile","cc-email"];
   var wrap=document.getElementById("cc-popia-wrap");
-  function chk(){var has=fields.some(function(id){return(document.getElementById(id)||{}).value;});wrap.style.display=has?"block":"none";}
-  fields.forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener("input",chk);});
+  function chk(){var has=fields.some(function(id){return(document.getElementById(id)||{}).value;});if(wrap) wrap.style.display=has?"block":"none";}
+  fields.forEach(function(id){var el=document.getElementById(id);if(el){el.removeEventListener("input",chk);el.addEventListener("input",chk);}});
   chk();
 }
 
@@ -1272,9 +1462,10 @@ function cStepNext(){
   } else {
     // Validate contact if entered
     var name=(document.getElementById("cc-name").value||"").trim();
+    var surname=(document.getElementById("cc-surname")||{}).value||""; surname=surname.trim();
     var mobile=(document.getElementById("cc-mobile").value||"").trim();
     var email=(document.getElementById("cc-email").value||"").trim();
-    if((name||mobile||email)&&!document.getElementById("cc-popia").checked){
+    if((name||surname||mobile||email)&&!document.getElementById("cc-popia").checked){
       document.getElementById("cs2-status").textContent="Please tick POPIA consent to submit with your details."; return;
     }
     if(mobile&&!/^\d{10}$/.test(mobile)){document.getElementById("cs2-status").textContent="Mobile must be 10 digits.";return;}
@@ -1289,10 +1480,12 @@ function submitClub(){
   var club=CLUBS[S.clubId]||{};
   var comment=(document.getElementById("c-comment").value||"").trim();
   var name=(document.getElementById("cc-name").value||"").trim();
+  var surname=(document.getElementById("cc-surname")||{}).value||""; surname=surname.trim();
   var mobile=(document.getElementById("cc-mobile").value||"").trim();
   var email=(document.getElementById("cc-email").value||"").trim();
   var cp=(document.getElementById("cc-popia")||{}).checked||false;
   var mp=(document.getElementById("cc-mkt")||{}).checked||false;
+  var trainerComment=(document.getElementById("c-trainer-comment")||{}).value||"";
 
   // Daily limit: one club review per clubId per day
   var limitKey="pf_c_"+S.clubId+"_"+todayKey();
@@ -1305,7 +1498,10 @@ function submitClub(){
     src:"club", clubId:S.clubId, areaId:S.selectedArea,
     areaType:S.selectedArea&&AREAS[S.selectedArea]?AREAS[S.selectedArea].type:"",
     ratings:S.clubRatings, comment:comment, issueType:"",
-    contact:{name,mobile,email}, contactPerm:cp, marketingPerm:mp,
+    trainerId:S.selectedTrainerId||"", trainerName:S.selectedTrainerName||"",
+    trainerRating:S.trainerRating||"", trainerFeedback:S.trainerFeedback||"",
+    trainerComment:trainerComment.trim(),
+    contact:{name,surname,mobile,email}, contactPerm:cp, marketingPerm:mp,
     submittedAt:new Date().toISOString()
   };
   sub.severity=calcSev(sub);
@@ -1339,6 +1535,19 @@ function submitArea(){
   var area=AREAS[S.areaId]||{};
   var club=CLUBS[S.clubId]||{};
   var comment=(document.getElementById("a-comment").value||"").trim();
+  var name=(document.getElementById("ac-name")||{}).value||""; name=name.trim();
+  var surname=(document.getElementById("ac-surname")||{}).value||""; surname=surname.trim();
+  var mobile=(document.getElementById("ac-mobile")||{}).value||""; mobile=mobile.trim();
+  var email=(document.getElementById("ac-email")||{}).value||""; email=email.trim();
+  var cp=(document.getElementById("ac-popia")||{}).checked||false;
+  var mp=(document.getElementById("ac-mkt")||{}).checked||false;
+  var trainerComment=(document.getElementById("a-trainer-comment")||{}).value||"";
+
+  if((name||surname||mobile||email)&&!cp){
+    st.textContent="Please tick POPIA consent to submit with your details."; return;
+  }
+  if(mobile&&!/^\d{10}$/.test(mobile)){st.textContent="Mobile must be 10 digits.";return;}
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){st.textContent="Please enter a valid email.";return;}
 
   // Daily limit: one area review per areaId per day
   var limitKey="pf_a_"+S.clubId+"_"+S.areaId+"_"+todayKey();
@@ -1350,13 +1559,17 @@ function submitArea(){
     src:"area", clubId:S.clubId, areaId:S.areaId,
     areaType:area.type||"facilities", areaName:area.name||S.areaId,
     ratings:{cleanliness:S.areaClean}, issueType:S.areaDesc==="safety"?"safety":S.areaDesc||"",
-    comment:comment, contact:{}, contactPerm:false, marketingPerm:false,
+    comment:comment,
+    trainerId:S.selectedTrainerId||"", trainerName:S.selectedTrainerName||"",
+    trainerRating:S.aTrainerRating||"", trainerFeedback:S.aTrainerFeedback||"",
+    trainerComment:trainerComment.trim(),
+    contact:{name,surname,mobile,email}, contactPerm:cp, marketingPerm:mp,
     submittedAt:new Date().toISOString()
   };
   sub.severity=calcSev(sub);
   sub.recipients=getRecips(sub,club);
   sub.alertEmail=buildEmail(sub,club);
-  sub.customerEmail=null;
+  sub.customerEmail=(email&&cp&&sub.severity!=="info")?buildCustomerEmail(sub,club):null;
 
   send(sub,function(){
     if(!isTestMode()) localStorage.setItem(limitKey,"1");
@@ -1550,6 +1763,11 @@ function send(payload,onDone){
     customerEmailTo:payload.customerEmail?payload.customerEmail.to:"",
     customerEmailSubject:payload.customerEmail?payload.customerEmail.subject:"",
     customerEmailHtml:payload.customerEmail?payload.customerEmail.html:"",
+    trainerId:payload.trainerId||"",
+    trainerName:payload.trainerName||"",
+    trainerRating:payload.trainerRating||"",
+    trainerFeedback:payload.trainerFeedback||"",
+    trainerComment:payload.trainerComment||"",
     contactName:(payload.contact||{}).name||"",
     contactSurname:(payload.contact||{}).surname||"",
     contactMobile:(payload.contact||{}).mobile||"",
