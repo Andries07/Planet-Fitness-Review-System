@@ -1474,16 +1474,49 @@ function buildEmail(sub,club){
   var subject=subjects[sev];
   var rl={5:"Very Good",4:"Good",3:"Average",2:"Poor",1:"Very Poor"};
   var cl2={5:"Working Perfectly",4:"Working Fine",3:"Slight Issue",2:"Poor Condition",1:"Not Working"};
+
   var rrows="";
-  var rmap={overall:"Overall Visit",cleanliness:"Cleanliness",equip:"Equipment","area-clean":"Area Cleanliness",staff:"Team Helpfulness"};
-  for(var k in rmap){if(sub.ratings&&sub.ratings[k]){var v=sub.ratings[k];var c=v>=4?"#16A34A":v>=3?"#B45309":v>=2?"#EA580C":"#DC2626";rrows+="<tr><td style='padding:5px 10px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>"+rmap[k]+"</td><td style='padding:5px 10px;font-size:13px;font-weight:700;color:"+c+";border-bottom:1px solid #f0f0f0'>"+rl[v]+"</td></tr>";}}
-  if(sub.machineCondition){var v=sub.machineCondition;var c=v>=4?"#16A34A":v>=3?"#B45309":v>=2?"#EA580C":"#DC2626";rrows+="<tr><td style='padding:5px 10px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>Machine Condition</td><td style='padding:5px 10px;font-size:13px;font-weight:700;color:"+c+";border-bottom:1px solid #f0f0f0'>"+cl2[v]+"</td></tr>";}
+  var rmap={
+    overall:"Overall Visit",
+    clean:"Cleanliness",
+    cleanliness:"Cleanliness",
+    equip:"Equipment",
+    equipment:"Equipment",
+    staff:"Team Helpfulness",
+    environment:"Environment",
+    "area-clean":"Area Cleanliness"
+  };
+
+  for(var k in rmap){
+    if(sub.ratings && sub.ratings[k]){
+      var v=Number(sub.ratings[k]);
+      if(v<3){
+        var c=v>=2?"#EA580C":"#DC2626";
+        rrows+="<tr><td style='padding:5px 10px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>"+rmap[k]+"</td><td style='padding:5px 10px;font-size:13px;font-weight:700;color:"+c+";border-bottom:1px solid #f0f0f0'>"+rl[v]+"</td></tr>";
+      }
+    }
+  }
+
+  if(sub.areaId && AREAS[sub.areaId]){
+    rrows+="<tr><td style='padding:5px 10px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>Area Mainly Rated</td><td style='padding:5px 10px;font-size:13px;font-weight:700;color:#0057B8;border-bottom:1px solid #f0f0f0'>"+AREAS[sub.areaId].name+"</td></tr>";
+  }
+
+  if(sub.machineCondition){
+    var v=Number(sub.machineCondition);
+    if(v<3){
+      var c=v>=2?"#EA580C":"#DC2626";
+      rrows+="<tr><td style='padding:5px 10px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>Machine Condition</td><td style='padding:5px 10px;font-size:13px;font-weight:700;color:"+c+";border-bottom:1px solid #f0f0f0'>"+cl2[v]+"</td></tr>";
+    }
+  }
+
   var mSection="";
   if(sub.src==="machine"&&sub.machineName){
     mSection="<div style='background:#F8FAFF;border:1px solid #DBEAFE;border-radius:8px;padding:14px;margin-top:14px'><div style='font-size:10px;font-weight:800;color:#0057B8;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px'>Equipment Detail</div><table style='font-size:13px;color:#111;width:100%'><tr><td style='padding:3px 0;color:#555;width:40%'>Machine</td><td style='font-weight:700'>"+sub.machineName+"</td></tr><tr><td style='padding:3px 0;color:#555'>Category</td><td>"+sub.machineCategory+"</td></tr><tr><td style='padding:3px 0;color:#555'>Asset</td><td style='font-family:monospace'>"+sub.machineAsset+"</td></tr><tr><td style='padding:3px 0;color:#555'>Location</td><td>"+sub.machineLoc+"</td></tr>"+(sub.issueType?"<tr><td style='padding:3px 0;color:#555'>Issue Type</td><td style='font-weight:700;color:#C2410C'>"+sub.issueType+"</td></tr>":"")+"</table></div>";
   }
+
   var cSection="";
   if(sub.contact&&(sub.contact.name||sub.contact.mobile)){cSection="<div style='background:#ECFDF5;border:1px solid #BBF7D0;border-radius:8px;padding:12px;margin-top:14px'><div style='font-size:10px;font-weight:800;color:#16A34A;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px'>Contact</div>"+(sub.contact.name?"<p style='margin:2px 0;font-size:13px'><b>Name:</b> "+sub.contact.name+"</p>":"")+(sub.contact.mobile?"<p style='margin:2px 0;font-size:13px'><b>Mobile:</b> "+sub.contact.mobile+"</p>":"")+(sub.contact.email?"<p style='margin:2px 0;font-size:13px'><b>Email:</b> "+sub.contact.email+"</p>":"")+"</div>";}
+
   var action={info:"No immediate action needed. Feedback logged for daily summary.",attention:"Please review and address if required.",urgent:"Please inspect and resolve as soon as possible.",critical:"IMMEDIATE action required. Inspect, make safe, and escalate now."}[sev];
   var now=new Date().toLocaleString("en-ZA",{timeZone:"Africa/Johannesburg",hour12:false});
 
