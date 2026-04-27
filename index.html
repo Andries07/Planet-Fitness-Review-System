@@ -1049,7 +1049,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
    Replace YOUR_DEPLOYMENT_ID with your deployed Apps Script URL
    Example: https://script.google.com/macros/s/AKfy.../exec
 ─────────────────────────────────────────────────────────────── */
-var GAS_URL = "https://script.google.com/macros/s/AKfycbx9l_-_IEbBVm89u9AqGdKa-Uq1_2IXDaTt8j8fXVMmC13fP5tqaSBldQN41-liOwrHRQ/exec";
+var GAS_URL = "https://script.google.com/macros/s/AKfycbxKuMTj6iGn2hrDko4Yq4vtnfaXo7sTLcmIzhIEvLy2mB6CbC4C5HIbMJTYL4acPuoaBQ/exec";
 
 /* ════════════════════════════════════════════════════════════
    EMAIL CONFIG — ADD / REMOVE / CHANGE EMAILS HERE
@@ -1330,7 +1330,7 @@ function submitMachine(){
   sub.severity=calcSev(sub);
   sub.recipients=getRecips(sub,club);
   sub.alertEmail=buildEmail(sub,club);
-  sub.customerEmail=(email&&popia)?buildCustomerEmail(sub,club):null;
+  sub.customerEmail=(email&&popia&&sub.severity!=="info")?buildCustomerEmail(sub,club):null;
 
   send(sub,function(){
     if(!isTestMode()) localStorage.setItem(limitKey,"1");
@@ -1730,6 +1730,25 @@ function buildEmail(sub,club){
   var cSection="";
   if(sub.contact&&(sub.contact.name||sub.contact.mobile)){cSection="<div style='background:#ECFDF5;border:1px solid #BBF7D0;border-radius:8px;padding:12px;margin-top:14px'><div style='font-size:10px;font-weight:800;color:#16A34A;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px'>Contact</div>"+(sub.contact.name?"<p style='margin:2px 0;font-size:13px'><b>Name:</b> "+sub.contact.name+"</p>":"")+(sub.contact.mobile?"<p style='margin:2px 0;font-size:13px'><b>Mobile:</b> "+sub.contact.mobile+"</p>":"")+(sub.contact.email?"<p style='margin:2px 0;font-size:13px'><b>Email:</b> "+sub.contact.email+"</p>":"")+"</div>";}
 
+  // Trainer section — included whenever a trainer was selected with a rating
+  var tSection="";
+  if(sub.trainerName){
+    var trRl={5:"Excellent",4:"Good",3:"Average",2:"Poor",1:"Very Poor"};
+    var trScore=sub.trainerRating?Number(sub.trainerRating):null;
+    var trCol=trScore?( trScore>=4?"#16A34A":trScore>=3?"#B45309":trScore>=2?"#EA580C":"#DC2626" ):"#555";
+    var trLabel=trScore?trRl[trScore]:"Not rated";
+    var trFb=(sub.trainerFeedback||"").replace(/-/g," ").replace(/\b\w/g,function(c){return c.toUpperCase();});
+    var trComment=sub.trainerComment||"";
+    tSection="<div style='background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:14px;margin-top:14px'>"+
+      "<div style='font-size:10px;font-weight:800;color:#C2410C;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px'>⚠️ Instructor / Trainer Feedback</div>"+
+      "<table style='font-size:13px;color:#111;width:100%'>"+
+      "<tr><td style='padding:3px 0;color:#555;width:40%'>Trainer</td><td style='font-weight:700'>"+sub.trainerName+"</td></tr>"+
+      (trScore?"<tr><td style='padding:3px 0;color:#555'>Session Rating</td><td style='font-weight:800;color:"+trCol+"'>"+trLabel+"</td></tr>":"")+
+      (trFb?"<tr><td style='padding:3px 0;color:#555'>Feedback Tag</td><td style='font-weight:600'>"+trFb+"</td></tr>":"")+
+      (trComment?"<tr><td style='padding:3px 0;color:#555;vertical-align:top'>Comment</td><td style='font-style:italic;color:#333'>\""+trComment+"\"</td></tr>":"")+
+      "</table></div>";
+  }
+
   var action={info:"No immediate action needed. Feedback logged for daily summary.",attention:"Please review and address if required.",urgent:"Please inspect and resolve as soon as possible.",critical:"IMMEDIATE action required. Inspect, make safe, and escalate now."}[sev];
   var now=new Date().toLocaleString("en-ZA",{timeZone:"Africa/Johannesburg",hour12:false});
 
@@ -1739,7 +1758,7 @@ function buildEmail(sub,club){
           style="height:40px;object-fit:contain;filter:brightness(0) invert(1);display:block;margin-bottom:6px"/>
      The image URL must be publicly accessible (GitHub Pages works well).
   ═══════════════════════════════════════════════════════════ */
-  var html="<!DOCTYPE html><html><head><meta charset='UTF-8'/></head><body style='margin:0;padding:0;background:#EEF2F7;font-family:Arial,Helvetica,sans-serif'><table width='100%' cellpadding='0' cellspacing='0' style='background:#EEF2F7;padding:20px 10px'><tr><td align='center'><table width='560' cellpadding='0' cellspacing='0' style='max-width:560px;width:100%;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.09)'><tr><td style='background:linear-gradient(135deg,#0A1628 0%,#0057B8 100%);padding:20px 24px'><table width='100%'><tr><td><div style='font-size:18px;font-weight:900;color:#fff;letter-spacing:.5px'>PLANET FITNESS</div><div style='font-size:10px;color:#00A3FF;letter-spacing:2px;text-transform:uppercase;margin-top:3px'>Member Experience Intelligence</div></td><td align='right'><div style='background:"+sb+";color:"+sc+";font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:5px;white-space:nowrap'>"+sl+"</div></td></tr></table></td></tr><tr><td style='background:#F8FAFF;border-bottom:1px solid #DBEAFE;padding:12px 24px'><table width='100%'><tr><td style='font-size:12px;color:#555'><b style='color:#0057B8'>Club</b><br/>"+club.club_name+"</td><td style='font-size:12px;color:#555'><b style='color:#0057B8'>Source</b><br/>"+(sub.src==="machine"?"Machine QR":sub.src==="area"?"Area QR":"Club Feedback")+"</td><td style='font-size:12px;color:#555;text-align:right'><b style='color:#0057B8'>Reported</b><br/>"+now+" SAST</td></tr></table></td></tr><tr><td style='padding:20px 24px'>"+(rrows?"<div style='margin-bottom:14px'><table style='width:100%;border-collapse:collapse;background:#FAFAFA;border-radius:6px;overflow:hidden'>"+rrows+"</table></div>":"")+(sub.comment?"<div style='background:#FFFBEB;border-left:3px solid #F59E0B;padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:14px'><div style='font-size:10px;font-weight:700;color:#92400E;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px'>Member Comment</div><div style='font-size:13px;color:#111;line-height:1.5;font-style:italic'>\""+sub.comment+"\"</div></div>":"")+mSection+cSection+"<div style='background:"+sb+";border:1px solid "+sc+"20;border-radius:8px;padding:12px;margin-top:14px'><div style='font-size:10px;font-weight:800;color:"+sc+";letter-spacing:2px;text-transform:uppercase;margin-bottom:5px'>Suggested Action</div><div style='font-size:13px;color:#111;line-height:1.45'>"+action+"</div></div></td></tr><tr><td style='background:#F8FAFF;border-top:1px solid #E5EAF2;padding:14px 24px;text-align:center'><div style='font-size:10px;color:#0057B8;font-weight:700;letter-spacing:1px'>PLANET FITNESS SOUTH AFRICA</div><div style='font-size:9px;color:#aaa;margin-top:3px'>Demo concept. Not an official Planet Fitness product.</div></td></tr></table></td></tr></table></body></html>";
+  var html="<!DOCTYPE html><html><head><meta charset='UTF-8'/></head><body style='margin:0;padding:0;background:#EEF2F7;font-family:Arial,Helvetica,sans-serif'><table width='100%' cellpadding='0' cellspacing='0' style='background:#EEF2F7;padding:20px 10px'><tr><td align='center'><table width='560' cellpadding='0' cellspacing='0' style='max-width:560px;width:100%;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.09)'><tr><td style='background:linear-gradient(135deg,#0A1628 0%,#0057B8 100%);padding:20px 24px'><table width='100%'><tr><td><div style='font-size:18px;font-weight:900;color:#fff;letter-spacing:.5px'>PLANET FITNESS</div><div style='font-size:10px;color:#00A3FF;letter-spacing:2px;text-transform:uppercase;margin-top:3px'>Member Experience Intelligence</div></td><td align='right'><div style='background:"+sb+";color:"+sc+";font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:5px;white-space:nowrap'>"+sl+"</div></td></tr></table></td></tr><tr><td style='background:#F8FAFF;border-bottom:1px solid #DBEAFE;padding:12px 24px'><table width='100%'><tr><td style='font-size:12px;color:#555'><b style='color:#0057B8'>Club</b><br/>"+club.club_name+"</td><td style='font-size:12px;color:#555'><b style='color:#0057B8'>Source</b><br/>"+(sub.src==="machine"?"Machine QR":sub.src==="area"?"Area QR":"Club Feedback")+"</td><td style='font-size:12px;color:#555;text-align:right'><b style='color:#0057B8'>Reported</b><br/>"+now+" SAST</td></tr></table></td></tr><tr><td style='padding:20px 24px'>"+(rrows?"<div style='margin-bottom:14px'><table style='width:100%;border-collapse:collapse;background:#FAFAFA;border-radius:6px;overflow:hidden'>"+rrows+"</table></div>":"")+(sub.comment?"<div style='background:#FFFBEB;border-left:3px solid #F59E0B;padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:14px'><div style='font-size:10px;font-weight:700;color:#92400E;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px'>Member Comment</div><div style='font-size:13px;color:#111;line-height:1.5;font-style:italic'>\""+sub.comment+"\"</div></div>":"")+mSection+cSection+tSection+"<div style='background:"+sb+";border:1px solid "+sc+"20;border-radius:8px;padding:12px;margin-top:14px'><div style='font-size:10px;font-weight:800;color:"+sc+";letter-spacing:2px;text-transform:uppercase;margin-bottom:5px'>Suggested Action</div><div style='font-size:13px;color:#111;line-height:1.45'>"+action+"</div></div></td></tr><tr><td style='background:#F8FAFF;border-top:1px solid #E5EAF2;padding:14px 24px;text-align:center'><div style='font-size:10px;color:#0057B8;font-weight:700;letter-spacing:1px'>PLANET FITNESS SOUTH AFRICA</div><div style='font-size:9px;color:#aaa;margin-top:3px'>Demo concept. Not an official Planet Fitness product.</div></td></tr></table></td></tr></table></body></html>";
   return{subject,html};
 }
 
@@ -1872,6 +1891,11 @@ function buildCustomerEmail(sub,club){
   if(overallDisplay) feedbackRows+="<tr><td style='padding:5px 12px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0;width:45%'>Overall Visit</td><td style='padding:5px 12px;font-size:13px;font-weight:700;color:#C2410C;border-bottom:1px solid #f0f0f0'>"+overallDisplay+"</td></tr>";
   if(condDisplay)    feedbackRows+="<tr><td style='padding:5px 12px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>Machine Condition</td><td style='padding:5px 12px;font-size:13px;font-weight:700;color:#C2410C;border-bottom:1px solid #f0f0f0'>"+condDisplay+"</td></tr>";
   if(issueDisplay)   feedbackRows+="<tr><td style='padding:5px 12px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>Issue Reported</td><td style='padding:5px 12px;font-size:13px;font-weight:600;color:#111;border-bottom:1px solid #f0f0f0'>"+issueDisplay+"</td></tr>";
+  // Trainer row — include in customer email if trainer was selected
+  if(sub.trainerName){
+    var trRating=sub.trainerRating?ratingLabels[Number(sub.trainerRating)]:"";
+    feedbackRows+="<tr><td style='padding:5px 12px;color:#555;font-size:13px;border-bottom:1px solid #f0f0f0'>Trainer / Instructor</td><td style='padding:5px 12px;font-size:13px;font-weight:600;color:#111;border-bottom:1px solid #f0f0f0'>"+sub.trainerName+(trRating?" — "+trRating:"")+"</td></tr>";
+  }
   if(sub.comment)    feedbackRows+="<tr><td style='padding:5px 12px;color:#555;font-size:13px'>Your Comment</td><td style='padding:5px 12px;font-size:13px;color:#111;font-style:italic'>\""+sub.comment+"\"</td></tr>";
 
   var html=[
