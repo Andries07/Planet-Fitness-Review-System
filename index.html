@@ -1433,6 +1433,31 @@ function calcSev(s){
   return sev;
 }
 
+   function getRecips(sub,club){
+  var set = new Set(club.manager_emails || []);
+  var sev = sub.severity;
+  var src = sub.src;
+  var at = sub.areaType || "";
+  var it = sub.issueType || "";
+
+  if(sev === "critical"){
+    (club.maintenance_emails || []).forEach(function(e){ set.add(e); });
+    (club.escalation_emails || []).forEach(function(e){ set.add(e); });
+  }
+
+  if(sev === "urgent" || sev === "attention"){
+    if(src === "machine" || at === "equipment"){
+      (club.maintenance_emails || []).forEach(function(e){ set.add(e); });
+    }
+
+    if(at === "facilities" || it === "dirty" || it === "safety"){
+      (club.cleanliness_emails || []).forEach(function(e){ set.add(e); });
+    }
+  }
+
+  return Array.from(set);
+}
+
 /* ════════════════════════════════════════
    EMAIL BUILDER — Premium PF branded HTML
 ════════════════════════════════════════ */
