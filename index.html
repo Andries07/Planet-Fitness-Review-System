@@ -1459,20 +1459,9 @@ function buildEmail(sub,club){
 ════════════════════════════════════════ */
 function send(payload,onDone){
   show("pg-loading");
-  var cb="pfcb_"+Date.now()+"_"+Math.floor(Math.random()*9999);
-  var to;
-  window[cb]=function(res){
-    clearTimeout(to);
-    try{delete window[cb];}catch(e){}
-    if(script&&script.parentNode)script.parentNode.removeChild(script);
-    onDone(res);
-  };
-  to=setTimeout(function(){
-    try{delete window[cb];}catch(e){}
-    onDone({success:false,error:"timeout"});
-  },15000);
+
   var p={
-    callback:cb, action:"submit",
+    action:"submit",
     sourceType:payload.src, clubId:payload.clubId,
     areaId:payload.areaId||"", machineId:payload.machineId||"",
     machineName:payload.machineName||"", machineCondition:payload.machineCondition||"",
@@ -1493,11 +1482,20 @@ function send(payload,onDone){
     marketingPerm:payload.marketingPerm?"1":"0",
     submittedAt:payload.submittedAt||""
   };
-  var qs=Object.keys(p).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(p[k])}).join("&");
-  var script=document.createElement("script");
-  script.src=GAS_URL+"?"+qs;
-  script.onerror=function(){clearTimeout(to);try{delete window[cb];}catch(e){}onDone({error:"network"});};
-  document.head.appendChild(script);
+
+  fetch(GAS_URL,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(p)
+  })
+  .then(function(){
+    onDone({success:true});
+  })
+  .catch(function(err){
+    console.error("Submit failed",err);
+    onDone({success:false,error:String(err)});
+  });
 }
 
 /* ════════════════════════════════════════
