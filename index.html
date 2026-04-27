@@ -1387,31 +1387,41 @@ function showSuccess(title,msg,sub){
 var CRIT_WORDS=["unsafe","injured","injury","sparks","shock","snapped","blood","leak","slip","dangerous","fire","burnt"];
 function calcSev(s){
   var sev="info";
-  var ov=(s.ratings&&s.ratings.overall)||5;
-  var cl=(s.ratings&&(s.ratings.cleanliness||s.ratings["area-clean"]))||5;
+  var ratings=s.ratings||{};
   var cond=s.machineCondition||5;
   var issue=s.issueType||"";
   var comment=(s.comment||"").toLowerCase();
   var atype=s.areaType||"";
-  for(var i=0;i<CRIT_WORDS.length;i++){if(comment.indexOf(CRIT_WORDS[i])!==-1||issue==="safety")return"critical";}
-  if(cond<=1||issue==="not-working"||issue==="damaged")sev="urgent";
-  if(ov<=1)sev="urgent";
-  if((atype==="facilities"||atype==="bathrooms"||atype==="changerooms")&&cl<=2)sev="urgent";
-  if(cl<=2&&sev==="info")sev="attention";
-  if(ov<=2&&sev==="info")sev="attention";
-  if((cond===3||cond===2)&&sev==="info")sev="attention";
-  var poor=0; for(var k in s.ratings){if(s.ratings[k]<=2)poor++;} if(poor>=2&&sev==="attention")sev="urgent";
-  return sev;
-}
-function getRecips(sub,club){
-  var set=new Set(club.manager_emails||[]);
-  var sev=sub.severity,src=sub.src,at=sub.areaType||"",it=sub.issueType||"";
-  if(sev==="critical"){(club.maintenance_emails||[]).forEach(function(e){set.add(e)});(club.escalation_emails||[]).forEach(function(e){set.add(e)});}
-  if(sev==="urgent"||sev==="attention"){
-    if(src==="machine"||at==="equipment")(club.maintenance_emails||[]).forEach(function(e){set.add(e)});
-    if(at==="facilities"||it==="dirty"||it==="safety")(club.cleanliness_emails||[]).forEach(function(e){set.add(e)});
+
+  // Critical words always override everything
+  for(var i=0;i<CRIT_WORDS.length;i++){
+    if(comment.indexOf(CRIT_WORDS[i])!==-1||issue==="safety")return"critical";
   }
-  return Array.from(set);
+
+  // Equipment-specific urgent rules
+  if(cond<=1||issue==="not-working"||issue==="damaged")sev="urgent";
+  if((cond===3||cond===2)&&sev==="info")sev="attention";
+
+  // Club visit rule:
+  // Any "How was your visit" question lower than average means email must send.
+  // Average = 3, lower than average = 1 or 2.
+  var clubKeys=["overall","clean","cleanliness","equip","equipment","staff","environment","area-clean"];
+  var lowCount=0;
+
+  clubKeys.forEach(function(k){
+    if(ratings[k] && Number(ratings[k]) < 3){
+      lowCount++;
+    }
+  });
+
+  if(lowCount>=1 && sev==="info")sev="attention";
+  if(lowCount>=2)sev="urgent";
+
+  // Facilities-specific urgent rule
+  var cl=ratings.cleanliness||ratings.clean||ratings["area-clean"]||5;
+  if((atype==="facilities"||atype==="bathrooms"||atype==="changerooms")&&cl<=2)sev="urgent";
+
+  return sev;
 }
 
 /* ════════════════════════════════════════
