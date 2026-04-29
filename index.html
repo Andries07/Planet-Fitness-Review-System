@@ -3902,44 +3902,6 @@ function deleteTrainer(index){
 function isTestMode(){
   return new URLSearchParams(window.location.search).get("test") === "1";
 }
-<div class="modal-overlay hidden" id="modal-edit-emails">
-  <div class="modal-box">
-    <div class="modal-title" id="emails-modal-title">Edit Emails</div>
-
-    <div class="form-field">
-      <label class="form-label">Manager Emails</label>
-      <input class="pfi" id="e-manager" placeholder="email1@pf.co.za, email2@pf.co.za"/>
-    </div>
-
-    <div class="form-field">
-      <label class="form-label">Maintenance Emails</label>
-      <input class="pfi" id="e-maintenance" placeholder="maintenance@pf.co.za"/>
-    </div>
-
-    <div class="form-field">
-      <label class="form-label">Escalation Emails</label>
-      <input class="pfi" id="e-escalation" placeholder="regional@pf.co.za"/>
-    </div>
-
-    <div class="form-field">
-      <label class="form-label">Cleanliness Emails</label>
-      <input class="pfi" id="e-cleanliness" placeholder="cleaning@pf.co.za"/>
-    </div>
-
-    <div class="form-field">
-      <label class="form-label">Summary Emails</label>
-      <input class="pfi" id="e-summary" placeholder="summary@pf.co.za"/>
-    </div>
-
-    <div class="modal-actions">
-      <button class="adm-btn-ghost" onclick="closeModal('modal-edit-emails')">Cancel</button>
-      <button class="adm-btn-blue" onclick="saveEmailConfig()">Save Emails</button>
-    </div>
-
-    <div class="modal-status" id="ms-emails"></div>
-  </div>
-</div>
-   
 </script>
 </body>
 </html>
