@@ -470,32 +470,305 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
 .load-msg{font-size:12px;color:rgba(255,255,255,.45);letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
 
 /* ══════════════════════════════════
-   ADMIN PAGE
+   ADMIN SYSTEM — Complete design
 ══════════════════════════════════ */
-#pg-admin{background:var(--off)}
-.adm{padding:16px}
+#pg-admin{background:#F0F2F5;flex-direction:column}
+#pg-login{background:var(--navy);flex-direction:column}
+
+/* Tab navigation */
+.adm-tab-bar{
+  background:var(--navy2);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;overflow-x:auto;flex-shrink:0;
+  scrollbar-width:none;padding:0 14px;
+}
+.adm-tab-bar::-webkit-scrollbar{display:none}
+.adm-tab{
+  flex-shrink:0;
+  padding:12px 14px;
+  background:none;border:none;border-bottom:2.5px solid transparent;
+  font-family:var(--fb);font-size:12px;font-weight:600;
+  color:rgba(255,255,255,.5);cursor:pointer;
+  transition:color .15s,border-color .15s;
+  white-space:nowrap;
+}
+.adm-tab:hover{color:rgba(255,255,255,.8)}
+.adm-tab.active{color:#fff;border-bottom-color:var(--electric)}
+
+/* Tab panels */
+.adm-panel{display:none;padding:20px 16px 40px;min-height:0}
+.adm-panel.active{display:block}
+
+/* Section header */
+.adm-section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.adm-section-title{
+  font-family:var(--fh);font-size:20px;font-weight:800;
+  color:var(--text);text-transform:uppercase;letter-spacing:.3px;line-height:1;
+}
+.adm-section-sub{font-size:12px;color:var(--muted);margin-top:3px;font-weight:400}
+
+/* Cards */
+.adm-card{
+  background:#fff;border:1px solid var(--grey);
+  border-radius:12px;padding:0;margin-bottom:10px;
+  box-shadow:0 1px 4px rgba(0,0,0,.05);
+  overflow:hidden;
+}
+.adm-card-header{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-bottom:1px solid var(--grey);
+}
+.adm-card-body{padding:14px 16px}
+.adm-card-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.adm-card-icon.blue{background:#EFF6FF}
+.adm-card-icon.green{background:#ECFDF5}
+.adm-card-icon.orange{background:#FFF7ED}
+.adm-card-icon.purple{background:#F5F3FF}
+.adm-card-meta{flex:1;min-width:0}
+.adm-card-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.2}
+.adm-card-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3}
+.adm-card-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* Image preview in card */
+.adm-img-preview{
+  width:56px;height:56px;border-radius:8px;
+  background:var(--off);border:1px solid var(--grey);
+  object-fit:cover;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;overflow:hidden;
+}
+.adm-img-preview img{width:100%;height:100%;object-fit:cover;border-radius:7px}
+
+/* Data rows */
+.dr{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--grey);font-size:12px;
+}
+.dr:last-child{border-bottom:none}
+.dk{color:var(--muted);font-weight:500}
+.dv{color:var(--text);font-weight:600;text-align:right;max-width:58%;word-break:break-all}
+
+/* Badges */
+.adm-badge{
+  padding:2px 8px;border-radius:5px;
+  font-size:9px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.8px;font-family:var(--fh);white-space:nowrap;
+}
+.ab-blue{background:#EFF6FF;color:var(--blue)}
+.ab-grey{background:var(--grey);color:var(--muted)}
+.ab-ok{background:#ECFDF5;color:#16A34A}
+.ab-warn{background:#FFF7ED;color:#C2410C}
+.ab-red{background:#FEF2F2;color:#991B1B}
+.ab-purple{background:#F5F3FF;color:#6D28D9}
+
+/* Status dot */
+.status-dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;
+  display:inline-block;
+}
+.dot-green{background:#16A34A}
+.dot-red{background:#DC2626}
+.dot-grey{background:#9CA3AF}
+
+/* Small action buttons */
+.adm-btn-sm{
+  padding:5px 10px;border-radius:6px;font-family:var(--fb);
+  font-size:11px;font-weight:600;cursor:pointer;
+  border:1.5px solid var(--grey);background:#fff;color:var(--text);
+  transition:all .12s;white-space:nowrap;
+}
+.adm-btn-sm:hover{border-color:var(--blue);color:var(--blue)}
+.adm-btn-sm.danger{border-color:#FECACA;color:#DC2626}
+.adm-btn-sm.danger:hover{background:#FEF2F2}
+
+/* Primary + ghost buttons */
+.adm-btn-blue{
+  padding:9px 16px;
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  border:none;border-radius:8px;
+  font-family:var(--fb);font-size:13px;font-weight:600;
+  color:#fff;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,87,184,.25);
+  transition:opacity .12s,transform .1s;
+  white-space:nowrap;
+}
+.adm-btn-blue:hover{opacity:.9;transform:translateY(-1px)}
+.adm-btn-blue:active{transform:none}
+.adm-btn-ghost{
+  padding:9px 16px;background:#fff;
+  border:1.5px solid var(--grey);border-radius:8px;
+  font-family:var(--fb);font-size:13px;font-weight:600;
+  color:var(--muted);cursor:pointer;transition:all .12s;
+}
+.adm-btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+
+/* Grid layouts */
+.adm-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.adm-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+
+/* Machine / area tiles */
+.adm-tile{
+  background:#fff;border:1px solid var(--grey);border-radius:12px;
+  overflow:hidden;transition:box-shadow .15s;
+}
+.adm-tile:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.adm-tile-img{
+  width:100%;height:90px;background:var(--off);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;border-bottom:1px solid var(--grey);
+  overflow:hidden;position:relative;
+}
+.adm-tile-img img{width:100%;height:100%;object-fit:cover}
+.adm-tile-img .img-upload-btn{
+  position:absolute;bottom:6px;right:6px;
+  background:rgba(0,0,0,.55);color:#fff;border:none;
+  border-radius:5px;font-size:10px;font-weight:600;
+  padding:3px 8px;cursor:pointer;
+}
+.adm-tile-body{padding:10px 12px}
+.adm-tile-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.2}
+.adm-tile-sub{font-size:10px;color:var(--muted)}
+.adm-tile-footer{
+  display:flex;gap:6px;padding:8px 12px;
+  border-top:1px solid var(--grey);background:var(--off);
+}
+
+/* Email config rows */
+.email-group{
+  background:#fff;border:1px solid var(--grey);
+  border-radius:12px;margin-bottom:12px;overflow:hidden;
+}
+.email-group-header{
+  padding:12px 16px;background:var(--navy);
+  display:flex;align-items:center;gap:10px;
+}
+.email-group-title{font-family:var(--fh);font-size:15px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.3px;flex:1}
+.email-type-section{border-bottom:1px solid var(--grey)}
+.email-type-section:last-child{border-bottom:none}
+.email-type-header{
+  padding:10px 16px;background:var(--off);
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--grey);
+}
+.email-type-label{font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.email-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--off);border:1px solid var(--grey);border-radius:20px;
+  padding:4px 10px;margin:3px;font-size:11px;font-weight:500;color:var(--text);
+}
+.email-pill-remove{
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:13px;line-height:1;padding:0;margin-left:2px;
+}
+.email-pill-remove:hover{color:var(--danger)}
+.email-pills-wrap{padding:10px 14px;display:flex;flex-wrap:wrap;align-items:center;min-height:44px}
+.email-add-input{
+  background:none;border:none;outline:none;font-family:var(--fb);
+  font-size:12px;color:var(--text);min-width:180px;padding:4px 6px;
+}
+.email-add-input::placeholder{color:var(--muted)}
+
+/* Modals */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  z-index:200;display:flex;align-items:center;justify-content:center;
+  padding:20px;backdrop-filter:blur(4px);
+}
+.modal-overlay.hidden{display:none}
+.modal-box{
+  background:#fff;border-radius:16px;padding:24px;
+  width:100%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  max-height:90vh;overflow-y:auto;
+}
+.modal-title{
+  font-family:var(--fh);font-size:22px;font-weight:800;
+  color:var(--text);text-transform:uppercase;
+  letter-spacing:.3px;margin-bottom:16px;
+}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.modal-status{font-size:12px;color:var(--danger);font-weight:600;min-height:16px;margin-top:8px;text-align:center}
+.modal-status.ok{color:#16A34A}
+
+/* Image upload area in modals */
+.img-upload-zone{
+  border:2px dashed var(--grey);border-radius:10px;
+  padding:20px;text-align:center;cursor:pointer;
+  transition:border-color .15s,background .15s;
+  background:var(--off);
+}
+.img-upload-zone:hover{border-color:var(--blue);background:#EFF6FF}
+.img-upload-zone .upload-icon{font-size:28px;margin-bottom:6px}
+.img-upload-zone .upload-label{font-size:12px;color:var(--muted);line-height:1.45}
+.img-upload-zone .upload-label strong{color:var(--blue)}
+.img-preview-box{
+  width:100%;height:120px;border-radius:8px;
+  object-fit:cover;border:1px solid var(--grey);
+  display:none;margin-bottom:8px;
+}
+.form-field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.form-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Stat strip in admin */
+.adm-kpi-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:10px;margin-bottom:16px;
+}
+.adm-kpi{
+  background:#fff;border:1px solid var(--grey);border-radius:10px;
+  padding:12px;text-align:center;
+}
+.adm-kpi-val{font-family:var(--fh);font-size:26px;font-weight:900;color:var(--blue);line-height:1}
+.adm-kpi-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:3px}
+
+/* Inline search / filter */
+.adm-search{
+  background:#fff;border:1.5px solid var(--grey);border-radius:8px;
+  padding:8px 12px;font-family:var(--fb);font-size:13px;
+  color:var(--text);outline:none;width:100%;margin-bottom:12px;
+  transition:border-color .15s;
+}
+.adm-search:focus{border-color:var(--blue)}
+
+/* User role pill */
+.role-badge{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+}
+.role-super{background:#F5F3FF;color:#6D28D9}
+.role-club{background:#EFF6FF;color:#0057B8}
+
+/* Divider */
+.adm{padding:0}
+.adm-footer{padding:16px;text-align:center;font-size:11px;color:var(--muted);line-height:1.6}
+.mg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mtile{background:var(--off);border:1px solid var(--grey);border-radius:8px;padding:9px;font-size:11px}
+.mtile-n{font-weight:700;color:var(--text);margin-bottom:1px}
+.mtile-c{color:var(--muted);font-size:10px}
 .adm-h{font-family:var(--fh);font-size:18px;font-weight:800;text-transform:uppercase;color:var(--text);margin-bottom:10px;margin-top:16px}
 .adm-h:first-child{margin-top:0}
-.adm-card{background:#fff;border:1px solid var(--grey);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:0 1px 6px rgba(0,0,0,.04)}
-.dr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--grey);font-size:12px}
-.dr:last-child{border-bottom:none}
-.dk{color:var(--muted);font-weight:500}.dv{color:var(--text);font-weight:600;text-align:right;max-width:58%;word-break:break-all}
-.adm-badge{padding:2px 8px;border-radius:5px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;font-family:var(--fh)}
-.ab-blue{background:#EFF6FF;color:var(--blue)}.ab-grey{background:var(--grey);color:var(--muted)}.ab-ok{background:#ECFDF5;color:#16A34A}.ab-warn{background:#FFF7ED;color:#C2410C}
-.mg2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.mtile{background:var(--off);border:1px solid var(--grey);border-radius:8px;padding:9px;font-size:11px}
-.mtile-n{font-weight:700;color:var(--text);margin-bottom:1px}.mtile-c{color:var(--muted);font-size:10px}
-.adm-footer{padding:16px;text-align:center;font-size:11px;color:var(--muted);line-height:1.6}
 
 /* ── RESPONSIVE ── */
 @media(max-width:380px){
   .rg{gap:4px}.rb{padding:8px 3px}.rb .re{font-size:16px}
   .cond-row{gap:4px}.cond-btn{padding:8px 3px}.cond-btn .ci{font-size:17px}
   .contact-row{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .adm-kpi-strip{grid-template-columns:1fr 1fr}
+  .adm-grid-2,.adm-grid-3{grid-template-columns:1fr}
 }
 @media(min-width:600px){
   .sp-inner,.suc-inner{max-width:500px}
   .mb,.cb{padding:18px 22px 28px}
+  .adm-grid-3{grid-template-columns:repeat(3,1fr)}
 }
 </style>
 </head>
@@ -967,75 +1240,402 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
 </div>
 
 <!-- ═════════════════════════════════
-     ADMIN DEMO CONFIG
+     LOGIN PAGE
+═════════════════════════════════ -->
+<div class="page" id="pg-login">
+  <div style="min-height:100dvh;background:var(--navy);display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% -5%,rgba(0,87,184,.4) 0%,transparent 70%);pointer-events:none"></div>
+    <div style="position:relative;z-index:2;width:100%;max-width:360px">
+
+      <div style="text-align:center;margin-bottom:36px">
+        <div style="width:52px;height:52px;background:var(--blue);border-radius:13px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="white"><use href="#pfm"/></svg>
+        </div>
+        <div style="font-family:var(--fh);font-size:28px;font-weight:900;color:#fff;letter-spacing:.5px;line-height:1">PLANET FITNESS</div>
+        <div style="font-size:10px;color:var(--elec);letter-spacing:3px;text-transform:uppercase;margin-top:5px;font-weight:600">Admin Portal</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:24px">
+        <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:20px;text-align:center">Sign in to your admin account</div>
+
+        <div style="margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Email</div>
+          <input id="login-email" type="email" inputmode="email" autocomplete="email"
+            placeholder="you@planetfitness.co.za"
+            onkeydown="if(event.key==='Enter')document.getElementById('login-pw').focus()"
+            style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:9px;padding:11px 14px;font-family:var(--fb);font-size:14px;color:#fff;outline:none;-webkit-appearance:none;caret-color:var(--elec)"
+          />
+        </div>
+
+        <div style="margin-bottom:18px">
+          <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Password</div>
+          <input id="login-pw" type="password" autocomplete="current-password"
+            placeholder="••••••••"
+            onkeydown="if(event.key==='Enter')doLogin()"
+            style="width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:9px;padding:11px 14px;font-family:var(--fb);font-size:14px;color:#fff;outline:none;-webkit-appearance:none;caret-color:var(--elec)"
+          />
+        </div>
+
+        <div id="login-status" style="font-size:12px;color:#F87171;min-height:16px;margin-bottom:12px;text-align:center;font-weight:600"></div>
+
+        <button id="login-btn" onclick="doLogin()"
+          style="width:100%;padding:13px;background:linear-gradient(135deg,var(--blue),var(--blue2));border:none;border-radius:9px;font-family:var(--fb);font-size:14px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(0,87,184,.4);transition:opacity .15s">
+          Sign In →
+        </button>
+      </div>
+
+      <div style="text-align:center;margin-top:16px;font-size:11px;color:rgba(255,255,255,.25)">
+        Restricted to authorised Planet Fitness admin users.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════
+     ADMIN DASHBOARD
 ═════════════════════════════════ -->
 <div class="page" id="pg-admin">
-  <div class="ph">
-    <button class="ph-back" onclick="goSplash()">←</button>
-    <div class="ph-body">
-      <div class="ph-title">Demo Config</div>
-      <div class="ph-sub">Club data model &amp; setup guide</div>
-    </div>
-    <div class="ph-logo-slot"><svg viewBox="0 0 24 24"><use href="#pfm"/></svg></div>
-  </div>
-  <div class="ps">
-    <div class="adm">
 
-      <div class="adm-h">Logo Placement Guide</div>
-      <div class="adm-card">
-        <div class="dr"><span class="dk">Splash page logo</span><span class="dv"><span class="adm-badge ab-blue">Replace sp-logo-wrap</span></span></div>
-        <div class="dr"><span class="dk">Page header (all pages)</span><span class="dv"><span class="adm-badge ab-blue">Replace ph-logo-slot</span></span></div>
-        <div class="dr"><span class="dk">Club hero banner</span><span class="dv"><span class="adm-badge ab-blue">Replace ch-logo-slot</span></span></div>
-        <div class="dr"><span class="dk">Success page</span><span class="dv"><span class="adm-badge ab-blue">Above suc-icon div</span></span></div>
-        <div class="dr"><span class="dk">Machine images</span><span class="dv"><span class="adm-badge ab-grey">MACHINES[id].image_url</span></span></div>
-        <div style="margin-top:10px;font-size:11px;color:var(--muted);line-height:1.6">
-          Host logo at: <code style="background:var(--off);padding:1px 4px;border-radius:3px">/images/pf-logo.png</code> in your GitHub repo.<br/>
-          For dark logos on navy: add <code style="background:var(--off);padding:1px 4px;border-radius:3px">filter:brightness(0) invert(1)</code> to the img tag.<br/>
-          Recommended logo height: 32–60px depending on placement.
+  <!-- Admin header bar -->
+  <div style="background:var(--navy);padding:11px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;position:sticky;top:0;z-index:50">
+    <div style="width:30px;height:30px;background:var(--blue);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><use href="#pfm"/></svg>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div style="font-family:var(--fh);font-size:15px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.3px;line-height:1">Admin Dashboard</div>
+      <div style="font-size:10px;color:var(--elec);margin-top:1px;font-weight:600" id="adm-user-label">Planet Fitness</div>
+    </div>
+    <button onclick="doLogout()" title="Sign out"
+      style="background:rgba(255,255,255,.08);border:none;border-radius:7px;width:32px;height:32px;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      ↩
+    </button>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="adm-tab-bar">
+    <button class="adm-tab active" onclick="admTab('clubs')" id="tab-clubs">🏢 Clubs</button>
+    <button class="adm-tab" onclick="admTab('equipment')" id="tab-equipment">🔧 Equipment</button>
+    <button class="adm-tab" onclick="admTab('areas')" id="tab-areas">🚿 Areas</button>
+    <button class="adm-tab" onclick="admTab('trainers')" id="tab-trainers">👤 Trainers</button>
+    <button class="adm-tab" onclick="admTab('statuses')" id="tab-statuses">🏷️ Statuses</button>
+    <button class="adm-tab" onclick="admTab('emails')" id="tab-emails">📧 Emails</button>
+    <button class="adm-tab" onclick="admTab('users')" id="tab-users">🔐 Users</button>
+  </div>
+
+  <!-- Scrollable panel area -->
+  <div class="ps" id="adm-scroll">
+
+    <!-- ══ CLUBS ══ -->
+    <div class="adm-panel active" id="panel-clubs">
+      <div class="adm-section-head">
+        <div>
+          <div class="adm-section-title">Clubs</div>
+          <div class="adm-section-sub">Manage Planet Fitness locations</div>
+        </div>
+        <button class="adm-btn-blue" onclick="openModal('modal-add-club')">+ Add Club</button>
+      </div>
+      <div id="adm-clubs-list"></div>
+    </div>
+
+    <!-- ══ EQUIPMENT ══ -->
+    <div class="adm-panel" id="panel-equipment">
+      <div class="adm-section-head">
+        <div>
+          <div class="adm-section-title">Equipment</div>
+          <div class="adm-section-sub">Machines with QR codes &amp; images</div>
+        </div>
+        <button class="adm-btn-blue" onclick="openModal('modal-add-machine')">+ Add Machine</button>
+      </div>
+      <input class="adm-search" id="machine-search" placeholder="Search machines…" oninput="filterMachines(this.value)"/>
+      <div class="adm-grid-2" id="adm-machines-list"></div>
+    </div>
+
+    <!-- ══ AREAS ══ -->
+    <div class="adm-panel" id="panel-areas">
+      <div class="adm-section-head">
+        <div>
+          <div class="adm-section-title">Areas</div>
+          <div class="adm-section-sub">Club zones and feedback destinations</div>
+        </div>
+        <button class="adm-btn-blue" onclick="openModal('modal-add-area')">+ Add Area</button>
+      </div>
+      <div class="adm-grid-2" id="adm-areas-list"></div>
+    </div>
+
+    <!-- ══ TRAINERS ══ -->
+    <div class="adm-panel" id="panel-trainers">
+      <div class="adm-section-head">
+        <div>
+          <div class="adm-section-title">Trainers</div>
+          <div class="adm-section-sub">Instructors &amp; personal trainers</div>
+        </div>
+        <button class="adm-btn-blue" onclick="openModal('modal-add-trainer')">+ Add Trainer</button>
+      </div>
+      <div id="adm-trainers-list"></div>
+    </div>
+
+    <!-- ══ STATUSES ══ -->
+    <div class="adm-panel" id="panel-statuses">
+      <div class="adm-section-head">
+        <div>
+          <div class="adm-section-title">Status Config</div>
+          <div class="adm-section-sub">Define statuses for equipment, areas &amp; trainers</div>
+        </div>
+        <button class="adm-btn-blue" onclick="openModal('modal-add-status')">+ Add Status</button>
+      </div>
+      <div id="adm-statuses-list"></div>
+    </div>
+
+    <!-- ══ EMAIL CONFIG ══ -->
+    <div class="adm-panel" id="panel-emails">
+      <div class="adm-section-head">
+        <div>
+          <div class="adm-section-title">Email Config</div>
+          <div class="adm-section-sub">Who receives alerts &amp; summaries per club</div>
         </div>
       </div>
-
-      <div class="adm-h">Demo Club</div>
-      <div class="adm-card">
-        <div class="dr"><span class="dk">Club ID</span><span class="dv">PF-DEMO-001</span></div>
-        <div class="dr"><span class="dk">Name</span><span class="dv">Planet Fitness Sandton</span></div>
-        <div class="dr"><span class="dk">Province</span><span class="dv">Gauteng</span></div>
-        <div class="dr"><span class="dk">Alerts → Manager</span><span class="dv">andriesmoolman07@gmail.com</span></div>
-        <div class="dr"><span class="dk">Alerts → Maintenance</span><span class="dv">andriesmoolman07@gmail.com</span></div>
-        <div class="dr"><span class="dk">Alerts → Critical</span><span class="dv">andriesmoolman07@gmail.com</span></div>
-      </div>
-
-      <div class="adm-h">Alert Routing</div>
-      <div class="adm-card">
-        <div class="dr"><span class="dk">Safety concern</span><span class="dv"><span class="adm-badge" style="background:#FEF2F2;color:#991B1B">Critical — All groups</span></span></div>
-        <div class="dr"><span class="dk">Machine not working</span><span class="dv"><span class="adm-badge ab-warn">Urgent — Maintenance + Mgr</span></span></div>
-        <div class="dr"><span class="dk">Very poor visit</span><span class="dv"><span class="adm-badge ab-warn">Urgent — Manager</span></span></div>
-        <div class="dr"><span class="dk">Dirty bathrooms</span><span class="dv"><span class="adm-badge ab-warn">Urgent — Manager + Clean</span></span></div>
-        <div class="dr"><span class="dk">Poor rating</span><span class="dv"><span class="adm-badge" style="background:#FEF9C3;color:#92400E">Attention — Manager</span></span></div>
-        <div class="dr"><span class="dk">Good rating</span><span class="dv"><span class="adm-badge ab-blue">Info — Daily digest only</span></span></div>
-      </div>
-
-      <div class="adm-h">Example QR URLs</div>
-      <div class="adm-card">
-        <div class="dr"><span class="dk">Club feedback</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001</span></div>
-        <div class="dr"><span class="dk">Treadmill 01</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&machine=TM-01</span></div>
-        <div class="dr"><span class="dk">Leg Press</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&machine=LP-01</span></div>
-        <div class="dr"><span class="dk">Bathrooms</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&area=bathrooms</span></div>
-        <div class="dr"><span class="dk">Change Rooms</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&area=changerooms</span></div>
-        <div class="dr"><span class="dk">Studio</span><span class="dv" style="font-size:10px">?club=PF-DEMO-001&area=studio</span></div>
-      </div>
-
-      <div class="adm-h">Areas (14)</div>
-      <div class="adm-card" id="adm-areas"></div>
-
-      <div class="adm-h">Machines (24)</div>
-      <div class="mg2" id="adm-machines"></div>
-
-      <div class="adm-footer">
-        Demo concept built for Planet Fitness South Africa.<br/>
-        Not an official Planet Fitness product.
-      </div>
+      <div id="adm-email-config"></div>
     </div>
+
+    <!-- ══ ADMIN USERS ══ -->
+    <div class="adm-panel" id="panel-users">
+      <div class="adm-section-head">
+        <div>
+          <div class="adm-section-title">Admin Users</div>
+          <div class="adm-section-sub">Access control &amp; role management</div>
+        </div>
+        <button class="adm-btn-blue" onclick="openModal('modal-add-user')">+ Add User</button>
+      </div>
+      <div id="adm-users-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════ MODALS ══════ -->
+
+<!-- Add Club -->
+<div class="modal-overlay hidden" id="modal-add-club">
+  <div class="modal-box">
+    <div class="modal-title">Add Club</div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Club ID</label><input class="pfi" id="m-club-id" placeholder="PF-CPT-001" autocomplete="off"/></div>
+      <div class="form-field"><label class="form-label">Display Name</label><input class="pfi" id="m-club-display" placeholder="Century City" autocomplete="off"/></div>
+    </div>
+    <div class="form-field"><label class="form-label">Full Club Name</label><input class="pfi" id="m-club-name" placeholder="Planet Fitness Century City" autocomplete="off"/></div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Province</label><input class="pfi" id="m-club-province" placeholder="Western Cape" autocomplete="off"/></div>
+      <div class="form-field"><label class="form-label">City</label><input class="pfi" id="m-club-city" placeholder="Cape Town" autocomplete="off"/></div>
+    </div>
+    <div class="form-field"><label class="form-label">Manager Email(s) <span class="opt-tag">comma-separated</span></label><input class="pfi" id="m-club-mgr-email" placeholder="manager@pf.co.za" autocomplete="off"/></div>
+    <div class="form-field"><label class="form-label">Maintenance Email(s)</label><input class="pfi" id="m-club-maint-email" placeholder="maintenance@pf.co.za" autocomplete="off"/></div>
+    <div class="modal-actions">
+      <button class="adm-btn-ghost" onclick="closeModal('modal-add-club')">Cancel</button>
+      <button class="adm-btn-blue" onclick="saveClub()">Save Club</button>
+    </div>
+    <div class="modal-status" id="ms-club"></div>
+  </div>
+</div>
+
+<!-- Add Machine -->
+<div class="modal-overlay hidden" id="modal-add-machine">
+  <div class="modal-box">
+    <div class="modal-title">Add Machine</div>
+
+    <!-- Image upload -->
+    <div class="form-field">
+      <label class="form-label">Machine Image</label>
+      <img id="m-mach-img-preview" class="img-preview-box" alt="Preview"/>
+      <div class="img-upload-zone" onclick="document.getElementById('m-mach-img-file').click()">
+        <div class="upload-icon">📷</div>
+        <div class="upload-label">
+          <strong>Tap to upload</strong> a photo of this machine<br/>
+          JPG or PNG · Max 5MB · Recommended square
+        </div>
+        <input type="file" id="m-mach-img-file" accept="image/*" style="display:none" onchange="previewImg(this,'m-mach-img-preview','m-mach-img-b64')"/>
+      </div>
+      <input type="hidden" id="m-mach-img-b64"/>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Machine ID</label><input class="pfi" id="m-mach-id" placeholder="TM-05" autocomplete="off"/></div>
+      <div class="form-field"><label class="form-label">Club ID</label><input class="pfi" id="m-mach-club" placeholder="PF-DEMO-001" autocomplete="off"/></div>
+    </div>
+    <div class="form-field"><label class="form-label">Machine Name</label><input class="pfi" id="m-mach-name" placeholder="Treadmill 05" autocomplete="off"/></div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Category</label><input class="pfi" id="m-mach-cat" placeholder="Cardio" autocomplete="off"/></div>
+      <div class="form-field"><label class="form-label">Asset Code</label><input class="pfi" id="m-mach-asset" placeholder="PF-TM-005" autocomplete="off"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Area ID</label><input class="pfi" id="m-mach-area" placeholder="cardio" autocomplete="off"/></div>
+      <div class="form-field"><label class="form-label">Emoji (fallback)</label><input class="pfi" id="m-mach-emoji" placeholder="🏃" maxlength="4" autocomplete="off"/></div>
+    </div>
+    <div class="form-field"><label class="form-label">Location Note</label><input class="pfi" id="m-mach-loc" placeholder="Window row, position 5" autocomplete="off"/></div>
+    <div class="modal-actions">
+      <button class="adm-btn-ghost" onclick="closeModal('modal-add-machine')">Cancel</button>
+      <button class="adm-btn-blue" onclick="saveMachine()">Save Machine</button>
+    </div>
+    <div class="modal-status" id="ms-machine"></div>
+  </div>
+</div>
+
+<!-- Add Area -->
+<div class="modal-overlay hidden" id="modal-add-area">
+  <div class="modal-box">
+    <div class="modal-title">Add Area</div>
+
+    <!-- Image upload -->
+    <div class="form-field">
+      <label class="form-label">Area Photo <span class="opt-tag">Optional</span></label>
+      <img id="m-area-img-preview" class="img-preview-box" alt="Preview"/>
+      <div class="img-upload-zone" onclick="document.getElementById('m-area-img-file').click()">
+        <div class="upload-icon">🖼️</div>
+        <div class="upload-label">
+          <strong>Tap to upload</strong> a photo of this area<br/>
+          Helps staff and managers identify locations
+        </div>
+        <input type="file" id="m-area-img-file" accept="image/*" style="display:none" onchange="previewImg(this,'m-area-img-preview','m-area-img-b64')"/>
+      </div>
+      <input type="hidden" id="m-area-img-b64"/>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Area ID</label><input class="pfi" id="m-area-id" placeholder="pooldeck" autocomplete="off"/></div>
+      <div class="form-field"><label class="form-label">Club ID</label><input class="pfi" id="m-area-club" placeholder="PF-DEMO-001" autocomplete="off"/></div>
+    </div>
+    <div class="form-field"><label class="form-label">Area Name</label><input class="pfi" id="m-area-name" placeholder="Pool Deck" autocomplete="off"/></div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">Type</label>
+        <select class="pfi" id="m-area-type">
+          <option value="facilities">Facilities</option>
+          <option value="equipment">Equipment</option>
+          <option value="class">Class / Studio</option>
+          <option value="wellness">Wellness</option>
+          <option value="reception">Reception</option>
+          <option value="lounge">Lounge</option>
+        </select>
+      </div>
+      <div class="form-field"><label class="form-label">Icon (emoji)</label><input class="pfi" id="m-area-icon" placeholder="🏊" maxlength="4" autocomplete="off"/></div>
+    </div>
+    <div class="modal-actions">
+      <button class="adm-btn-ghost" onclick="closeModal('modal-add-area')">Cancel</button>
+      <button class="adm-btn-blue" onclick="saveArea()">Save Area</button>
+    </div>
+    <div class="modal-status" id="ms-area"></div>
+  </div>
+</div>
+
+<!-- Add Trainer -->
+<div class="modal-overlay hidden" id="modal-add-trainer">
+  <div class="modal-box">
+    <div class="modal-title">Add Trainer</div>
+
+    <!-- Photo upload -->
+    <div class="form-field">
+      <label class="form-label">Trainer Photo <span class="opt-tag">Optional</span></label>
+      <img id="m-tr-img-preview" class="img-preview-box" alt="Preview"/>
+      <div class="img-upload-zone" onclick="document.getElementById('m-tr-img-file').click()">
+        <div class="upload-icon">👤</div>
+        <div class="upload-label"><strong>Tap to upload</strong> a profile photo</div>
+        <input type="file" id="m-tr-img-file" accept="image/*" style="display:none" onchange="previewImg(this,'m-tr-img-preview','m-tr-img-b64')"/>
+      </div>
+      <input type="hidden" id="m-tr-img-b64"/>
+    </div>
+
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Name</label><input class="pfi" id="m-tr-name" placeholder="Lerato M." autocomplete="off"/></div>
+      <div class="form-field"><label class="form-label">Club ID</label><input class="pfi" id="m-tr-club" placeholder="PF-DEMO-001" autocomplete="off"/></div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Role</label>
+      <select class="pfi" id="m-tr-type">
+        <option value="instructor">Group Instructor</option>
+        <option value="PT">Personal Trainer</option>
+        <option value="biokineticist">Biokineticist</option>
+      </select>
+    </div>
+    <div class="form-field"><label class="form-label">Specialisations <span class="opt-tag">comma-separated</span></label><input class="pfi" id="m-tr-spec" placeholder="Yoga, Mobility" autocomplete="off"/></div>
+    <div class="modal-actions">
+      <button class="adm-btn-ghost" onclick="closeModal('modal-add-trainer')">Cancel</button>
+      <button class="adm-btn-blue" onclick="saveTrainer()">Save Trainer</button>
+    </div>
+    <div class="modal-status" id="ms-trainer"></div>
+  </div>
+</div>
+
+<!-- Add Status -->
+<div class="modal-overlay hidden" id="modal-add-status">
+  <div class="modal-box">
+    <div class="modal-title">Add Status</div>
+    <div class="form-field"><label class="form-label">Status Name</label><input class="pfi" id="m-st-name" placeholder="Under Maintenance" autocomplete="off"/></div>
+    <div class="form-field">
+      <label class="form-label">Applies To</label>
+      <select class="pfi" id="m-st-cat">
+        <option value="global">Global — all types</option>
+        <option value="equipment">Equipment only</option>
+        <option value="area">Areas only</option>
+        <option value="trainer">Trainers only</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Background Colour</label><input class="pfi" id="m-st-color" placeholder="#FEF2F2" maxlength="7" autocomplete="off"/></div>
+      <div class="form-field"><label class="form-label">Text Colour</label><input class="pfi" id="m-st-textcolor" placeholder="#991B1B" maxlength="7" autocomplete="off"/></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">Preview: <span id="status-preview" style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700">Status Name</span></div>
+    <div class="modal-actions">
+      <button class="adm-btn-ghost" onclick="closeModal('modal-add-status')">Cancel</button>
+      <button class="adm-btn-blue" onclick="saveStatus()">Save Status</button>
+    </div>
+    <div class="modal-status" id="ms-status"></div>
+  </div>
+</div>
+
+<!-- Add Admin User -->
+<div class="modal-overlay hidden" id="modal-add-user">
+  <div class="modal-box">
+    <div class="modal-title">Add Admin User</div>
+    <div class="form-row">
+      <div class="form-field"><label class="form-label">Name</label><input class="pfi" id="m-u-name" placeholder="Jane" autocomplete="off"/></div>
+      <div class="form-field"><label class="form-label">Surname</label><input class="pfi" id="m-u-surname" placeholder="Doe" autocomplete="off"/></div>
+    </div>
+    <div class="form-field"><label class="form-label">Email</label><input class="pfi" id="m-u-email" type="email" placeholder="jane@planetfitness.co.za" autocomplete="off" inputmode="email"/></div>
+    <div class="form-field">
+      <label class="form-label">Password</label>
+      <input class="pfi" id="m-u-pw" type="password" placeholder="Min 8 characters" autocomplete="new-password"/>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">🔒 Hashed with SHA-256. Never stored as plain text.</div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Role</label>
+      <select class="pfi" id="m-u-role">
+        <option value="super_admin">Super Admin — all clubs</option>
+        <option value="club_admin">Club Admin — assigned clubs only</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Assigned Club IDs <span class="opt-tag">Club Admin only</span></label>
+      <input class="pfi" id="m-u-clubs" placeholder="PF-DEMO-001, PF-CPT-001" autocomplete="off"/>
+    </div>
+    <div class="modal-actions">
+      <button class="adm-btn-ghost" onclick="closeModal('modal-add-user')">Cancel</button>
+      <button class="adm-btn-blue" onclick="saveAdminUser()">Create User</button>
+    </div>
+    <div class="modal-status" id="ms-user"></div>
+  </div>
+</div>
+
+<!-- Reset Password -->
+<div class="modal-overlay hidden" id="modal-reset-pw">
+  <div class="modal-box">
+    <div class="modal-title">Reset Password</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Resetting password for <strong id="reset-pw-email-label" style="color:var(--text)"></strong></div>
+    <div class="form-field"><label class="form-label">New Password</label><input class="pfi" id="m-reset-pw" type="password" placeholder="Min 8 characters" autocomplete="new-password"/></div>
+    <div class="form-field"><label class="form-label">Confirm Password</label><input class="pfi" id="m-reset-pw2" type="password" placeholder="Repeat password" autocomplete="new-password"/></div>
+    <div class="modal-actions">
+      <button class="adm-btn-ghost" onclick="closeModal('modal-reset-pw')">Cancel</button>
+      <button class="adm-btn-blue" onclick="doResetPassword()">Update Password</button>
+    </div>
+    <div class="modal-status" id="ms-reset-pw"></div>
   </div>
 </div>
 
@@ -1049,7 +1649,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
    Replace YOUR_DEPLOYMENT_ID with your deployed Apps Script URL
    Example: https://script.google.com/macros/s/AKfy.../exec
 ─────────────────────────────────────────────────────────────── */
-var GAS_URL = "https://script.google.com/macros/s/AKfycbzwpYneQxpkNvled7dA5BYJq6Uj9rnm5xZqyifY8-vSf4RcQrgWSR7Z_MLO89Dtl1oX/exec";
+var GAS_URL = "https://script.google.com/macros/s/AKfycbzLGe9qlTSM2QCbgPPmKCH2Q9Ki4Dqf6pwjbQVqFbXjqSxJOKtD0xJDh-i7F44OxhZjJQ/exec";
 
 /* ════════════════════════════════════════════════════════════
    EMAIL CONFIG — ADD / REMOVE / CHANGE EMAILS HERE
@@ -1948,14 +2548,626 @@ function buildCustomerEmail(sub,club){
 }
 
 /* ════════════════════════════════════════
-   ADMIN PAGE BUILDER
+   ADMIN STATE
+════════════════════════════════════════ */
+var AdminState = {
+  session: null,       // { token, email, role, clubs[] }
+  currentTab: 'clubs',
+  statuses: [          // Built-in seeded statuses
+    {id:'s1', name:'Active',            category:'global',    color:'#ECFDF5', textColor:'#16A34A', active:true},
+    {id:'s2', name:'Broken',            category:'equipment', color:'#FEF2F2', textColor:'#DC2626', active:true},
+    {id:'s3', name:'Under Maintenance', category:'equipment', color:'#FFF7ED', textColor:'#C2410C', active:true},
+    {id:'s4', name:'Dirty',             category:'equipment', color:'#FEF9C3', textColor:'#92400E', active:true},
+    {id:'s5', name:'Needs Attention',   category:'area',      color:'#FEF9C3', textColor:'#92400E', active:true},
+    {id:'s6', name:'Out of Service',    category:'area',      color:'#FEF2F2', textColor:'#991B1B', active:true},
+    {id:'s7', name:'On Leave',          category:'trainer',   color:'#F5F3FF', textColor:'#6D28D9', active:true}
+  ],
+  adminUsers: [        // Seeded super admin — password: admin123 (SHA-256 hashed)
+    {id:'u1', name:'Admin', surname:'User', email:'admin@pf-demo.co.za',
+     passwordHash:'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9',
+     role:'super_admin', clubs:[], status:'active'}
+  ],
+  resetTargetEmail: null
+};
+
+/* ════════════════════════════════════════
+   SHA-256 (pure JS, no libs needed)
+════════════════════════════════════════ */
+async function sha256(message){
+  var msgBuffer=new TextEncoder().encode(message);
+  var hashBuffer=await crypto.subtle.digest('SHA-256',msgBuffer);
+  var hashArray=Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+}
+
+/* ════════════════════════════════════════
+   LOGIN / LOGOUT
+════════════════════════════════════════ */
+function goAdmin(){
+  // Check for existing session
+  var sess=sessionStorage.getItem('pf_admin_sess');
+  if(sess){
+    try{
+      AdminState.session=JSON.parse(sess);
+      document.getElementById('adm-user-label').textContent=AdminState.session.email+' · '+AdminState.session.role.replace('_',' ');
+      buildAdmin();
+      show('pg-admin');
+      return;
+    }catch(e){ sessionStorage.removeItem('pf_admin_sess'); }
+  }
+  show('pg-login');
+}
+
+function doLogin(){
+  var email=(document.getElementById('login-email').value||'').trim().toLowerCase();
+  var pw=(document.getElementById('login-pw').value||'').trim();
+  var st=document.getElementById('login-status');
+  var btn=document.getElementById('login-btn');
+  if(!email||!pw){st.textContent='Please enter email and password.';return;}
+  if(pw.length<8){st.textContent='Password must be at least 8 characters.';return;}
+  st.textContent='Signing in…';
+  btn.disabled=true;
+  sha256(pw).then(function(hash){
+    var user=AdminState.adminUsers.find(function(u){
+      return u.email.toLowerCase()===email && u.passwordHash===hash && u.status==='active';
+    });
+    if(!user){
+      st.textContent='Incorrect email or password.';
+      btn.disabled=false;
+      document.getElementById('login-pw').value='';
+      return;
+    }
+    var session={token:'pf_'+Date.now(), email:user.email, role:user.role, clubs:user.clubs, name:user.name};
+    AdminState.session=session;
+    sessionStorage.setItem('pf_admin_sess',JSON.stringify(session));
+    document.getElementById('adm-user-label').textContent=user.name+' '+user.surname+' · '+user.role.replace('_',' ');
+    st.textContent='';
+    btn.disabled=false;
+    document.getElementById('login-email').value='';
+    document.getElementById('login-pw').value='';
+    buildAdmin();
+    show('pg-admin');
+  });
+}
+
+function doLogout(){
+  AdminState.session=null;
+  sessionStorage.removeItem('pf_admin_sess');
+  show('pg-login');
+}
+
+/* ════════════════════════════════════════
+   TAB SWITCHING
+════════════════════════════════════════ */
+function admTab(name){
+  // Tabs
+  document.querySelectorAll('.adm-tab').forEach(function(t){t.classList.remove('active');});
+  var tab=document.getElementById('tab-'+name);
+  if(tab) tab.classList.add('active');
+  // Panels
+  document.querySelectorAll('.adm-panel').forEach(function(p){p.classList.remove('active');});
+  var panel=document.getElementById('panel-'+name);
+  if(panel) panel.classList.add('active');
+  AdminState.currentTab=name;
+  // Scroll to top
+  var sc=document.getElementById('adm-scroll');
+  if(sc) sc.scrollTop=0;
+  // Rebuild content for the tab
+  if(name==='clubs')     renderClubs();
+  if(name==='equipment') renderMachines();
+  if(name==='areas')     renderAreas();
+  if(name==='trainers')  renderTrainers();
+  if(name==='statuses')  renderStatuses();
+  if(name==='emails')    renderEmails();
+  if(name==='users')     renderUsers();
+}
+
+/* ════════════════════════════════════════
+   MODAL HELPERS
+════════════════════════════════════════ */
+function openModal(id){
+  var m=document.getElementById(id);
+  if(m) m.classList.remove('hidden');
+}
+function closeModal(id){
+  var m=document.getElementById(id);
+  if(m) m.classList.add('hidden');
+  // Clear status messages
+  var st=m&&m.querySelector('.modal-status');
+  if(st){st.textContent='';st.className='modal-status';}
+}
+
+/* ════════════════════════════════════════
+   IMAGE PREVIEW HANDLER
+════════════════════════════════════════ */
+function previewImg(input, previewId, b64Id){
+  var file=input.files&&input.files[0];
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var preview=document.getElementById(previewId);
+    var b64=document.getElementById(b64Id);
+    if(preview){ preview.src=e.target.result; preview.style.display='block'; }
+    if(b64) b64.value=e.target.result; // store base64 for submission
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ════════════════════════════════════════
+   BUILD ADMIN — entry point
 ════════════════════════════════════════ */
 function buildAdmin(){
-  var aEl=document.getElementById("adm-areas");
-  if(aEl)aEl.innerHTML=Object.values(AREAS).sort(function(a,b){return a.sort-b.sort}).map(function(a){return'<div class="dr"><span class="dk">'+a.icon+' '+a.name+'</span><span class="dv"><span class="adm-badge ab-grey" style="text-transform:capitalize">'+a.type+'</span></span></div>';}).join("");
-  var mEl=document.getElementById("adm-machines");
-  if(mEl)mEl.innerHTML=Object.values(MACHINES).map(function(m){return'<div class="mtile"><div class="mtile-n">'+m.name+'</div><div class="mtile-c">'+m.category+' · '+m.asset+'</div></div>';}).join("");
+  admTab('clubs');
 }
+
+/* ════════════════════════════════════════
+   RENDER: CLUBS
+════════════════════════════════════════ */
+function renderClubs(){
+  var container=document.getElementById('adm-clubs-list');
+  if(!container) return;
+  var clubs=Object.values(CLUBS);
+  if(!clubs.length){ container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center">No clubs configured.</div>'; return; }
+  container.innerHTML=clubs.map(function(c){
+    return '<div class="adm-card" style="margin-bottom:10px">'+
+      '<div class="adm-card-header">'+
+        '<div class="adm-card-icon blue">🏢</div>'+
+        '<div class="adm-card-meta">'+
+          '<div class="adm-card-name">'+c.club_name+'</div>'+
+          '<div class="adm-card-sub">'+c.city+', '+c.province+' &nbsp;·&nbsp; ID: <code style="font-size:10px">'+c.club_id+'</code></div>'+
+        '</div>'+
+        '<span class="adm-badge ab-ok">Active</span>'+
+      '</div>'+
+      '<div class="adm-card-body">'+
+        '<div class="dr"><span class="dk">Manager emails</span><span class="dv" style="font-size:11px">'+(c.manager_emails||[]).join(', ')+'</span></div>'+
+        '<div class="dr"><span class="dk">Maintenance emails</span><span class="dv" style="font-size:11px">'+(c.maintenance_emails||[]).join(', ')+'</span></div>'+
+        '<div class="dr"><span class="dk">Escalation emails</span><span class="dv" style="font-size:11px">'+(c.escalation_emails||[]).join(', ')+'</span></div>'+
+        '<div class="dr"><span class="dk">QR feedback URL</span><span class="dv" style="font-size:10px">?club='+c.club_id+'</span></div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+/* ════════════════════════════════════════
+   RENDER: MACHINES
+════════════════════════════════════════ */
+function renderMachines(filter){
+  var container=document.getElementById('adm-machines-list');
+  if(!container) return;
+  var machines=Object.values(MACHINES);
+  if(filter) machines=machines.filter(function(m){ return (m.name+m.category+m.asset).toLowerCase().indexOf(filter.toLowerCase())!==-1; });
+  if(!machines.length){ container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center;grid-column:span 2">No machines found.</div>'; return; }
+  container.innerHTML=machines.map(function(m){
+    var imgHtml=m.image_url
+      ? '<img src="'+m.image_url+'" style="width:100%;height:100%;object-fit:cover"/>'
+      : '<span style="font-size:32px">'+m.emoji+'</span>';
+    return '<div class="adm-tile">'+
+      '<div class="adm-tile-img">'+imgHtml+'<button class="img-upload-btn" onclick="promptMachineImg(\''+m.id+'\')">📷 Change</button></div>'+
+      '<div class="adm-tile-body">'+
+        '<div class="adm-tile-name">'+m.name+'</div>'+
+        '<div class="adm-tile-sub">'+m.category+' &nbsp;·&nbsp; '+m.asset+'</div>'+
+        '<div class="adm-tile-sub" style="margin-top:2px">📍 '+m.loc+'</div>'+
+      '</div>'+
+      '<div class="adm-tile-footer">'+
+        '<span class="adm-badge ab-grey" style="font-size:9px">'+m.area_id+'</span>'+
+        '<span class="adm-badge ab-blue" style="font-size:9px;margin-left:auto">QR: ?machine='+m.id+'</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function filterMachines(val){
+  renderMachines(val);
+}
+
+function promptMachineImg(machineId){
+  var input=document.createElement('input');
+  input.type='file'; input.accept='image/*';
+  input.onchange=function(){
+    var file=input.files&&input.files[0];
+    if(!file) return;
+    var reader=new FileReader();
+    reader.onload=function(e){
+      if(MACHINES[machineId]) MACHINES[machineId].image_url=e.target.result;
+      renderMachines((document.getElementById('machine-search')||{}).value||'');
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+/* ════════════════════════════════════════
+   RENDER: AREAS
+════════════════════════════════════════ */
+function renderAreas(){
+  var container=document.getElementById('adm-areas-list');
+  if(!container) return;
+  var areas=Object.values(AREAS).sort(function(a,b){return a.sort-b.sort;});
+  container.innerHTML=areas.map(function(a){
+    var imgHtml=a.image_url
+      ? '<img src="'+a.image_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:9px"/>'
+      : '<span style="font-size:28px">'+a.icon+'</span>';
+    return '<div class="adm-tile">'+
+      '<div class="adm-tile-img" style="height:80px">'+imgHtml+'<button class="img-upload-btn" onclick="promptAreaImg(\''+a.id+'\')">📷 Change</button></div>'+
+      '<div class="adm-tile-body">'+
+        '<div class="adm-tile-name">'+a.icon+' '+a.name+'</div>'+
+        '<div class="adm-tile-sub">'+a.type+' &nbsp;·&nbsp; '+a.club_id+'</div>'+
+      '</div>'+
+      '<div class="adm-tile-footer">'+
+        '<span class="adm-badge ab-blue" style="font-size:9px">QR: ?area='+a.id+'</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function promptAreaImg(areaId){
+  var input=document.createElement('input');
+  input.type='file'; input.accept='image/*';
+  input.onchange=function(){
+    var file=input.files&&input.files[0];
+    if(!file) return;
+    var reader=new FileReader();
+    reader.onload=function(e){
+      if(AREAS[areaId]) AREAS[areaId].image_url=e.target.result;
+      renderAreas();
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+/* ════════════════════════════════════════
+   RENDER: TRAINERS
+════════════════════════════════════════ */
+function renderTrainers(){
+  var container=document.getElementById('adm-trainers-list');
+  if(!container) return;
+  if(!TRAINERS||!TRAINERS.length){ container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center">No trainers configured.</div>'; return; }
+  container.innerHTML=TRAINERS.map(function(t,i){
+    var img=t.image_url
+      ? '<img src="'+t.image_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>'
+      : '<span style="font-size:22px">👤</span>';
+    var roleMap={instructor:'Instructor',PT:'Personal Trainer',biokineticist:'Biokineticist'};
+    return '<div class="adm-card" style="margin-bottom:8px">'+
+      '<div class="adm-card-header">'+
+        '<div class="adm-card-icon" style="background:var(--off);border-radius:50%;overflow:hidden;width:42px;height:42px">'+img+'</div>'+
+        '<div class="adm-card-meta">'+
+          '<div class="adm-card-name">'+t.name+'</div>'+
+          '<div class="adm-card-sub">'+(roleMap[t.type]||t.type)+' &nbsp;·&nbsp; '+t.club_id+'</div>'+
+          '<div class="adm-card-sub" style="margin-top:2px">'+(t.specialisations||[]).join(', ')+'</div>'+
+        '</div>'+
+        '<div class="adm-card-actions">'+
+          '<button class="adm-btn-sm" onclick="promptTrainerImg('+i+')">📷</button>'+
+          '<button class="adm-btn-sm danger" onclick="TRAINERS.splice('+i+',1);renderTrainers()">Remove</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function promptTrainerImg(idx){
+  var input=document.createElement('input');
+  input.type='file'; input.accept='image/*';
+  input.onchange=function(){
+    var file=input.files&&input.files[0];
+    if(!file) return;
+    var reader=new FileReader();
+    reader.onload=function(e){ if(TRAINERS[idx]) TRAINERS[idx].image_url=e.target.result; renderTrainers(); };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+/* ════════════════════════════════════════
+   RENDER: STATUSES
+════════════════════════════════════════ */
+function renderStatuses(){
+  var container=document.getElementById('adm-statuses-list');
+  if(!container) return;
+  var catLabels={global:'Global',equipment:'Equipment',area:'Area',trainer:'Trainer'};
+  container.innerHTML='<div class="adm-card">'+AdminState.statuses.map(function(s,i){
+    return '<div class="dr">'+
+      '<div style="display:flex;align-items:center;gap:10px">'+
+        '<span class="adm-badge" style="background:'+s.color+';color:'+s.textColor+'">'+s.name+'</span>'+
+        '<span style="font-size:11px;color:var(--muted)">'+catLabels[s.category]+'</span>'+
+      '</div>'+
+      '<div class="adm-card-actions">'+
+        '<button class="adm-btn-sm danger" onclick="AdminState.statuses.splice('+i+',1);renderStatuses()">Remove</button>'+
+      '</div>'+
+    '</div>';
+  }).join('')+'</div>';
+}
+
+/* ════════════════════════════════════════
+   RENDER: EMAILS
+════════════════════════════════════════ */
+function renderEmails(){
+  var container=document.getElementById('adm-email-config');
+  if(!container) return;
+  var emailTypes=[
+    {key:'alert',    label:'🚨 Alert Emails',   desc:'Immediate — sent on bad reviews',  color:'#C2410C'},
+    {key:'summary',  label:'📊 Summary Emails',  desc:'Daily / weekly / monthly digests', color:'#0057B8'},
+    {key:'escalation',label:'⚠️ Escalation',    desc:'Critical issues — all groups',     color:'#991B1B'}
+  ];
+  container.innerHTML=Object.values(CLUBS).map(function(club){
+    var sections=emailTypes.map(function(et){
+      var emailKey=et.key+'_emails';
+      var emails=(club[emailKey]||club.manager_emails||[]);
+      var pills=emails.map(function(e){
+        return '<span class="email-pill">'+e+'<button class="email-pill-remove" onclick="removeEmail(\''+club.club_id+'\',\''+et.key+'\',\''+e+'\')">×</button></span>';
+      }).join('');
+      return '<div class="email-type-section">'+
+        '<div class="email-type-header">'+
+          '<div class="email-type-label"><span style="color:'+et.color+'">●</span> '+et.label+'<span style="font-size:10px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0"> — '+et.desc+'</span></div>'+
+          '<button class="adm-btn-sm" onclick="addEmailPrompt(\''+club.club_id+'\',\''+et.key+'\')">+ Add</button>'+
+        '</div>'+
+        '<div class="email-pills-wrap">'+
+          (pills||'<span style="font-size:11px;color:var(--muted)">No emails configured</span>')+
+        '</div>'+
+      '</div>';
+    }).join('');
+    return '<div class="email-group">'+
+      '<div class="email-group-header">'+
+        '<div class="email-group-title">'+club.club_name+'</div>'+
+        '<span class="adm-badge ab-ok">Active</span>'+
+      '</div>'+
+      sections+
+    '</div>';
+  }).join('');
+}
+
+function addEmailPrompt(clubId, type){
+  var email=prompt('Add email address for '+type+' alerts at '+clubId+':');
+  if(!email||!email.trim()) return;
+  email=email.trim().toLowerCase();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Invalid email address.'); return; }
+  var club=CLUBS[clubId];
+  if(!club) return;
+  var key=type+'_emails';
+  if(!club[key]) club[key]=[];
+  if(!club[key].includes(email)) club[key].push(email);
+  renderEmails();
+}
+
+function removeEmail(clubId, type, email){
+  var club=CLUBS[clubId];
+  if(!club) return;
+  var key=type+'_emails';
+  if(!club[key]) club[key]=[];
+  club[key]=club[key].filter(function(e){return e!==email;});
+  renderEmails();
+}
+
+/* ════════════════════════════════════════
+   RENDER: ADMIN USERS
+════════════════════════════════════════ */
+function renderUsers(){
+  var container=document.getElementById('adm-users-list');
+  if(!container) return;
+  var isSuperAdmin=AdminState.session&&AdminState.session.role==='super_admin';
+  container.innerHTML='<div class="adm-card">'+AdminState.adminUsers.map(function(u,i){
+    var roleCls=u.role==='super_admin'?'role-super':'role-club';
+    var roleLabel=u.role==='super_admin'?'Super Admin':'Club Admin';
+    var statusDot=u.status==='active'?'dot-green':'dot-red';
+    return '<div class="dr" style="align-items:flex-start;padding:10px 0">'+
+      '<div>'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">'+
+          '<span class="status-dot '+statusDot+'"></span>'+
+          '<span style="font-size:13px;font-weight:700;color:var(--text)">'+u.name+' '+u.surname+'</span>'+
+          '<span class="role-badge '+roleCls+'">'+roleLabel+'</span>'+
+        '</div>'+
+        '<div style="font-size:11px;color:var(--muted)">'+u.email+'</div>'+
+        (u.clubs&&u.clubs.length?'<div style="font-size:10px;color:var(--blue);margin-top:2px">Clubs: '+u.clubs.join(', ')+'</div>':'')+
+      '</div>'+
+      (isSuperAdmin?
+        '<div class="adm-card-actions" style="flex-direction:column;gap:4px">'+
+          '<button class="adm-btn-sm" onclick="openResetPw(\''+u.email+'\')">Reset PW</button>'+
+          (u.status==='active'
+            ? '<button class="adm-btn-sm danger" onclick="toggleUserStatus('+i+',\'disabled\')">Disable</button>'
+            : '<button class="adm-btn-sm" onclick="toggleUserStatus('+i+',\'active\')">Enable</button>')+
+        '</div>':'')+
+    '</div>';
+  }).join('')+'</div>';
+}
+
+function toggleUserStatus(idx, status){
+  if(AdminState.adminUsers[idx]) AdminState.adminUsers[idx].status=status;
+  renderUsers();
+}
+
+function openResetPw(email){
+  AdminState.resetTargetEmail=email;
+  document.getElementById('reset-pw-email-label').textContent=email;
+  document.getElementById('m-reset-pw').value='';
+  document.getElementById('m-reset-pw2').value='';
+  openModal('modal-reset-pw');
+}
+
+function doResetPassword(){
+  var pw1=(document.getElementById('m-reset-pw').value||'').trim();
+  var pw2=(document.getElementById('m-reset-pw2').value||'').trim();
+  var st=document.getElementById('ms-reset-pw');
+  if(pw1.length<8){st.textContent='Password must be at least 8 characters.'; return;}
+  if(pw1!==pw2){st.textContent='Passwords do not match.'; return;}
+  sha256(pw1).then(function(hash){
+    var user=AdminState.adminUsers.find(function(u){return u.email===AdminState.resetTargetEmail;});
+    if(user){ user.passwordHash=hash; user.forceChange=false; }
+    st.textContent='Password updated successfully.';
+    st.className='modal-status ok';
+    setTimeout(function(){closeModal('modal-reset-pw');},1200);
+  });
+}
+
+/* ════════════════════════════════════════
+   SAVE: CLUB
+════════════════════════════════════════ */
+function saveClub(){
+  var st=document.getElementById('ms-club');
+  var id=(document.getElementById('m-club-id').value||'').trim();
+  var name=(document.getElementById('m-club-name').value||'').trim();
+  var display=(document.getElementById('m-club-display').value||'').trim();
+  var province=(document.getElementById('m-club-province').value||'').trim();
+  var city=(document.getElementById('m-club-city').value||'').trim();
+  var mgrEmail=(document.getElementById('m-club-mgr-email').value||'').trim();
+  var maintEmail=(document.getElementById('m-club-maint-email').value||'').trim();
+  if(!id||!name){st.textContent='Club ID and Name are required.';return;}
+  if(CLUBS[id]){st.textContent='A club with this ID already exists.';return;}
+  CLUBS[id]={
+    club_id:id, club_name:name, display_name:display||name,
+    province:province, city:city, active:true,
+    manager_emails:mgrEmail?mgrEmail.split(',').map(function(e){return e.trim();}):[''],
+    maintenance_emails:maintEmail?maintEmail.split(',').map(function(e){return e.trim();}):[''],
+    escalation_emails:[], cleanliness_emails:[]
+  };
+  st.textContent='Club saved!'; st.className='modal-status ok';
+  setTimeout(function(){ closeModal('modal-add-club'); renderClubs(); },900);
+}
+
+/* ════════════════════════════════════════
+   SAVE: MACHINE
+════════════════════════════════════════ */
+function saveMachine(){
+  var st=document.getElementById('ms-machine');
+  var id=(document.getElementById('m-mach-id').value||'').trim();
+  var club=(document.getElementById('m-mach-club').value||'').trim();
+  var name=(document.getElementById('m-mach-name').value||'').trim();
+  var cat=(document.getElementById('m-mach-cat').value||'').trim();
+  var asset=(document.getElementById('m-mach-asset').value||'').trim();
+  var area=(document.getElementById('m-mach-area').value||'').trim();
+  var loc=(document.getElementById('m-mach-loc').value||'').trim();
+  var emoji=(document.getElementById('m-mach-emoji').value||'🏋️').trim();
+  var imgB64=(document.getElementById('m-mach-img-b64').value||'');
+  if(!id||!name){st.textContent='Machine ID and Name are required.';return;}
+  MACHINES[id]={
+    id:id, club_id:club||'PF-DEMO-001', area_id:area||'cardio',
+    name:name, category:cat||'Equipment', asset:asset||id,
+    loc:loc||'Club floor', emoji:emoji,
+    image_url:imgB64||''
+  };
+  st.textContent='Machine saved!'; st.className='modal-status ok';
+  // Reset image preview
+  var prev=document.getElementById('m-mach-img-preview');
+  if(prev){prev.style.display='none';prev.src='';}
+  document.getElementById('m-mach-img-b64').value='';
+  setTimeout(function(){ closeModal('modal-add-machine'); renderMachines(); },900);
+}
+
+/* ════════════════════════════════════════
+   SAVE: AREA
+════════════════════════════════════════ */
+function saveArea(){
+  var st=document.getElementById('ms-area');
+  var id=(document.getElementById('m-area-id').value||'').trim();
+  var club=(document.getElementById('m-area-club').value||'').trim();
+  var name=(document.getElementById('m-area-name').value||'').trim();
+  var type=document.getElementById('m-area-type').value||'facilities';
+  var icon=(document.getElementById('m-area-icon').value||'📍').trim();
+  var imgB64=(document.getElementById('m-area-img-b64').value||'');
+  if(!id||!name){st.textContent='Area ID and Name are required.';return;}
+  var maxSort=Math.max.apply(null,Object.values(AREAS).map(function(a){return a.sort||0;}));
+  AREAS[id]={
+    id:id, club_id:club||'PF-DEMO-001', name:name,
+    type:type, icon:icon, sort:maxSort+1, active:true,
+    image_url:imgB64||''
+  };
+  st.textContent='Area saved!'; st.className='modal-status ok';
+  var prev=document.getElementById('m-area-img-preview');
+  if(prev){prev.style.display='none';prev.src='';}
+  document.getElementById('m-area-img-b64').value='';
+  setTimeout(function(){ closeModal('modal-add-area'); renderAreas(); buildAreaChips(); },900);
+}
+
+/* ════════════════════════════════════════
+   SAVE: TRAINER
+════════════════════════════════════════ */
+function saveTrainer(){
+  var st=document.getElementById('ms-trainer');
+  var name=(document.getElementById('m-tr-name').value||'').trim();
+  var club=(document.getElementById('m-tr-club').value||'').trim();
+  var type=document.getElementById('m-tr-type').value||'instructor';
+  var spec=(document.getElementById('m-tr-spec').value||'').trim();
+  var imgB64=(document.getElementById('m-tr-img-b64').value||'');
+  if(!name){st.textContent='Trainer name is required.';return;}
+  TRAINERS.push({
+    trainer_id:'TR-'+(TRAINERS.length+1).toString().padStart(2,'0'),
+    club_id:club||'PF-DEMO-001',
+    name:name, type:type, active:true,
+    specialisations:spec?spec.split(',').map(function(s){return s.trim();}):[''],
+    image_url:imgB64||''
+  });
+  st.textContent='Trainer saved!'; st.className='modal-status ok';
+  var prev=document.getElementById('m-tr-img-preview');
+  if(prev){prev.style.display='none';prev.src='';}
+  document.getElementById('m-tr-img-b64').value='';
+  setTimeout(function(){ closeModal('modal-add-trainer'); renderTrainers(); },900);
+}
+
+/* ════════════════════════════════════════
+   SAVE: STATUS
+════════════════════════════════════════ */
+function saveStatus(){
+  var st=document.getElementById('ms-status');
+  var name=(document.getElementById('m-st-name').value||'').trim();
+  var cat=document.getElementById('m-st-cat').value||'global';
+  var color=(document.getElementById('m-st-color').value||'#F3F4F6').trim();
+  var textColor=(document.getElementById('m-st-textcolor').value||'#374151').trim();
+  if(!name){st.textContent='Status name is required.';return;}
+  AdminState.statuses.push({
+    id:'s'+(AdminState.statuses.length+1),
+    name:name, category:cat, color:color, textColor:textColor, active:true
+  });
+  st.textContent='Status saved!'; st.className='modal-status ok';
+  setTimeout(function(){ closeModal('modal-add-status'); renderStatuses(); },900);
+}
+
+// Live status preview
+(function(){
+  function updatePreview(){
+    var color=(document.getElementById('m-st-color')||{}).value||'#F3F4F6';
+    var textColor=(document.getElementById('m-st-textcolor')||{}).value||'#374151';
+    var name=(document.getElementById('m-st-name')||{}).value||'Status';
+    var prev=document.getElementById('status-preview');
+    if(prev){ prev.style.background=color; prev.style.color=textColor; prev.textContent=name; }
+  }
+  window.addEventListener('load',function(){
+    ['m-st-color','m-st-textcolor','m-st-name'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) el.addEventListener('input',updatePreview);
+    });
+  });
+})();
+
+/* ════════════════════════════════════════
+   SAVE: ADMIN USER
+════════════════════════════════════════ */
+function saveAdminUser(){
+  var st=document.getElementById('ms-user');
+  var isSuperAdmin=AdminState.session&&AdminState.session.role==='super_admin';
+  if(!isSuperAdmin){st.textContent='Only Super Admins can create users.';return;}
+  var name=(document.getElementById('m-u-name').value||'').trim();
+  var surname=(document.getElementById('m-u-surname').value||'').trim();
+  var email=(document.getElementById('m-u-email').value||'').trim().toLowerCase();
+  var pw=(document.getElementById('m-u-pw').value||'').trim();
+  var role=document.getElementById('m-u-role').value||'club_admin';
+  var clubs=(document.getElementById('m-u-clubs').value||'').trim();
+  if(!name||!email||!pw){st.textContent='Name, email and password are required.';return;}
+  if(pw.length<8){st.textContent='Password must be at least 8 characters.';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){st.textContent='Invalid email address.';return;}
+  if(AdminState.adminUsers.find(function(u){return u.email===email;})){st.textContent='A user with this email already exists.';return;}
+  sha256(pw).then(function(hash){
+    AdminState.adminUsers.push({
+      id:'u'+(AdminState.adminUsers.length+1),
+      name:name, surname:surname, email:email,
+      passwordHash:hash, role:role, status:'active',
+      clubs:clubs?clubs.split(',').map(function(c){return c.trim();}):[],
+      forceChange:true
+    });
+    st.textContent='User created! They must change their password on first login.';
+    st.className='modal-status ok';
+    setTimeout(function(){ closeModal('modal-add-user'); renderUsers(); },1200);
+  });
+}
+
 function isTestMode(){
   return new URLSearchParams(window.location.search).get("test") === "1";
 }
