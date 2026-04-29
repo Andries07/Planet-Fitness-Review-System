@@ -3131,7 +3131,7 @@ function saveMachine(){
     loc:loc||'Club floor',
     emoji:emoji||'🏋️',
     image_url:imgB64 || existing.image_url || '',
-    tatus: status || existing.status || 'Active'
+    status: status || existing.status || 'Active'
   };
 
   st.textContent = editingMachineId ? 'Machine updated!' : 'Machine saved!';
@@ -3143,7 +3143,7 @@ function saveMachine(){
     renderMachines((document.getElementById('machine-search')||{}).value||'');
   },900);
 }
- function populateStatusSelect(m-mach-status', 'equipment', 'Active'){
+ function populateStatusSelect(selectId, category, selectedValue){
   var select = document.getElementById(selectId);
   if(!select) return;
 
@@ -3157,7 +3157,7 @@ function saveMachine(){
       : '';
     return '<option value="'+s.name+'"'+selected+'>'+s.name+'</option>';
   }).join('');
-}  
+}
 function resetMachineModal(){
   editingMachineId = null;
 
@@ -3182,6 +3182,7 @@ function resetMachineModal(){
   document.getElementById('m-mach-img-b64').value = '';
   document.getElementById('ms-machine').textContent = '';
   document.getElementById('ms-machine').className = 'modal-status';
+  populateStatusSelect('m-mach-status', 'equipment', 'Active');
 }
 /* ════════════════════════════════════════
    SAVE: AREA
@@ -3522,7 +3523,10 @@ function setTrainerStatus(index){
 
   TRAINERS[index].status = status;
   renderTrainers();
-}   
+}  
+function filterMachines(value){
+  renderMachines(value || '');
+}
 function isTestMode(){
   return new URLSearchParams(window.location.search).get("test") === "1";
 }
