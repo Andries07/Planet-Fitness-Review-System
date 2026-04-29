@@ -1351,7 +1351,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
           <div class="adm-section-title">Clubs</div>
           <div class="adm-section-sub">Manage Planet Fitness locations</div>
         </div>
-        <button class="adm-btn-blue" onclick="openModal('modal-add-club')">+ Add Club</button>
+        <button class="adm-btn-blue" onclick="resetClubModal();openModal('modal-add-club')">+ Add Club</button>
       </div>
       <div id="adm-clubs-list"></div>
     </div>
@@ -1388,7 +1388,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
           <div class="adm-section-title">Trainers</div>
           <div class="adm-section-sub">Instructors &amp; personal trainers</div>
         </div>
-        <button class="adm-btn-blue" onclick="openModal('modal-add-trainer')">+ Add Trainer</button>
+        <button class="adm-btn-blue" onclick="resetTrainerModal();openModal('modal-add-trainer')">+ Add Trainer</button>
       </div>
       <div id="adm-trainers-list"></div>
     </div>
@@ -1423,7 +1423,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
           <div class="adm-section-title">Admin Users</div>
           <div class="adm-section-sub">Access control &amp; role management</div>
         </div>
-        <button class="adm-btn-blue" onclick="openModal('modal-add-user')">+ Add User</button>
+       <button class="adm-btn-blue" onclick="resetUserModal();openModal('modal-add-user')">+ Add User</button>
       </div>
       <div id="adm-users-list"></div>
     </div>
@@ -1436,7 +1436,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
 <!-- Add Club -->
 <div class="modal-overlay hidden" id="modal-add-club">
   <div class="modal-box">
-    <div class="modal-title">Add Club</div>
+    <div class="modal-title" id="club-modal-title">Add Club</div>
     <div class="form-row">
       <div class="form-field"><label class="form-label">Club ID</label><input class="pfi" id="m-club-id" placeholder="PF-CPT-001" autocomplete="off"/></div>
       <div class="form-field"><label class="form-label">Display Name</label><input class="pfi" id="m-club-display" placeholder="Century City" autocomplete="off"/></div>
@@ -1556,7 +1556,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
 <!-- Add Trainer -->
 <div class="modal-overlay hidden" id="modal-add-trainer">
   <div class="modal-box">
-    <div class="modal-title">Add Trainer</div>
+   <div class="modal-title" id="trainer-modal-title">Add Trainer</div>
 
     <!-- Photo upload -->
     <div class="form-field">
@@ -1583,7 +1583,11 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
       </select>
     </div>
     <div class="form-field"><label class="form-label">Specialisations <span class="opt-tag">comma-separated</span></label><input class="pfi" id="m-tr-spec" placeholder="Yoga, Mobility" autocomplete="off"/></div>
-    <div class="modal-actions">
+   <div class="form-field">
+  <label class="form-label">Status</label>
+  <select class="pfi" id="m-tr-status"></select>
+</div>
+     <div class="modal-actions">
       <button class="adm-btn-ghost" onclick="closeModal('modal-add-trainer')">Cancel</button>
       <button class="adm-btn-blue" onclick="saveTrainer()">Save Trainer</button>
     </div>
@@ -1621,7 +1625,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
 <!-- Add Admin User -->
 <div class="modal-overlay hidden" id="modal-add-user">
   <div class="modal-box">
-    <div class="modal-title">Add Admin User</div>
+   <div class="modal-title" id="user-modal-title">Add Admin User</div>
     <div class="form-row">
       <div class="form-field"><label class="form-label">Name</label><input class="pfi" id="m-u-name" placeholder="Jane" autocomplete="off"/></div>
       <div class="form-field"><label class="form-label">Surname</label><input class="pfi" id="m-u-surname" placeholder="Doe" autocomplete="off"/></div>
@@ -1663,6 +1667,9 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
       <button class="adm-btn-blue" onclick="doResetPassword()">Update Password</button>
     </div>
     <div class="modal-status" id="ms-reset-pw"></div>
+     <!-- Edit Emails -->
+<div class="modal-overlay hidden" id="modal-edit-emails">
+</div>
   </div>
 </div>
 
@@ -2578,6 +2585,10 @@ function buildCustomerEmail(sub,club){
 ════════════════════════════════════════ */
 var editingMachineId = null;
 var editingAreaId = null;
+var editingClubId = null;
+var editingTrainerIndex = null;
+var editingUserIndex = null;
+var editingEmailClubId = null;
 var AdminState = {
   session: null,       // { token, email, role, clubs[] }
   currentTab: 'clubs',
@@ -2907,8 +2918,8 @@ function renderTrainers(){
         '</div>'+
         '<div class="adm-card-actions">'+
          '<button class="adm-btn-sm" onclick="promptTrainerImg('+i+')">📷</button>'+
-'<button class="adm-btn-sm" onclick="setTrainerStatus('+i+')">Status</button>'+
-'<button class="adm-btn-sm danger" onclick="TRAINERS.splice('+i+',1);renderTrainers()">Remove</button>'+
+'<button class="adm-btn-sm" onclick="editTrainerPrompt('+i+')">Edit</button>'+
+'<button class="adm-btn-sm danger" onclick="deleteTrainer('+i+')">Delete</button>'+
         '</div>'+
       '</div>'+
     '</div>';
@@ -2954,60 +2965,74 @@ function renderStatuses(){
 function renderEmails(){
   var container=document.getElementById('adm-email-config');
   if(!container) return;
-  var emailTypes=[
-    {key:'alert',    label:'🚨 Alert Emails',   desc:'Immediate — sent on bad reviews',  color:'#C2410C'},
-    {key:'summary',  label:'📊 Summary Emails',  desc:'Daily / weekly / monthly digests', color:'#0057B8'},
-    {key:'escalation',label:'⚠️ Escalation',    desc:'Critical issues — all groups',     color:'#991B1B'}
-  ];
+
   container.innerHTML=Object.values(CLUBS).map(function(club){
-    var sections=emailTypes.map(function(et){
-      var emailKey=et.key+'_emails';
-      var emails=(club[emailKey]||club.manager_emails||[]);
-      var pills=emails.map(function(e){
-        return '<span class="email-pill">'+e+'<button class="email-pill-remove" onclick="removeEmail(\''+club.club_id+'\',\''+et.key+'\',\''+e+'\')">×</button></span>';
-      }).join('');
-      return '<div class="email-type-section">'+
-        '<div class="email-type-header">'+
-          '<div class="email-type-label"><span style="color:'+et.color+'">●</span> '+et.label+'<span style="font-size:10px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0"> — '+et.desc+'</span></div>'+
-          '<button class="adm-btn-sm" onclick="addEmailPrompt(\''+club.club_id+'\',\''+et.key+'\')">+ Add</button>'+
-        '</div>'+
-        '<div class="email-pills-wrap">'+
-          (pills||'<span style="font-size:11px;color:var(--muted)">No emails configured</span>')+
-        '</div>'+
-      '</div>';
-    }).join('');
     return '<div class="email-group">'+
       '<div class="email-group-header">'+
         '<div class="email-group-title">'+club.club_name+'</div>'+
-        '<span class="adm-badge ab-ok">Active</span>'+
+        '<button class="adm-btn-sm" onclick="editEmailsPrompt(\''+club.club_id+'\')">Edit</button>'+
       '</div>'+
-      sections+
+      '<div class="adm-card-body">'+
+        '<div class="dr"><span class="dk">Manager</span><span class="dv">'+(club.manager_emails||[]).join(', ')+'</span></div>'+
+        '<div class="dr"><span class="dk">Maintenance</span><span class="dv">'+(club.maintenance_emails||[]).join(', ')+'</span></div>'+
+        '<div class="dr"><span class="dk">Escalation</span><span class="dv">'+(club.escalation_emails||[]).join(', ')+'</span></div>'+
+        '<div class="dr"><span class="dk">Cleanliness</span><span class="dv">'+(club.cleanliness_emails||[]).join(', ')+'</span></div>'+
+        '<div class="dr"><span class="dk">Summary</span><span class="dv">'+(club.summary_emails||[]).join(', ')+'</span></div>'+
+      '</div>'+
     '</div>';
   }).join('');
+
+
+
+function splitEmails(value){
+  return (value||'')
+    .split(',')
+    .map(function(e){return e.trim().toLowerCase();})
+    .filter(Boolean);
 }
 
-function addEmailPrompt(clubId, type){
-  var email=prompt('Add email address for '+type+' alerts at '+clubId+':');
-  if(!email||!email.trim()) return;
-  email=email.trim().toLowerCase();
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Invalid email address.'); return; }
-  var club=CLUBS[clubId];
-  if(!club) return;
-  var key=type+'_emails';
-  if(!club[key]) club[key]=[];
-  if(!club[key].includes(email)) club[key].push(email);
-  renderEmails();
+function editEmailsPrompt(clubId){
+  var club=CLUBS[clubId];addEmailPrompt(
+  if(!club) return alert('Club not found.');
+
+  editingEmailClubId=clubId;
+
+  document.getElementById('emails-modal-title').textContent='Edit Emails - '+club.display_name;
+  document.getElementById('e-manager').value=(club.manager_emails||[]).join(', ');
+  document.getElementById('e-maintenance').value=(club.maintenance_emails||[]).join(', ');
+  document.getElementById('e-escalation').value=(club.escalation_emails||[]).join(', ');
+  document.getElementById('e-cleanliness').value=(club.cleanliness_emails||[]).join(', ');
+  document.getElementById('e-summary').value=(club.summary_emails||[]).join(', ');
+  document.getElementById('ms-emails').textContent='';
+
+  openModal('modal-edit-emails');
 }
 
-function removeEmail(clubId, type, email){
-  var club=CLUBS[clubId];
-  if(!club) return;
-  var key=type+'_emails';
-  if(!club[key]) club[key]=[];
-  club[key]=club[key].filter(function(e){return e!==email;});
-  renderEmails();
-}
+function saveEmailConfig(){
+  var st=document.getElementById('ms-emails');
+  var club=CLUBS[editingEmailClubId];
 
+  if(!club){
+    st.textContent='Club not found.';
+    return;
+  }
+
+  club.manager_emails=splitEmails(document.getElementById('e-manager').value);
+  club.maintenance_emails=splitEmails(document.getElementById('e-maintenance').value);
+  club.escalation_emails=splitEmails(document.getElementById('e-escalation').value);
+  club.cleanliness_emails=splitEmails(document.getElementById('e-cleanliness').value);
+  club.summary_emails=splitEmails(document.getElementById('e-summary').value);
+
+  st.textContent='Emails updated!';
+  st.className='modal-status ok';
+
+  setTimeout(function(){
+    closeModal('modal-edit-emails');
+    editingEmailClubId=null;
+    renderEmails();
+    renderClubs();
+  },900);
+}
 /* ════════════════════════════════════════
    RENDER: ADMIN USERS
 ════════════════════════════════════════ */
@@ -3031,11 +3056,12 @@ function renderUsers(){
       '</div>'+
       (isSuperAdmin?
         '<div class="adm-card-actions" style="flex-direction:column;gap:4px">'+
-          '<button class="adm-btn-sm" onclick="openResetPw(\''+u.email+'\')">Reset PW</button>'+
-          (u.status==='active'
-            ? '<button class="adm-btn-sm danger" onclick="toggleUserStatus('+i+',\'disabled\')">Disable</button>'
-            : '<button class="adm-btn-sm" onclick="toggleUserStatus('+i+',\'active\')">Enable</button>')+
-        '</div>':'')+
+  '<button class="adm-btn-sm" onclick="editUserPrompt('+i+')">Edit</button>'+
+  '<button class="adm-btn-sm" onclick="openResetPw(\''+u.email+'\')">Reset PW</button>'+
+  (u.status==='active'
+    ? '<button class="adm-btn-sm danger" onclick="toggleUserStatus('+i+',\'disabled\')">Disable</button>'
+    : '<button class="adm-btn-sm" onclick="toggleUserStatus('+i+',\'active\')">Enable</button>')+
+'</div>'
     '</div>';
   }).join('')+'</div>';
 }
@@ -3073,6 +3099,7 @@ function doResetPassword(){
 ════════════════════════════════════════ */
 function saveClub(){
   var st=document.getElementById('ms-club');
+
   var id=(document.getElementById('m-club-id').value||'').trim();
   var name=(document.getElementById('m-club-name').value||'').trim();
   var display=(document.getElementById('m-club-display').value||'').trim();
@@ -3080,17 +3107,43 @@ function saveClub(){
   var city=(document.getElementById('m-club-city').value||'').trim();
   var mgrEmail=(document.getElementById('m-club-mgr-email').value||'').trim();
   var maintEmail=(document.getElementById('m-club-maint-email').value||'').trim();
-  if(!id||!name){st.textContent='Club ID and Name are required.';return;}
-  if(CLUBS[id]){st.textContent='A club with this ID already exists.';return;}
+
+  if(!id||!name){
+    st.textContent='Club ID and Name are required.';
+    return;
+  }
+
+  if(!editingClubId && CLUBS[id]){
+    st.textContent='A club with this ID already exists.';
+    return;
+  }
+
+  var existing = editingClubId ? (CLUBS[editingClubId] || {}) : {};
+
   CLUBS[id]={
-    club_id:id, club_name:name, display_name:display||name,
-    province:province, city:city, active:true,
-    manager_emails:mgrEmail?mgrEmail.split(',').map(function(e){return e.trim();}):[''],
-    maintenance_emails:maintEmail?maintEmail.split(',').map(function(e){return e.trim();}):[''],
-    escalation_emails:[], cleanliness_emails:[]
+    club_id:id,
+    club_name:name,
+    display_name:display||name,
+    province:province,
+    city:city,
+    active:true,
+    manager_emails:mgrEmail?mgrEmail.split(',').map(function(e){return e.trim();}).filter(Boolean):[],
+    maintenance_emails:maintEmail?maintEmail.split(',').map(function(e){return e.trim();}).filter(Boolean):[],
+    escalation_emails:existing.escalation_emails||[],
+    cleanliness_emails:existing.cleanliness_emails||[],
+    alert_emails:existing.alert_emails||[],
+    summary_emails:existing.summary_emails||[]
   };
-  st.textContent='Club saved!'; st.className='modal-status ok';
-  setTimeout(function(){ closeModal('modal-add-club'); renderClubs(); },900);
+
+  st.textContent=editingClubId?'Club updated!':'Club saved!';
+  st.className='modal-status ok';
+
+  setTimeout(function(){
+    closeModal('modal-add-club');
+    resetClubModal();
+    renderClubs();
+    renderEmails();
+  },900);
 }
 
 /* ════════════════════════════════════════
@@ -3261,24 +3314,46 @@ function resetAreaModal(){
 ════════════════════════════════════════ */
 function saveTrainer(){
   var st=document.getElementById('ms-trainer');
+
   var name=(document.getElementById('m-tr-name').value||'').trim();
   var club=(document.getElementById('m-tr-club').value||'').trim();
   var type=document.getElementById('m-tr-type').value||'instructor';
   var spec=(document.getElementById('m-tr-spec').value||'').trim();
   var imgB64=(document.getElementById('m-tr-img-b64').value||'');
-  if(!name){st.textContent='Trainer name is required.';return;}
-  TRAINERS.push({
-    trainer_id:'TR-'+(TRAINERS.length+1).toString().padStart(2,'0'),
+  var status=(document.getElementById('m-tr-status')||{}).value||'Active';
+
+  if(!name){
+    st.textContent='Trainer name is required.';
+    return;
+  }
+
+  var existing = editingTrainerIndex !== null ? (TRAINERS[editingTrainerIndex] || {}) : {};
+
+  var trainerObj={
+    trainer_id:existing.trainer_id || 'TR-'+(TRAINERS.length+1).toString().padStart(2,'0'),
     club_id:club||'PF-DEMO-001',
-    name:name, type:type, active:true,
-    specialisations:spec?spec.split(',').map(function(s){return s.trim();}):[''],
-    image_url:imgB64||''
-  });
-  st.textContent='Trainer saved!'; st.className='modal-status ok';
-  var prev=document.getElementById('m-tr-img-preview');
-  if(prev){prev.style.display='none';prev.src='';}
-  document.getElementById('m-tr-img-b64').value='';
-  setTimeout(function(){ closeModal('modal-add-trainer'); renderTrainers(); },900);
+    name:name,
+    type:type,
+    active:status !== 'Disabled',
+    status:status,
+    specialisations:spec?spec.split(',').map(function(s){return s.trim();}).filter(Boolean):[],
+    image_url:imgB64 || existing.image_url || ''
+  };
+
+  if(editingTrainerIndex !== null){
+    TRAINERS[editingTrainerIndex]=trainerObj;
+  } else {
+    TRAINERS.push(trainerObj);
+  }
+
+  st.textContent=editingTrainerIndex!==null?'Trainer updated!':'Trainer saved!';
+  st.className='modal-status ok';
+
+  setTimeout(function(){
+    closeModal('modal-add-trainer');
+    resetTrainerModal();
+    renderTrainers();
+  },900);
 }
 
 /* ════════════════════════════════════════
@@ -3322,62 +3397,117 @@ function saveStatus(){
 function saveAdminUser(){
   var st=document.getElementById('ms-user');
   var isSuperAdmin=AdminState.session&&AdminState.session.role==='super_admin';
-  if(!isSuperAdmin){st.textContent='Only Super Admins can create users.';return;}
+
+  if(!isSuperAdmin){
+    st.textContent='Only Super Admins can create or edit users.';
+    return;
+  }
+
   var name=(document.getElementById('m-u-name').value||'').trim();
   var surname=(document.getElementById('m-u-surname').value||'').trim();
   var email=(document.getElementById('m-u-email').value||'').trim().toLowerCase();
   var pw=(document.getElementById('m-u-pw').value||'').trim();
   var role=document.getElementById('m-u-role').value||'club_admin';
   var clubs=(document.getElementById('m-u-clubs').value||'').trim();
-  if(!name||!email||!pw){st.textContent='Name, email and password are required.';return;}
-  if(pw.length<8){st.textContent='Password must be at least 8 characters.';return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){st.textContent='Invalid email address.';return;}
-  if(AdminState.adminUsers.find(function(u){return u.email===email;})){st.textContent='A user with this email already exists.';return;}
-  sha256(pw).then(function(hash){
-    AdminState.adminUsers.push({
-      id:'u'+(AdminState.adminUsers.length+1),
-      name:name, surname:surname, email:email,
-      passwordHash:hash, role:role, status:'active',
-      clubs:clubs?clubs.split(',').map(function(c){return c.trim();}):[],
-      forceChange:true
-    });
-    st.textContent='User created! They must change their password on first login.';
-    st.className='modal-status ok';
-    setTimeout(function(){ closeModal('modal-add-user'); renderUsers(); },1200);
-  });
-}
 
+  if(!name||!email){
+    st.textContent='Name and email are required.';
+    return;
+  }
+
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    st.textContent='Invalid email address.';
+    return;
+  }
+
+  var duplicate=AdminState.adminUsers.find(function(u,idx){
+    return u.email===email && idx!==editingUserIndex;
+  });
+
+  if(duplicate){
+    st.textContent='A user with this email already exists.';
+    return;
+  }
+
+  var existing = editingUserIndex !== null ? AdminState.adminUsers[editingUserIndex] : null;
+
+  if(!existing && pw.length<8){
+    st.textContent='Password must be at least 8 characters.';
+    return;
+  }
+
+  function finish(hash){
+    var userObj={
+      id:existing ? existing.id : 'u'+(AdminState.adminUsers.length+1),
+      name:name,
+      surname:surname,
+      email:email,
+      passwordHash:hash || existing.passwordHash,
+      role:role,
+      status:existing ? existing.status : 'active',
+      clubs:clubs?clubs.split(',').map(function(c){return c.trim();}).filter(Boolean):[],
+      forceChange:existing ? existing.forceChange : true
+    };
+
+    if(editingUserIndex !== null){
+      AdminState.adminUsers[editingUserIndex]=userObj;
+    } else {
+      AdminState.adminUsers.push(userObj);
+    }
+
+    st.textContent=editingUserIndex!==null?'User updated!':'User created!';
+    st.className='modal-status ok';
+
+    setTimeout(function(){
+      closeModal('modal-add-user');
+      resetUserModal();
+      renderUsers();
+    },900);
+  }
+
+  if(pw){
+    if(pw.length<8){
+      st.textContent='Password must be at least 8 characters.';
+      return;
+    }
+    sha256(pw).then(finish);
+  } else {
+    finish(null);
+  }
+}
 function editClubPrompt(clubId){
   var c=CLUBS[clubId];
   if(!c) return alert('Club not found.');
 
-  var newName=prompt('Club name:', c.club_name || '');
-  if(newName===null) return;
+  editingClubId=clubId;
 
-  var newDisplay=prompt('Display name:', c.display_name || '');
-  if(newDisplay===null) return;
+  document.getElementById('club-modal-title').textContent='Edit Club';
+  document.getElementById('m-club-id').value=c.club_id||'';
+  document.getElementById('m-club-id').disabled=true;
+  document.getElementById('m-club-display').value=c.display_name||'';
+  document.getElementById('m-club-name').value=c.club_name||'';
+  document.getElementById('m-club-province').value=c.province||'';
+  document.getElementById('m-club-city').value=c.city||'';
+  document.getElementById('m-club-mgr-email').value=(c.manager_emails||[]).join(', ');
+  document.getElementById('m-club-maint-email').value=(c.maintenance_emails||[]).join(', ');
+  document.getElementById('ms-club').textContent='';
 
-  var newProvince=prompt('Province:', c.province || '');
-  if(newProvince===null) return;
+  openModal('modal-add-club');
+}
+function resetClubModal(){
+  editingClubId=null;
 
-  var newCity=prompt('City:', c.city || '');
-  if(newCity===null) return;
-
-  var managerEmails=prompt('Manager emails, comma-separated:', (c.manager_emails||[]).join(', '));
-  if(managerEmails===null) return;
-
-  var maintenanceEmails=prompt('Maintenance emails, comma-separated:', (c.maintenance_emails||[]).join(', '));
-  if(maintenanceEmails===null) return;
-
-  c.club_name=newName.trim();
-  c.display_name=newDisplay.trim();
-  c.province=newProvince.trim();
-  c.city=newCity.trim();
-  c.manager_emails=managerEmails.split(',').map(function(e){return e.trim();}).filter(Boolean);
-  c.maintenance_emails=maintenanceEmails.split(',').map(function(e){return e.trim();}).filter(Boolean);
-
-  renderClubs();
-  renderEmails();
+  document.getElementById('club-modal-title').textContent='Add Club';
+  document.getElementById('m-club-id').disabled=false;
+  document.getElementById('m-club-id').value='';
+  document.getElementById('m-club-display').value='';
+  document.getElementById('m-club-name').value='';
+  document.getElementById('m-club-province').value='';
+  document.getElementById('m-club-city').value='';
+  document.getElementById('m-club-mgr-email').value='';
+  document.getElementById('m-club-maint-email').value='';
+  document.getElementById('ms-club').textContent='';
+  document.getElementById('ms-club').className='modal-status';
 }
 
 function deleteClub(clubId){
@@ -3527,9 +3657,140 @@ function setTrainerStatus(index){
 function filterMachines(value){
   renderMachines(value || '');
 }
+
+   function editTrainerPrompt(index){
+  var t=TRAINERS[index];
+  if(!t) return alert('Trainer not found.');
+
+  editingTrainerIndex=index;
+
+  document.getElementById('trainer-modal-title').textContent='Edit Trainer';
+  document.getElementById('m-tr-name').value=t.name||'';
+  document.getElementById('m-tr-club').value=t.club_id||'';
+  document.getElementById('m-tr-type').value=t.type||'instructor';
+  document.getElementById('m-tr-spec').value=(t.specialisations||[]).join(', ');
+  document.getElementById('m-tr-img-b64').value=t.image_url||'';
+
+  var prev=document.getElementById('m-tr-img-preview');
+  if(prev && t.image_url){
+    prev.src=t.image_url;
+    prev.style.display='block';
+  } else if(prev){
+    prev.src='';
+    prev.style.display='none';
+  }
+
+  populateStatusSelect('m-tr-status','trainer',t.status||'Active');
+  document.getElementById('ms-trainer').textContent='';
+
+  openModal('modal-add-trainer');
+}
+
+function resetTrainerModal(){
+  editingTrainerIndex=null;
+
+  document.getElementById('trainer-modal-title').textContent='Add Trainer';
+  document.getElementById('m-tr-name').value='';
+  document.getElementById('m-tr-club').value='';
+  document.getElementById('m-tr-type').value='instructor';
+  document.getElementById('m-tr-spec').value='';
+  document.getElementById('m-tr-img-b64').value='';
+
+  var prev=document.getElementById('m-tr-img-preview');
+  if(prev){
+    prev.style.display='none';
+    prev.src='';
+  }
+
+  populateStatusSelect('m-tr-status','trainer','Active');
+  document.getElementById('ms-trainer').textContent='';
+  document.getElementById('ms-trainer').className='modal-status';
+}
+
+function deleteTrainer(index){
+  var t=TRAINERS[index];
+  if(!t) return alert('Trainer not found.');
+
+  if(!confirm('Delete trainer '+t.name+'?')) return;
+
+  TRAINERS.splice(index,1);
+  renderTrainers();
+}
+
+   function editUserPrompt(index){
+  var u=AdminState.adminUsers[index];
+  if(!u) return alert('User not found.');
+
+  editingUserIndex=index;
+
+  document.getElementById('user-modal-title').textContent='Edit Admin User';
+  document.getElementById('m-u-name').value=u.name||'';
+  document.getElementById('m-u-surname').value=u.surname||'';
+  document.getElementById('m-u-email').value=u.email||'';
+  document.getElementById('m-u-role').value=u.role||'club_admin';
+  document.getElementById('m-u-clubs').value=(u.clubs||[]).join(', ');
+  document.getElementById('m-u-pw').value='';
+  document.getElementById('m-u-pw').placeholder='Leave blank to keep existing password';
+  document.getElementById('ms-user').textContent='';
+
+  openModal('modal-add-user');
+}
+
+function resetUserModal(){
+  editingUserIndex=null;
+
+  document.getElementById('user-modal-title').textContent='Add Admin User';
+  document.getElementById('m-u-name').value='';
+  document.getElementById('m-u-surname').value='';
+  document.getElementById('m-u-email').value='';
+  document.getElementById('m-u-pw').value='';
+  document.getElementById('m-u-pw').placeholder='Min 8 characters';
+  document.getElementById('m-u-role').value='club_admin';
+  document.getElementById('m-u-clubs').value='';
+  document.getElementById('ms-user').textContent='';
+  document.getElementById('ms-user').className='modal-status';
+}
 function isTestMode(){
   return new URLSearchParams(window.location.search).get("test") === "1";
 }
+<div class="modal-overlay hidden" id="modal-edit-emails">
+  <div class="modal-box">
+    <div class="modal-title" id="emails-modal-title">Edit Emails</div>
+
+    <div class="form-field">
+      <label class="form-label">Manager Emails</label>
+      <input class="pfi" id="e-manager" placeholder="email1@pf.co.za, email2@pf.co.za"/>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Maintenance Emails</label>
+      <input class="pfi" id="e-maintenance" placeholder="maintenance@pf.co.za"/>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Escalation Emails</label>
+      <input class="pfi" id="e-escalation" placeholder="regional@pf.co.za"/>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Cleanliness Emails</label>
+      <input class="pfi" id="e-cleanliness" placeholder="cleaning@pf.co.za"/>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Summary Emails</label>
+      <input class="pfi" id="e-summary" placeholder="summary@pf.co.za"/>
+    </div>
+
+    <div class="modal-actions">
+      <button class="adm-btn-ghost" onclick="closeModal('modal-edit-emails')">Cancel</button>
+      <button class="adm-btn-blue" onclick="saveEmailConfig()">Save Emails</button>
+    </div>
+
+    <div class="modal-status" id="ms-emails"></div>
+  </div>
+</div>
+   
 </script>
 </body>
 </html>
