@@ -188,7 +188,14 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
   display:flex;align-items:center;justify-content:center;
   font-size:32px;
 }
-.mh-img img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+.mh-img img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  border-radius:9px;
+  background:#fff;
+}
 .mh-meta{flex:1}
 .mh-cat{
   display:inline-block;
@@ -625,7 +632,13 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
   font-size:32px;border-bottom:1px solid var(--grey);
   overflow:hidden;position:relative;
 }
-.adm-tile-img img{width:100%;height:100%;object-fit:cover}
+.adm-tile-img img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  background:#fff;
+}
 .adm-tile-img .img-upload-btn{
   position:absolute;bottom:6px;right:6px;
   background:rgba(0,0,0,.55);color:#fff;border:none;
@@ -709,9 +722,15 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
 .img-upload-zone .upload-label{font-size:12px;color:var(--muted);line-height:1.45}
 .img-upload-zone .upload-label strong{color:var(--blue)}
 .img-preview-box{
-  width:100%;height:120px;border-radius:8px;
-  object-fit:cover;border:1px solid var(--grey);
-  display:none;margin-bottom:8px;
+  width:100%;
+  height:160px;
+  border-radius:8px;
+  object-fit:contain;
+  object-position:center;
+  border:1px solid var(--grey);
+  background:#fff;
+  display:none;
+  margin-bottom:8px;
 }
 .form-field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
 .form-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
@@ -2705,17 +2724,26 @@ function buildAdmin(){
 function renderClubs(){
   var container=document.getElementById('adm-clubs-list');
   if(!container) return;
+
   var clubs=Object.values(CLUBS);
-  if(!clubs.length){ container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center">No clubs configured.</div>'; return; }
+
+  if(!clubs.length){
+    container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center">No clubs configured.</div>';
+    return;
+  }
+
   container.innerHTML=clubs.map(function(c){
     return '<div class="adm-card" style="margin-bottom:10px">'+
       '<div class="adm-card-header">'+
         '<div class="adm-card-icon blue">🏢</div>'+
         '<div class="adm-card-meta">'+
           '<div class="adm-card-name">'+c.club_name+'</div>'+
-          '<div class="adm-card-sub">'+c.city+', '+c.province+' &nbsp;·&nbsp; ID: <code style="font-size:10px">'+c.club_id+'</code></div>'+
+          '<div class="adm-card-sub">'+c.city+', '+c.province+' · ID: <code style="font-size:10px">'+c.club_id+'</code></div>'+
         '</div>'+
-        '<span class="adm-badge ab-ok">Active</span>'+
+        '<div class="adm-card-actions">'+
+          '<button class="adm-btn-sm" onclick="editClubPrompt(\''+c.club_id+'\')">Edit</button>'+
+          '<button class="adm-btn-sm danger" onclick="deleteClub(\''+c.club_id+'\')">Delete</button>'+
+        '</div>'+
       '</div>'+
       '<div class="adm-card-body">'+
         '<div class="dr"><span class="dk">Manager emails</span><span class="dv" style="font-size:11px">'+(c.manager_emails||[]).join(', ')+'</span></div>'+
@@ -2730,49 +2758,85 @@ function renderClubs(){
 /* ════════════════════════════════════════
    RENDER: MACHINES
 ════════════════════════════════════════ */
-function renderMachines(filter){
+function getStatusBadge(statusName){
+  statusName = statusName || 'Active';
+
+  var s = (AdminState.statuses || []).find(function(x){
+    return String(x.name).toLowerCase() === String(statusName).toLowerCase();
+  });
+
+  if(!s){
+    return '<span class="adm-badge ab-grey">'+statusName+'</span>';
+  }
+
+  return '<span class="adm-badge" style="background:'+s.color+';color:'+s.textColor+'">'+s.name+'</span>';
+}
+
+function chooseStatus(category, currentStatus){
+  var options = (AdminState.statuses || []).filter(function(s){
+    return s.active && (s.category === 'global' || s.category === category);
+  });
+
+  var list = options.map(function(s,i){
+    return (i+1)+'. '+s.name;
+  }).join('\n');
+
+  var answer = prompt(
+    'Choose status:\n\n'+list,
+    currentStatus || 'Active'
+  );
+
+  if(answer === null) return null;
+
+  var byNumber = parseInt(answer,10);
+  if(byNumber && options[byNumber-1]){
+    return options[byNumber-1].name;
+  }
+
+  var byName = options.find(function(s){
+    return s.name.toLowerCase() === answer.toLowerCase();
+  });
+
+  return byName ? byName.name : answer;
+}
+   
+   function renderMachines(filter){
   var container=document.getElementById('adm-machines-list');
   if(!container) return;
+
   var machines=Object.values(MACHINES);
-  if(filter) machines=machines.filter(function(m){ return (m.name+m.category+m.asset).toLowerCase().indexOf(filter.toLowerCase())!==-1; });
-  if(!machines.length){ container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center;grid-column:span 2">No machines found.</div>'; return; }
+
+  if(filter){
+    machines=machines.filter(function(m){
+      return (m.name+m.category+m.asset+m.id).toLowerCase().indexOf(filter.toLowerCase())!==-1;
+    });
+  }
+
+  if(!machines.length){
+    container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center;grid-column:span 2">No machines found.</div>';
+    return;
+  }
+
   container.innerHTML=machines.map(function(m){
     var imgHtml=m.image_url
-      ? '<img src="'+m.image_url+'" style="width:100%;height:100%;object-fit:cover"/>'
+      ? '<img src="'+m.image_url+'" style="width:100%;height:100%;object-fit:contain;object-position:center;background:#fff"/>'
       : '<span style="font-size:32px">'+m.emoji+'</span>';
+
     return '<div class="adm-tile">'+
       '<div class="adm-tile-img">'+imgHtml+'<button class="img-upload-btn" onclick="promptMachineImg(\''+m.id+'\')">📷 Change</button></div>'+
       '<div class="adm-tile-body">'+
         '<div class="adm-tile-name">'+m.name+'</div>'+
-        '<div class="adm-tile-sub">'+m.category+' &nbsp;·&nbsp; '+m.asset+'</div>'+
-        '<div class="adm-tile-sub" style="margin-top:2px">📍 '+m.loc+'</div>'+
+        '<div class="adm-tile-sub">'+m.category+' · '+m.asset+'</div>'+
+'<div class="adm-tile-sub" style="margin-top:2px">📍 '+m.loc+'</div>'+
+'<div style="margin-top:6px">'+getStatusBadge(m.status || 'Active')+'</div>'+
       '</div>'+
       '<div class="adm-tile-footer">'+
-        '<span class="adm-badge ab-grey" style="font-size:9px">'+m.area_id+'</span>'+
-        '<span class="adm-badge ab-blue" style="font-size:9px;margin-left:auto">QR: ?machine='+m.id+'</span>'+
+        '<button class="adm-btn-sm" onclick="editMachinePrompt(\''+m.id+'\')">Edit</button>'+
+'<button class="adm-btn-sm" onclick="setMachineStatus(\''+m.id+'\')">Status</button>'+
+'<button class="adm-btn-sm danger" onclick="deleteMachine(\''+m.id+'\')">Delete</button>'+
       '</div>'+
     '</div>';
   }).join('');
-}
-
-function filterMachines(val){
-  renderMachines(val);
-}
-
-function promptMachineImg(machineId){
-  var input=document.createElement('input');
-  input.type='file'; input.accept='image/*';
-  input.onchange=function(){
-    var file=input.files&&input.files[0];
-    if(!file) return;
-    var reader=new FileReader();
-    reader.onload=function(e){
-      if(MACHINES[machineId]) MACHINES[machineId].image_url=e.target.result;
-      renderMachines((document.getElementById('machine-search')||{}).value||'');
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
 }
 
 /* ════════════════════════════════════════
@@ -2781,38 +2845,33 @@ function promptMachineImg(machineId){
 function renderAreas(){
   var container=document.getElementById('adm-areas-list');
   if(!container) return;
-  var areas=Object.values(AREAS).sort(function(a,b){return a.sort-b.sort;});
+
+  var areas=Object.values(AREAS).sort(function(a,b){return (a.sort||0)-(b.sort||0);});
+
+  if(!areas.length){
+    container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center;grid-column:span 2">No areas configured.</div>';
+    return;
+  }
+
   container.innerHTML=areas.map(function(a){
     var imgHtml=a.image_url
-      ? '<img src="'+a.image_url+'" style="width:100%;height:100%;object-fit:cover;border-radius:9px"/>'
+      ? '<img src="'+a.image_url+'" style="width:100%;height:100%;object-fit:contain;object-position:center;background:#fff;border-radius:9px"/>'
       : '<span style="font-size:28px">'+a.icon+'</span>';
+
     return '<div class="adm-tile">'+
       '<div class="adm-tile-img" style="height:80px">'+imgHtml+'<button class="img-upload-btn" onclick="promptAreaImg(\''+a.id+'\')">📷 Change</button></div>'+
       '<div class="adm-tile-body">'+
         '<div class="adm-tile-name">'+a.icon+' '+a.name+'</div>'+
-        '<div class="adm-tile-sub">'+a.type+' &nbsp;·&nbsp; '+a.club_id+'</div>'+
+        '<div class="adm-tile-sub">'+a.type+' · '+a.club_id+'</div>'+
+'<div style="margin-top:6px">'+getStatusBadge(a.status || 'Active')+'</div>'+
       '</div>'+
       '<div class="adm-tile-footer">'+
-        '<span class="adm-badge ab-blue" style="font-size:9px">QR: ?area='+a.id+'</span>'+
+        '<button class="adm-btn-sm" onclick="editAreaPrompt(\''+a.id+'\')">Edit</button>'+
+'<button class="adm-btn-sm" onclick="setAreaStatus(\''+a.id+'\')">Status</button>'+
+'<button class="adm-btn-sm danger" onclick="deleteArea(\''+a.id+'\')">Delete</button>'+
       '</div>'+
     '</div>';
   }).join('');
-}
-
-function promptAreaImg(areaId){
-  var input=document.createElement('input');
-  input.type='file'; input.accept='image/*';
-  input.onchange=function(){
-    var file=input.files&&input.files[0];
-    if(!file) return;
-    var reader=new FileReader();
-    reader.onload=function(e){
-      if(AREAS[areaId]) AREAS[areaId].image_url=e.target.result;
-      renderAreas();
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
 }
 
 /* ════════════════════════════════════════
@@ -2832,12 +2891,14 @@ function renderTrainers(){
         '<div class="adm-card-icon" style="background:var(--off);border-radius:50%;overflow:hidden;width:42px;height:42px">'+img+'</div>'+
         '<div class="adm-card-meta">'+
           '<div class="adm-card-name">'+t.name+'</div>'+
-          '<div class="adm-card-sub">'+(roleMap[t.type]||t.type)+' &nbsp;·&nbsp; '+t.club_id+'</div>'+
-          '<div class="adm-card-sub" style="margin-top:2px">'+(t.specialisations||[]).join(', ')+'</div>'+
+          '<div class="adm-card-sub">'+(roleMap[t.type]||t.type)+' · '+t.club_id+'</div>'+
+'<div class="adm-card-sub" style="margin-top:2px">'+(t.specialisations||[]).join(', ')+'</div>'+
+'<div style="margin-top:6px">'+getStatusBadge(t.status || 'Active')+'</div>'+
         '</div>'+
         '<div class="adm-card-actions">'+
-          '<button class="adm-btn-sm" onclick="promptTrainerImg('+i+')">📷</button>'+
-          '<button class="adm-btn-sm danger" onclick="TRAINERS.splice('+i+',1);renderTrainers()">Remove</button>'+
+         '<button class="adm-btn-sm" onclick="promptTrainerImg('+i+')">📷</button>'+
+'<button class="adm-btn-sm" onclick="setTrainerStatus('+i+')">Status</button>'+
+'<button class="adm-btn-sm danger" onclick="TRAINERS.splice('+i+',1);renderTrainers()">Remove</button>'+
         '</div>'+
       '</div>'+
     '</div>';
@@ -3167,6 +3228,174 @@ function saveAdminUser(){
   });
 }
 
+function editClubPrompt(clubId){
+  var c=CLUBS[clubId];
+  if(!c) return alert('Club not found.');
+
+  var newName=prompt('Club name:', c.club_name || '');
+  if(newName===null) return;
+
+  var newDisplay=prompt('Display name:', c.display_name || '');
+  if(newDisplay===null) return;
+
+  var newProvince=prompt('Province:', c.province || '');
+  if(newProvince===null) return;
+
+  var newCity=prompt('City:', c.city || '');
+  if(newCity===null) return;
+
+  var managerEmails=prompt('Manager emails, comma-separated:', (c.manager_emails||[]).join(', '));
+  if(managerEmails===null) return;
+
+  var maintenanceEmails=prompt('Maintenance emails, comma-separated:', (c.maintenance_emails||[]).join(', '));
+  if(maintenanceEmails===null) return;
+
+  c.club_name=newName.trim();
+  c.display_name=newDisplay.trim();
+  c.province=newProvince.trim();
+  c.city=newCity.trim();
+  c.manager_emails=managerEmails.split(',').map(function(e){return e.trim();}).filter(Boolean);
+  c.maintenance_emails=maintenanceEmails.split(',').map(function(e){return e.trim();}).filter(Boolean);
+
+  renderClubs();
+  renderEmails();
+}
+
+function deleteClub(clubId){
+  var machineCount=Object.values(MACHINES).filter(function(m){return m.club_id===clubId;}).length;
+  var areaCount=Object.values(AREAS).filter(function(a){return a.club_id===clubId;}).length;
+  var trainerCount=TRAINERS.filter(function(t){return t.club_id===clubId;}).length;
+
+  var msg='Delete club '+clubId+'?';
+  if(machineCount || areaCount || trainerCount){
+    msg+='\n\nWarning: This club has '+machineCount+' machines, '+areaCount+' areas and '+trainerCount+' trainers linked to it.';
+    msg+='\n\nThis will delete the club only. Linked items will remain unless you delete them separately.';
+  }
+
+  if(!confirm(msg)) return;
+
+  delete CLUBS[clubId];
+  renderClubs();
+  renderEmails();
+}
+
+function editMachinePrompt(machineId){
+  var m=MACHINES[machineId];
+  if(!m) return alert('Machine not found.');
+
+  var newName=prompt('Machine name:', m.name || '');
+  if(newName===null) return;
+
+  var newCategory=prompt('Category:', m.category || '');
+  if(newCategory===null) return;
+
+  var newAsset=prompt('Asset code:', m.asset || '');
+  if(newAsset===null) return;
+
+  var newArea=prompt('Area ID:', m.area_id || '');
+  if(newArea===null) return;
+
+  var newLoc=prompt('Location note:', m.loc || '');
+  if(newLoc===null) return;
+
+  var newEmoji=prompt('Emoji:', m.emoji || '🏋️');
+  if(newEmoji===null) return;
+
+  m.name=newName.trim();
+  m.category=newCategory.trim();
+  m.asset=newAsset.trim();
+  m.area_id=newArea.trim();
+  m.loc=newLoc.trim();
+  m.emoji=newEmoji.trim() || '🏋️';
+
+  renderMachines((document.getElementById('machine-search')||{}).value||'');
+}
+
+function deleteMachine(machineId){
+  var m=MACHINES[machineId];
+  if(!m) return alert('Machine not found.');
+
+  if(!confirm('Delete machine '+m.name+' ('+machineId+')?')) return;
+
+  delete MACHINES[machineId];
+  renderMachines((document.getElementById('machine-search')||{}).value||'');
+}
+
+function editAreaPrompt(areaId){
+  var a=AREAS[areaId];
+  if(!a) return alert('Area not found.');
+
+  var newName=prompt('Area name:', a.name || '');
+  if(newName===null) return;
+
+  var newType=prompt('Type:', a.type || 'facilities');
+  if(newType===null) return;
+
+  var newIcon=prompt('Icon:', a.icon || '📍');
+  if(newIcon===null) return;
+
+  var newSort=prompt('Sort order:', a.sort || 99);
+  if(newSort===null) return;
+
+  a.name=newName.trim();
+  a.type=newType.trim();
+  a.icon=newIcon.trim() || '📍';
+  a.sort=parseInt(newSort,10) || 99;
+
+  renderAreas();
+  buildAreaChips();
+}
+
+function deleteArea(areaId){
+  var a=AREAS[areaId];
+  if(!a) return alert('Area not found.');
+
+  var linkedMachines=Object.values(MACHINES).filter(function(m){return m.area_id===areaId;}).length;
+  var msg='Delete area '+a.name+' ('+areaId+')?';
+
+  if(linkedMachines){
+    msg+='\n\nWarning: '+linkedMachines+' machine(s) are linked to this area. Delete or reassign those machines separately.';
+  }
+
+  if(!confirm(msg)) return;
+
+  delete AREAS[areaId];
+  renderAreas();
+  buildAreaChips();
+}
+
+function setMachineStatus(machineId){
+  var m = MACHINES[machineId];
+  if(!m) return alert('Machine not found.');
+
+  var status = chooseStatus('equipment', m.status || 'Active');
+  if(status === null) return;
+
+  m.status = status;
+  renderMachines((document.getElementById('machine-search')||{}).value||'');
+}
+
+function setAreaStatus(areaId){
+  var a = AREAS[areaId];
+  if(!a) return alert('Area not found.');
+
+  var status = chooseStatus('area', a.status || 'Active');
+  if(status === null) return;
+
+  a.status = status;
+  renderAreas();
+  buildAreaChips();
+}
+
+function setTrainerStatus(index){
+  if(!TRAINERS[index]) return alert('Trainer not found.');
+
+  var status = chooseStatus('trainer', TRAINERS[index].status || 'Active');
+  if(status === null) return;
+
+  TRAINERS[index].status = status;
+  renderTrainers();
+}   
 function isTestMode(){
   return new URLSearchParams(window.location.search).get("test") === "1";
 }
