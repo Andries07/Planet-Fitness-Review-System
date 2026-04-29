@@ -652,6 +652,29 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
   display:flex;gap:6px;padding:8px 12px;
   border-top:1px solid var(--grey);background:var(--off);
 }
+   .qr-url-box{
+  margin-top:8px;
+  padding:7px 8px;
+  background:#F8FAFF;
+  border:1px solid #DBEAFE;
+  border-radius:7px;
+  font-size:10px;
+  color:var(--blue);
+  font-family:monospace;
+  word-break:break-all;
+  line-height:1.35;
+}
+
+.qr-url-label{
+  display:block;
+  font-family:var(--fb);
+  font-size:9px;
+  font-weight:800;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  margin-bottom:3px;
+}
 
 /* Email config rows */
 .email-group{
@@ -2787,6 +2810,21 @@ function previewImg(input, previewId, b64Id){
 function buildAdmin(){
   admTab('clubs');
 }
+   function getFeedbackBaseUrl(){
+  return window.location.origin + window.location.pathname;
+}
+
+function getClubQrUrl(clubId){
+  return getFeedbackBaseUrl() + '?club=' + encodeURIComponent(clubId);
+}
+
+function getMachineQrUrl(clubId, machineId){
+  return getFeedbackBaseUrl() + '?club=' + encodeURIComponent(clubId) + '&machine=' + encodeURIComponent(machineId);
+}
+
+function getAreaQrUrl(clubId, areaId){
+  return getFeedbackBaseUrl() + '?club=' + encodeURIComponent(clubId) + '&area=' + encodeURIComponent(areaId);
+}
 
 /* ════════════════════════════════════════
    RENDER: CLUBS
@@ -2819,7 +2857,7 @@ function renderClubs(){
         '<div class="dr"><span class="dk">Manager emails</span><span class="dv" style="font-size:11px">'+(c.manager_emails||[]).join(', ')+'</span></div>'+
         '<div class="dr"><span class="dk">Maintenance emails</span><span class="dv" style="font-size:11px">'+(c.maintenance_emails||[]).join(', ')+'</span></div>'+
         '<div class="dr"><span class="dk">Escalation emails</span><span class="dv" style="font-size:11px">'+(c.escalation_emails||[]).join(', ')+'</span></div>'+
-        '<div class="dr"><span class="dk">QR feedback URL</span><span class="dv" style="font-size:10px">?club='+c.club_id+'</span></div>'+
+        '<div class="qr-url-box"><span class="qr-url-label">Club QR URL</span>'+getClubQrUrl(c.club_id)+'</div>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -2899,6 +2937,7 @@ function chooseStatus(category, currentStatus){
         '<div class="adm-tile-sub">'+m.category+' · '+m.asset+'</div>'+
 '<div class="adm-tile-sub" style="margin-top:2px">📍 '+m.loc+'</div>'+
 '<div style="margin-top:6px">'+getStatusBadge(m.status || 'Active')+'</div>'+
+'<div class="qr-url-box"><span class="qr-url-label">Equipment QR URL</span>'+getMachineQrUrl(m.club_id,m.id)+'</div>'+
       '</div>'+
       '<div class="adm-tile-footer">'+
         '<button class="adm-btn-sm" onclick="editMachinePrompt(\''+m.id+'\')">Edit</button>'+
@@ -2934,6 +2973,7 @@ function renderAreas(){
         '<div class="adm-tile-name">'+a.icon+' '+a.name+'</div>'+
         '<div class="adm-tile-sub">'+a.type+' · '+a.club_id+'</div>'+
 '<div style="margin-top:6px">'+getStatusBadge(a.status || 'Active')+'</div>'+
+'<div class="qr-url-box"><span class="qr-url-label">Area QR URL</span>'+getAreaQrUrl(a.club_id,a.id)+'</div>'+
       '</div>'+
       '<div class="adm-tile-footer">'+
         '<button class="adm-btn-sm" onclick="editAreaPrompt(\''+a.id+'\')">Edit</button>'+
