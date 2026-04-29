@@ -1659,14 +1659,51 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
 <div class="modal-overlay hidden" id="modal-reset-pw">
   <div class="modal-box">
     <div class="modal-title">Reset Password</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Resetting password for <strong id="reset-pw-email-label" style="color:var(--text)"></strong></div>
-    <div class="form-field"><label class="form-label">New Password</label><input class="pfi" id="m-reset-pw" type="password" placeholder="Min 8 characters" autocomplete="new-password"/></div>
-    <div class="form-field"><label class="form-label">Confirm Password</label><input class="pfi" id="m-reset-pw2" type="password" placeholder="Repeat password" autocomplete="new-password"/></div>
+
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
+      Resetting password for <strong id="reset-pw-email-label" style="color:var(--text)"></strong>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">New Password</label>
+      <input class="pfi" id="m-reset-pw" type="password" placeholder="Min 8 characters" autocomplete="new-password"/>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Confirm Password</label>
+      <input class="pfi" id="m-reset-pw2" type="password" placeholder="Repeat password" autocomplete="new-password"/>
+    </div>
+
     <div class="modal-actions">
       <button class="adm-btn-ghost" onclick="closeModal('modal-reset-pw')">Cancel</button>
       <button class="adm-btn-blue" onclick="doResetPassword()">Update Password</button>
     </div>
-   <div class="form-field">
+
+    <div class="modal-status" id="ms-reset-pw"></div>
+  </div>
+</div>
+
+<!-- Edit Emails -->
+<div class="modal-overlay hidden" id="modal-edit-emails">
+  <div class="modal-box">
+    <div class="modal-title" id="emails-modal-title">Edit Emails</div>
+
+    <div class="form-field">
+      <label class="form-label">Manager Emails</label>
+      <input class="pfi" id="e-manager" placeholder="email1@pf.co.za, email2@pf.co.za"/>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Maintenance Emails</label>
+      <input class="pfi" id="e-maintenance" placeholder="maintenance@pf.co.za"/>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Escalation Emails</label>
+      <input class="pfi" id="e-escalation" placeholder="regional@pf.co.za"/>
+    </div>
+
+    <div class="form-field">
       <label class="form-label">Cleanliness Emails</label>
       <input class="pfi" id="e-cleanliness" placeholder="cleaning@pf.co.za"/>
     </div>
@@ -3044,6 +3081,7 @@ function saveEmailConfig(){
     renderClubs();
   },900);
 }
+
 /* ════════════════════════════════════════
    RENDER: ADMIN USERS
 ════════════════════════════════════════ */
