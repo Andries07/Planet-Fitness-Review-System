@@ -1666,10 +1666,22 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
       <button class="adm-btn-ghost" onclick="closeModal('modal-reset-pw')">Cancel</button>
       <button class="adm-btn-blue" onclick="doResetPassword()">Update Password</button>
     </div>
-    <div class="modal-status" id="ms-reset-pw"></div>
-     <!-- Edit Emails -->
-<div class="modal-overlay hidden" id="modal-edit-emails">
-</div>
+   <div class="form-field">
+      <label class="form-label">Cleanliness Emails</label>
+      <input class="pfi" id="e-cleanliness" placeholder="cleaning@pf.co.za"/>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Summary Emails</label>
+      <input class="pfi" id="e-summary" placeholder="summary@pf.co.za"/>
+    </div>
+
+    <div class="modal-actions">
+      <button class="adm-btn-ghost" onclick="closeModal('modal-edit-emails')">Cancel</button>
+      <button class="adm-btn-blue" onclick="saveEmailConfig()">Save Emails</button>
+    </div>
+
+    <div class="modal-status" id="ms-emails"></div>
   </div>
 </div>
 
@@ -2981,8 +2993,7 @@ function renderEmails(){
       '</div>'+
     '</div>';
   }).join('');
-
-
+}
 
 function splitEmails(value){
   return (value||'')
@@ -2992,12 +3003,12 @@ function splitEmails(value){
 }
 
 function editEmailsPrompt(clubId){
-  var club=CLUBS[clubId];addEmailPrompt(
+  var club=CLUBS[clubId];
   if(!club) return alert('Club not found.');
 
   editingEmailClubId=clubId;
 
-  document.getElementById('emails-modal-title').textContent='Edit Emails - '+club.display_name;
+  document.getElementById('emails-modal-title').textContent='Edit Emails - '+(club.display_name || club.club_name);
   document.getElementById('e-manager').value=(club.manager_emails||[]).join(', ');
   document.getElementById('e-maintenance').value=(club.maintenance_emails||[]).join(', ');
   document.getElementById('e-escalation').value=(club.escalation_emails||[]).join(', ');
@@ -3039,11 +3050,14 @@ function saveEmailConfig(){
 function renderUsers(){
   var container=document.getElementById('adm-users-list');
   if(!container) return;
+
   var isSuperAdmin=AdminState.session&&AdminState.session.role==='super_admin';
+
   container.innerHTML='<div class="adm-card">'+AdminState.adminUsers.map(function(u,i){
     var roleCls=u.role==='super_admin'?'role-super':'role-club';
     var roleLabel=u.role==='super_admin'?'Super Admin':'Club Admin';
     var statusDot=u.status==='active'?'dot-green':'dot-red';
+
     return '<div class="dr" style="align-items:flex-start;padding:10px 0">'+
       '<div>'+
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">'+
@@ -3054,14 +3068,16 @@ function renderUsers(){
         '<div style="font-size:11px;color:var(--muted)">'+u.email+'</div>'+
         (u.clubs&&u.clubs.length?'<div style="font-size:10px;color:var(--blue);margin-top:2px">Clubs: '+u.clubs.join(', ')+'</div>':'')+
       '</div>'+
-      (isSuperAdmin?
-        '<div class="adm-card-actions" style="flex-direction:column;gap:4px">'+
-  '<button class="adm-btn-sm" onclick="editUserPrompt('+i+')">Edit</button>'+
-  '<button class="adm-btn-sm" onclick="openResetPw(\''+u.email+'\')">Reset PW</button>'+
-  (u.status==='active'
-    ? '<button class="adm-btn-sm danger" onclick="toggleUserStatus('+i+',\'disabled\')">Disable</button>'
-    : '<button class="adm-btn-sm" onclick="toggleUserStatus('+i+',\'active\')">Enable</button>')+
-'</div>'
+      (isSuperAdmin
+        ? '<div class="adm-card-actions" style="flex-direction:column;gap:4px">'+
+            '<button class="adm-btn-sm" onclick="editUserPrompt('+i+')">Edit</button>'+
+            '<button class="adm-btn-sm" onclick="openResetPw(\''+u.email+'\')">Reset PW</button>'+
+            (u.status==='active'
+              ? '<button class="adm-btn-sm danger" onclick="toggleUserStatus('+i+',\'disabled\')">Disable</button>'
+              : '<button class="adm-btn-sm" onclick="toggleUserStatus('+i+',\'active\')">Enable</button>')+
+          '</div>'
+        : ''
+      )+
     '</div>';
   }).join('')+'</div>';
 }
@@ -3749,6 +3765,101 @@ function resetUserModal(){
   document.getElementById('m-u-clubs').value='';
   document.getElementById('ms-user').textContent='';
   document.getElementById('ms-user').className='modal-status';
+}
+function editUserPrompt(index){
+  var u=AdminState.adminUsers[index];
+  if(!u) return alert('User not found.');
+
+  editingUserIndex=index;
+
+  document.getElementById('user-modal-title').textContent='Edit Admin User';
+  document.getElementById('m-u-name').value=u.name||'';
+  document.getElementById('m-u-surname').value=u.surname||'';
+  document.getElementById('m-u-email').value=u.email||'';
+  document.getElementById('m-u-role').value=u.role||'club_admin';
+  document.getElementById('m-u-clubs').value=(u.clubs||[]).join(', ');
+  document.getElementById('m-u-pw').value='';
+  document.getElementById('m-u-pw').placeholder='Leave blank to keep existing password';
+  document.getElementById('ms-user').textContent='';
+
+  openModal('modal-add-user');
+}
+
+function resetUserModal(){
+  editingUserIndex=null;
+
+  document.getElementById('user-modal-title').textContent='Add Admin User';
+  document.getElementById('m-u-name').value='';
+  document.getElementById('m-u-surname').value='';
+  document.getElementById('m-u-email').value='';
+  document.getElementById('m-u-pw').value='';
+  document.getElementById('m-u-pw').placeholder='Min 8 characters';
+  document.getElementById('m-u-role').value='club_admin';
+  document.getElementById('m-u-clubs').value='';
+  document.getElementById('ms-user').textContent='';
+  document.getElementById('ms-user').className='modal-status';
+}
+
+function editTrainerPrompt(index){
+  var t=TRAINERS[index];
+  if(!t) return alert('Trainer not found.');
+
+  editingTrainerIndex=index;
+
+  document.getElementById('trainer-modal-title').textContent='Edit Trainer';
+  document.getElementById('m-tr-name').value=t.name||'';
+  document.getElementById('m-tr-club').value=t.club_id||'';
+  document.getElementById('m-tr-type').value=t.type||'instructor';
+  document.getElementById('m-tr-spec').value=(t.specialisations||[]).join(', ');
+  document.getElementById('m-tr-img-b64').value=t.image_url||'';
+
+  var prev=document.getElementById('m-tr-img-preview');
+  if(prev && t.image_url){
+    prev.src=t.image_url;
+    prev.style.display='block';
+  } else if(prev){
+    prev.src='';
+    prev.style.display='none';
+  }
+
+  populateStatusSelect('m-tr-status','trainer',t.status||'Active');
+  document.getElementById('ms-trainer').textContent='';
+
+  openModal('modal-add-trainer');
+}
+
+function resetTrainerModal(){
+  editingTrainerIndex=null;
+
+  document.getElementById('trainer-modal-title').textContent='Add Trainer';
+  document.getElementById('m-tr-name').value='';
+  document.getElementById('m-tr-club').value='';
+  document.getElementById('m-tr-type').value='instructor';
+  document.getElementById('m-tr-spec').value='';
+  document.getElementById('m-tr-img-b64').value='';
+
+  var prev=document.getElementById('m-tr-img-preview');
+  if(prev){
+    prev.style.display='none';
+    prev.src='';
+  }
+
+  populateStatusSelect('m-tr-status','trainer','Active');
+  document.getElementById('ms-trainer').textContent='';
+  document.getElementById('ms-trainer').className='modal-status';
+}
+
+function deleteTrainer(index){
+  var t=TRAINERS[index];
+  if(!t) return alert('Trainer not found.');
+
+  if(!confirm('Delete trainer '+t.name+'?')) return;
+
+  TRAINERS.splice(index,1);
+  renderTrainers();
+}
+   function filterMachines(value){
+  renderMachines(value || '');
 }
 function isTestMode(){
   return new URLSearchParams(window.location.search).get("test") === "1";
