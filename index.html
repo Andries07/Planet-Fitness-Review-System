@@ -1363,7 +1363,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
           <div class="adm-section-title">Equipment</div>
           <div class="adm-section-sub">Machines with QR codes &amp; images</div>
         </div>
-        <button class="adm-btn-blue" onclick="openModal('modal-add-machine')">+ Add Machine</button>
+        <button class="adm-btn-blue" onclick="resetMachineModal();openModal('modal-add-machine')">+ Add Machine</button>
       </div>
       <input class="adm-search" id="machine-search" placeholder="Search machines…" oninput="filterMachines(this.value)"/>
       <div class="adm-grid-2" id="adm-machines-list"></div>
@@ -1376,7 +1376,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
           <div class="adm-section-title">Areas</div>
           <div class="adm-section-sub">Club zones and feedback destinations</div>
         </div>
-        <button class="adm-btn-blue" onclick="openModal('modal-add-area')">+ Add Area</button>
+        <button class="adm-btn-blue" onclick="resetAreaModal();openModal('modal-add-area')">+ Add Area</button>
       </div>
       <div class="adm-grid-2" id="adm-areas-list"></div>
     </div>
@@ -1459,7 +1459,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
 <!-- Add Machine -->
 <div class="modal-overlay hidden" id="modal-add-machine">
   <div class="modal-box">
-    <div class="modal-title">Add Machine</div>
+    <div class="modal-title" id="machine-modal-title">Add Machine</div>
 
     <!-- Image upload -->
     <div class="form-field">
@@ -1501,7 +1501,7 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
 <!-- Add Area -->
 <div class="modal-overlay hidden" id="modal-add-area">
   <div class="modal-box">
-    <div class="modal-title">Add Area</div>
+    <div class="modal-title" id="area-modal-title">Add Area</div>
 
     <!-- Image upload -->
     <div class="form-field">
@@ -2568,6 +2568,8 @@ function buildCustomerEmail(sub,club){
 /* ════════════════════════════════════════
    ADMIN STATE
 ════════════════════════════════════════ */
+var editingMachineId = null;
+var editingAreaId = null;
 var AdminState = {
   session: null,       // { token, email, role, clubs[] }
   currentTab: 'clubs',
@@ -2823,7 +2825,7 @@ function chooseStatus(category, currentStatus){
       : '<span style="font-size:32px">'+m.emoji+'</span>';
 
     return '<div class="adm-tile">'+
-      '<div class="adm-tile-img">'+imgHtml+'<button class="img-upload-btn" onclick="promptMachineImg(\''+m.id+'\')">📷 Change</button></div>'+
+      '<div class="adm-tile-img">'+imgHtml+'</div>'+
       '<div class="adm-tile-body">'+
         '<div class="adm-tile-name">'+m.name+'</div>'+
         '<div class="adm-tile-sub">'+m.category+' · '+m.asset+'</div>'+
@@ -2859,7 +2861,7 @@ function renderAreas(){
       : '<span style="font-size:28px">'+a.icon+'</span>';
 
     return '<div class="adm-tile">'+
-      '<div class="adm-tile-img" style="height:80px">'+imgHtml+'<button class="img-upload-btn" onclick="promptAreaImg(\''+a.id+'\')">📷 Change</button></div>'+
+      '<div class="adm-tile-img" style="height:80px">'+imgHtml+'</div>'+
       '<div class="adm-tile-body">'+
         '<div class="adm-tile-name">'+a.icon+' '+a.name+'</div>'+
         '<div class="adm-tile-sub">'+a.type+' · '+a.club_id+'</div>'+
@@ -3088,6 +3090,7 @@ function saveClub(){
 ════════════════════════════════════════ */
 function saveMachine(){
   var st=document.getElementById('ms-machine');
+
   var id=(document.getElementById('m-mach-id').value||'').trim();
   var club=(document.getElementById('m-mach-club').value||'').trim();
   var name=(document.getElementById('m-mach-name').value||'').trim();
@@ -3097,46 +3100,136 @@ function saveMachine(){
   var loc=(document.getElementById('m-mach-loc').value||'').trim();
   var emoji=(document.getElementById('m-mach-emoji').value||'🏋️').trim();
   var imgB64=(document.getElementById('m-mach-img-b64').value||'');
-  if(!id||!name){st.textContent='Machine ID and Name are required.';return;}
-  MACHINES[id]={
-    id:id, club_id:club||'PF-DEMO-001', area_id:area||'cardio',
-    name:name, category:cat||'Equipment', asset:asset||id,
-    loc:loc||'Club floor', emoji:emoji,
-    image_url:imgB64||''
-  };
-  st.textContent='Machine saved!'; st.className='modal-status ok';
-  // Reset image preview
-  var prev=document.getElementById('m-mach-img-preview');
-  if(prev){prev.style.display='none';prev.src='';}
-  document.getElementById('m-mach-img-b64').value='';
-  setTimeout(function(){ closeModal('modal-add-machine'); renderMachines(); },900);
-}
 
+  if(!id||!name){
+    st.textContent='Machine ID and Name are required.';
+    return;
+  }
+
+  if(!editingMachineId && MACHINES[id]){
+    st.textContent='A machine with this ID already exists.';
+    return;
+  }
+
+  var existing = editingMachineId ? (MACHINES[editingMachineId] || {}) : {};
+
+  MACHINES[id]={
+    id:id,
+    club_id:club||'PF-DEMO-001',
+    area_id:area||'cardio',
+    name:name,
+    category:cat||'Equipment',
+    asset:asset||id,
+    loc:loc||'Club floor',
+    emoji:emoji||'🏋️',
+    image_url:imgB64 || existing.image_url || '',
+    status: existing.status || 'Active'
+  };
+
+  st.textContent = editingMachineId ? 'Machine updated!' : 'Machine saved!';
+  st.className='modal-status ok';
+
+  setTimeout(function(){
+    closeModal('modal-add-machine');
+    resetMachineModal();
+    renderMachines((document.getElementById('machine-search')||{}).value||'');
+  },900);
+}
+function resetMachineModal(){
+  editingMachineId = null;
+
+  document.getElementById('machine-modal-title').textContent = 'Add Machine';
+
+  document.getElementById('m-mach-id').disabled = false;
+  document.getElementById('m-mach-id').value = '';
+  document.getElementById('m-mach-club').value = '';
+  document.getElementById('m-mach-name').value = '';
+  document.getElementById('m-mach-cat').value = '';
+  document.getElementById('m-mach-asset').value = '';
+  document.getElementById('m-mach-area').value = '';
+  document.getElementById('m-mach-emoji').value = '';
+  document.getElementById('m-mach-loc').value = '';
+
+  var prev=document.getElementById('m-mach-img-preview');
+  if(prev){
+    prev.style.display='none';
+    prev.src='';
+  }
+
+  document.getElementById('m-mach-img-b64').value = '';
+  document.getElementById('ms-machine').textContent = '';
+  document.getElementById('ms-machine').className = 'modal-status';
+}
 /* ════════════════════════════════════════
    SAVE: AREA
 ════════════════════════════════════════ */
 function saveArea(){
   var st=document.getElementById('ms-area');
+
   var id=(document.getElementById('m-area-id').value||'').trim();
   var club=(document.getElementById('m-area-club').value||'').trim();
   var name=(document.getElementById('m-area-name').value||'').trim();
   var type=document.getElementById('m-area-type').value||'facilities';
   var icon=(document.getElementById('m-area-icon').value||'📍').trim();
   var imgB64=(document.getElementById('m-area-img-b64').value||'');
-  if(!id||!name){st.textContent='Area ID and Name are required.';return;}
-  var maxSort=Math.max.apply(null,Object.values(AREAS).map(function(a){return a.sort||0;}));
-  AREAS[id]={
-    id:id, club_id:club||'PF-DEMO-001', name:name,
-    type:type, icon:icon, sort:maxSort+1, active:true,
-    image_url:imgB64||''
-  };
-  st.textContent='Area saved!'; st.className='modal-status ok';
-  var prev=document.getElementById('m-area-img-preview');
-  if(prev){prev.style.display='none';prev.src='';}
-  document.getElementById('m-area-img-b64').value='';
-  setTimeout(function(){ closeModal('modal-add-area'); renderAreas(); buildAreaChips(); },900);
-}
 
+  if(!id||!name){
+    st.textContent='Area ID and Name are required.';
+    return;
+  }
+
+  if(!editingAreaId && AREAS[id]){
+    st.textContent='An area with this ID already exists.';
+    return;
+  }
+
+  var existing = editingAreaId ? (AREAS[editingAreaId] || {}) : {};
+  var maxSort = Math.max.apply(null,Object.values(AREAS).map(function(a){return a.sort||0;}));
+
+  AREAS[id]={
+    id:id,
+    club_id:club||'PF-DEMO-001',
+    name:name,
+    type:type,
+    icon:icon||'📍',
+    sort: existing.sort || maxSort+1,
+    active:true,
+    image_url:imgB64 || existing.image_url || '',
+    status: existing.status || 'Active'
+  };
+
+  st.textContent = editingAreaId ? 'Area updated!' : 'Area saved!';
+  st.className='modal-status ok';
+
+  setTimeout(function(){
+    closeModal('modal-add-area');
+    resetAreaModal();
+    renderAreas();
+    buildAreaChips();
+  },900);
+}
+function resetAreaModal(){
+  editingAreaId = null;
+
+  document.getElementById('area-modal-title').textContent = 'Add Area';
+
+  document.getElementById('m-area-id').disabled = false;
+  document.getElementById('m-area-id').value = '';
+  document.getElementById('m-area-club').value = '';
+  document.getElementById('m-area-name').value = '';
+  document.getElementById('m-area-type').value = 'facilities';
+  document.getElementById('m-area-icon').value = '';
+
+  var prev=document.getElementById('m-area-img-preview');
+  if(prev){
+    prev.style.display='none';
+    prev.src='';
+  }
+
+  document.getElementById('m-area-img-b64').value = '';
+  document.getElementById('ms-area').textContent = '';
+  document.getElementById('ms-area').className = 'modal-status';
+}
 /* ════════════════════════════════════════
    SAVE: TRAINER
 ════════════════════════════════════════ */
@@ -3280,37 +3373,38 @@ function deleteClub(clubId){
 }
 
 function editMachinePrompt(machineId){
-  var m=MACHINES[machineId];
+  var m = MACHINES[machineId];
   if(!m) return alert('Machine not found.');
 
-  var newName=prompt('Machine name:', m.name || '');
-  if(newName===null) return;
+  editingMachineId = machineId;
 
-  var newCategory=prompt('Category:', m.category || '');
-  if(newCategory===null) return;
+  document.getElementById('machine-modal-title').textContent = 'Edit Machine';
 
-  var newAsset=prompt('Asset code:', m.asset || '');
-  if(newAsset===null) return;
+  document.getElementById('m-mach-id').value = m.id || '';
+  document.getElementById('m-mach-id').disabled = true;
 
-  var newArea=prompt('Area ID:', m.area_id || '');
-  if(newArea===null) return;
+  document.getElementById('m-mach-club').value = m.club_id || '';
+  document.getElementById('m-mach-name').value = m.name || '';
+  document.getElementById('m-mach-cat').value = m.category || '';
+  document.getElementById('m-mach-asset').value = m.asset || '';
+  document.getElementById('m-mach-area').value = m.area_id || '';
+  document.getElementById('m-mach-emoji').value = m.emoji || '';
+  document.getElementById('m-mach-loc').value = m.loc || '';
 
-  var newLoc=prompt('Location note:', m.loc || '');
-  if(newLoc===null) return;
+  document.getElementById('m-mach-img-b64').value = m.image_url || '';
 
-  var newEmoji=prompt('Emoji:', m.emoji || '🏋️');
-  if(newEmoji===null) return;
+  var prev = document.getElementById('m-mach-img-preview');
+  if(prev && m.image_url){
+    prev.src = m.image_url;
+    prev.style.display = 'block';
+  } else if(prev){
+    prev.src = '';
+    prev.style.display = 'none';
+  }
 
-  m.name=newName.trim();
-  m.category=newCategory.trim();
-  m.asset=newAsset.trim();
-  m.area_id=newArea.trim();
-  m.loc=newLoc.trim();
-  m.emoji=newEmoji.trim() || '🏋️';
-
-  renderMachines((document.getElementById('machine-search')||{}).value||'');
+  document.getElementById('ms-machine').textContent = '';
+  openModal('modal-add-machine');
 }
-
 function deleteMachine(machineId){
   var m=MACHINES[machineId];
   if(!m) return alert('Machine not found.');
@@ -3322,28 +3416,34 @@ function deleteMachine(machineId){
 }
 
 function editAreaPrompt(areaId){
-  var a=AREAS[areaId];
+  var a = AREAS[areaId];
   if(!a) return alert('Area not found.');
 
-  var newName=prompt('Area name:', a.name || '');
-  if(newName===null) return;
+  editingAreaId = areaId;
 
-  var newType=prompt('Type:', a.type || 'facilities');
-  if(newType===null) return;
+  document.getElementById('area-modal-title').textContent = 'Edit Area';
 
-  var newIcon=prompt('Icon:', a.icon || '📍');
-  if(newIcon===null) return;
+  document.getElementById('m-area-id').value = a.id || '';
+  document.getElementById('m-area-id').disabled = true;
 
-  var newSort=prompt('Sort order:', a.sort || 99);
-  if(newSort===null) return;
+  document.getElementById('m-area-club').value = a.club_id || '';
+  document.getElementById('m-area-name').value = a.name || '';
+  document.getElementById('m-area-type').value = a.type || 'facilities';
+  document.getElementById('m-area-icon').value = a.icon || '';
 
-  a.name=newName.trim();
-  a.type=newType.trim();
-  a.icon=newIcon.trim() || '📍';
-  a.sort=parseInt(newSort,10) || 99;
+  document.getElementById('m-area-img-b64').value = a.image_url || '';
 
-  renderAreas();
-  buildAreaChips();
+  var prev = document.getElementById('m-area-img-preview');
+  if(prev && a.image_url){
+    prev.src = a.image_url;
+    prev.style.display = 'block';
+  } else if(prev){
+    prev.src = '';
+    prev.style.display = 'none';
+  }
+
+  document.getElementById('ms-area').textContent = '';
+  openModal('modal-add-area');
 }
 
 function deleteArea(areaId){
