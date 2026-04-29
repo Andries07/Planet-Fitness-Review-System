@@ -1376,7 +1376,8 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
         </div>
         <button class="adm-btn-blue" onclick="resetClubModal();openModal('modal-add-club')">+ Add Club</button>
       </div>
-      <div id="adm-clubs-list"></div>
+     <input class="adm-search" id="club-search" placeholder="Search clubs…" oninput="filterClubs(this.value)"/>
+<div id="adm-clubs-list"></div>
     </div>
 
     <!-- ══ EQUIPMENT ══ -->
@@ -1401,7 +1402,8 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
         </div>
         <button class="adm-btn-blue" onclick="resetAreaModal();openModal('modal-add-area')">+ Add Area</button>
       </div>
-      <div class="adm-grid-2" id="adm-areas-list"></div>
+     <input class="adm-search" id="area-search" placeholder="Search areas…" oninput="filterAreas(this.value)"/>
+<div class="adm-grid-2" id="adm-areas-list"></div>
     </div>
 
     <!-- ══ TRAINERS ══ -->
@@ -1413,7 +1415,8 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
         </div>
         <button class="adm-btn-blue" onclick="resetTrainerModal();openModal('modal-add-trainer')">+ Add Trainer</button>
       </div>
-      <div id="adm-trainers-list"></div>
+    <input class="adm-search" id="trainer-search" placeholder="Search trainers…" oninput="filterTrainers(this.value)"/>
+<div id="adm-trainers-list"></div>
     </div>
 
     <!-- ══ STATUSES ══ -->
@@ -1425,7 +1428,8 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
         </div>
         <button class="adm-btn-blue" onclick="openModal('modal-add-status')">+ Add Status</button>
       </div>
-      <div id="adm-statuses-list"></div>
+      <input class="adm-search" id="status-search" placeholder="Search statuses…" oninput="filterStatuses(this.value)"/>
+<div id="adm-statuses-list"></div>
     </div>
 
     <!-- ══ EMAIL CONFIG ══ -->
@@ -1436,7 +1440,8 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
           <div class="adm-section-sub">Who receives alerts &amp; summaries per club</div>
         </div>
       </div>
-      <div id="adm-email-config"></div>
+      <input class="adm-search" id="email-search" placeholder="Search email config…" oninput="filterEmails(this.value)"/>
+<div id="adm-email-config"></div>
     </div>
 
     <!-- ══ ADMIN USERS ══ -->
@@ -1448,7 +1453,8 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
         </div>
        <button class="adm-btn-blue" onclick="resetUserModal();openModal('modal-add-user')">+ Add User</button>
       </div>
-      <div id="adm-users-list"></div>
+     <input class="adm-search" id="user-search" placeholder="Search users…" oninput="filterUsers(this.value)"/>
+<div id="adm-users-list"></div>
     </div>
 
   </div>
@@ -2829,12 +2835,16 @@ function getAreaQrUrl(clubId, areaId){
 /* ════════════════════════════════════════
    RENDER: CLUBS
 ════════════════════════════════════════ */
-function renderClubs(){
+function renderClubs(filter){
   var container=document.getElementById('adm-clubs-list');
   if(!container) return;
 
   var clubs=Object.values(CLUBS);
-
+if(filter){
+  clubs=clubs.filter(function(c){
+    return (c.club_id+c.club_name+c.display_name+c.city+c.province+(c.manager_emails||[]).join(',')).toLowerCase().indexOf(filter.toLowerCase())!==-1;
+  });
+}
   if(!clubs.length){
     container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center">No clubs configured.</div>';
     return;
@@ -2951,12 +2961,16 @@ function chooseStatus(category, currentStatus){
 /* ════════════════════════════════════════
    RENDER: AREAS
 ════════════════════════════════════════ */
-function renderAreas(){
+function renderAreas(filter){
   var container=document.getElementById('adm-areas-list');
   if(!container) return;
 
   var areas=Object.values(AREAS).sort(function(a,b){return (a.sort||0)-(b.sort||0);});
-
+if(filter){
+  areas=areas.filter(function(a){
+    return (a.id+a.name+a.type+a.club_id).toLowerCase().indexOf(filter.toLowerCase())!==-1;
+  });
+}
   if(!areas.length){
     container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center;grid-column:span 2">No areas configured.</div>';
     return;
@@ -2987,11 +3001,19 @@ function renderAreas(){
 /* ════════════════════════════════════════
    RENDER: TRAINERS
 ════════════════════════════════════════ */
-function renderTrainers(){
+function renderTrainers(filter){
   var container=document.getElementById('adm-trainers-list');
   if(!container) return;
-  if(!TRAINERS||!TRAINERS.length){ container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center">No trainers configured.</div>'; return; }
-  container.innerHTML=TRAINERS.map(function(t,i){
+ var trainers=TRAINERS || [];
+
+if(filter){
+  trainers=trainers.filter(function(t){
+    return (t.trainer_id+t.name+t.type+t.club_id+(t.specialisations||[]).join(',')).toLowerCase().indexOf(filter.toLowerCase())!==-1;
+  });
+}
+   if(!trainers.length){ container.innerHTML='<div style="color:var(--muted);font-size:13px;padding:16px;text-align:center">No trainers configured.</div>'; return; }
+ container.innerHTML=trainers.map(function(t){
+  var i=TRAINERS.indexOf(t);
     var img=t.image_url
       ? '<img src="'+t.image_url+'" style="width:100%;height:100%;object-fit:contain;object-position:center;background:#fff;border-radius:50%"/>'
       : '<span style="font-size:22px">👤</span>';
@@ -3031,11 +3053,19 @@ function promptTrainerImg(idx){
 /* ════════════════════════════════════════
    RENDER: STATUSES
 ════════════════════════════════════════ */
-function renderStatuses(){
+function renderStatuses(filter){
   var container=document.getElementById('adm-statuses-list');
   if(!container) return;
   var catLabels={global:'Global',equipment:'Equipment',area:'Area',trainer:'Trainer'};
-  container.innerHTML='<div class="adm-card">'+AdminState.statuses.map(function(s,i){
+   var statuses=AdminState.statuses || [];
+
+if(filter){
+  statuses=statuses.filter(function(s){
+    return (s.name+s.category).toLowerCase().indexOf(filter.toLowerCase())!==-1;
+  });
+}
+ container.innerHTML='<div class="adm-card">'+statuses.map(function(s){
+  var i=AdminState.statuses.indexOf(s);
     return '<div class="dr">'+
       '<div style="display:flex;align-items:center;gap:10px">'+
         '<span class="adm-badge" style="background:'+s.color+';color:'+s.textColor+'">'+s.name+'</span>'+
@@ -3051,11 +3081,25 @@ function renderStatuses(){
 /* ════════════════════════════════════════
    RENDER: EMAILS
 ════════════════════════════════════════ */
-function renderEmails(){
+function renderEmails(filter){
   var container=document.getElementById('adm-email-config');
   if(!container) return;
 
-  container.innerHTML=Object.values(CLUBS).map(function(club){
+ var clubs=Object.values(CLUBS);
+
+if(filter){
+  clubs=clubs.filter(function(club){
+    return (club.club_id+club.club_name+club.display_name+
+      (club.manager_emails||[]).join(',')+
+      (club.maintenance_emails||[]).join(',')+
+      (club.escalation_emails||[]).join(',')+
+      (club.cleanliness_emails||[]).join(',')+
+      (club.summary_emails||[]).join(',')
+    ).toLowerCase().indexOf(filter.toLowerCase())!==-1;
+  });
+}
+
+container.innerHTML=clubs.map(function(club){
     return '<div class="email-group">'+
       '<div class="email-group-header">'+
         '<div class="email-group-title">'+club.club_name+'</div>'+
@@ -3125,13 +3169,22 @@ function saveEmailConfig(){
 /* ════════════════════════════════════════
    RENDER: ADMIN USERS
 ════════════════════════════════════════ */
-function renderUsers(){
+function renderUsers(filter){
   var container=document.getElementById('adm-users-list');
   if(!container) return;
 
   var isSuperAdmin=AdminState.session&&AdminState.session.role==='super_admin';
 
-  container.innerHTML='<div class="adm-card">'+AdminState.adminUsers.map(function(u,i){
+var users=AdminState.adminUsers || [];
+
+if(filter){
+  users=users.filter(function(u){
+    return (u.name+u.surname+u.email+u.role+(u.clubs||[]).join(',')).toLowerCase().indexOf(filter.toLowerCase())!==-1;
+  });
+}
+
+container.innerHTML='<div class="adm-card">'+users.map(function(u){
+  var i=AdminState.adminUsers.indexOf(u);
     var roleCls=u.role==='super_admin'?'role-super':'role-club';
     var roleLabel=u.role==='super_admin'?'Super Admin':'Club Admin';
     var statusDot=u.status==='active'?'dot-green':'dot-red';
@@ -3939,6 +3992,30 @@ function deleteTrainer(index){
    function filterMachines(value){
   renderMachines(value || '');
 }
+function filterClubs(value){
+  renderClubs(value || '');
+}
+
+function filterAreas(value){
+  renderAreas(value || '');
+}
+
+function filterTrainers(value){
+  renderTrainers(value || '');
+}
+
+function filterStatuses(value){
+  renderStatuses(value || '');
+}
+
+function filterEmails(value){
+  renderEmails(value || '');
+}
+
+function filterUsers(value){
+  renderUsers(value || '');
+}
+   
 function isTestMode(){
   return new URLSearchParams(window.location.search).get("test") === "1";
 }
