@@ -1490,6 +1490,10 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
       <div class="form-field"><label class="form-label">Emoji (fallback)</label><input class="pfi" id="m-mach-emoji" placeholder="🏃" maxlength="4" autocomplete="off"/></div>
     </div>
     <div class="form-field"><label class="form-label">Location Note</label><input class="pfi" id="m-mach-loc" placeholder="Window row, position 5" autocomplete="off"/></div>
+     <div class="form-field">
+  <label class="form-label">Status</label>
+  <select class="pfi" id="m-mach-status"></select>
+</div>
     <div class="modal-actions">
       <button class="adm-btn-ghost" onclick="closeModal('modal-add-machine')">Cancel</button>
       <button class="adm-btn-blue" onclick="saveMachine()">Save Machine</button>
@@ -1536,6 +1540,10 @@ html,body{width:100%;font-family:var(--fb);background:var(--navy);color:var(--te
         </select>
       </div>
       <div class="form-field"><label class="form-label">Icon (emoji)</label><input class="pfi" id="m-area-icon" placeholder="🏊" maxlength="4" autocomplete="off"/></div>
+       <div class="form-field">
+  <label class="form-label">Status</label>
+  <select class="pfi" id="m-area-status"></select>
+</div>
     </div>
     <div class="modal-actions">
       <button class="adm-btn-ghost" onclick="closeModal('modal-add-area')">Cancel</button>
@@ -2834,7 +2842,7 @@ function chooseStatus(category, currentStatus){
       '</div>'+
       '<div class="adm-tile-footer">'+
         '<button class="adm-btn-sm" onclick="editMachinePrompt(\''+m.id+'\')">Edit</button>'+
-'<button class="adm-btn-sm" onclick="setMachineStatus(\''+m.id+'\')">Status</button>'+
+
 '<button class="adm-btn-sm danger" onclick="deleteMachine(\''+m.id+'\')">Delete</button>'+
       '</div>'+
     '</div>';
@@ -2869,7 +2877,7 @@ function renderAreas(){
       '</div>'+
       '<div class="adm-tile-footer">'+
         '<button class="adm-btn-sm" onclick="editAreaPrompt(\''+a.id+'\')">Edit</button>'+
-'<button class="adm-btn-sm" onclick="setAreaStatus(\''+a.id+'\')">Status</button>'+
+
 '<button class="adm-btn-sm danger" onclick="deleteArea(\''+a.id+'\')">Delete</button>'+
       '</div>'+
     '</div>';
@@ -3100,7 +3108,7 @@ function saveMachine(){
   var loc=(document.getElementById('m-mach-loc').value||'').trim();
   var emoji=(document.getElementById('m-mach-emoji').value||'🏋️').trim();
   var imgB64=(document.getElementById('m-mach-img-b64').value||'');
-
+  var status=(document.getElementById('m-mach-status')||{}).value || 'Active';
   if(!id||!name){
     st.textContent='Machine ID and Name are required.';
     return;
@@ -3123,7 +3131,7 @@ function saveMachine(){
     loc:loc||'Club floor',
     emoji:emoji||'🏋️',
     image_url:imgB64 || existing.image_url || '',
-    status: existing.status || 'Active'
+    tatus: status || existing.status || 'Active'
   };
 
   st.textContent = editingMachineId ? 'Machine updated!' : 'Machine saved!';
@@ -3135,6 +3143,21 @@ function saveMachine(){
     renderMachines((document.getElementById('machine-search')||{}).value||'');
   },900);
 }
+ function populateStatusSelect(m-mach-status', 'equipment', 'Active'){
+  var select = document.getElementById(selectId);
+  if(!select) return;
+
+  var options = (AdminState.statuses || []).filter(function(s){
+    return s.active && (s.category === 'global' || s.category === category);
+  });
+
+  select.innerHTML = options.map(function(s){
+    var selected = String(s.name).toLowerCase() === String(selectedValue || 'Active').toLowerCase()
+      ? ' selected'
+      : '';
+    return '<option value="'+s.name+'"'+selected+'>'+s.name+'</option>';
+  }).join('');
+}  
 function resetMachineModal(){
   editingMachineId = null;
 
@@ -3172,6 +3195,7 @@ function saveArea(){
   var type=document.getElementById('m-area-type').value||'facilities';
   var icon=(document.getElementById('m-area-icon').value||'📍').trim();
   var imgB64=(document.getElementById('m-area-img-b64').value||'');
+  var status=(document.getElementById('m-area-status')||{}).value || 'Active';
 
   if(!id||!name){
     st.textContent='Area ID and Name are required.';
@@ -3195,7 +3219,7 @@ function saveArea(){
     sort: existing.sort || maxSort+1,
     active:true,
     image_url:imgB64 || existing.image_url || '',
-    status: existing.status || 'Active'
+    status: status || existing.status || 'Active'
   };
 
   st.textContent = editingAreaId ? 'Area updated!' : 'Area saved!';
@@ -3229,6 +3253,7 @@ function resetAreaModal(){
   document.getElementById('m-area-img-b64').value = '';
   document.getElementById('ms-area').textContent = '';
   document.getElementById('ms-area').className = 'modal-status';
+  populateStatusSelect('m-area-status', 'area', 'Active');
 }
 /* ════════════════════════════════════════
    SAVE: TRAINER
@@ -3403,6 +3428,7 @@ function editMachinePrompt(machineId){
   }
 
   document.getElementById('ms-machine').textContent = '';
+  populateStatusSelect('m-mach-status', 'equipment', m.status || 'Active');
   openModal('modal-add-machine');
 }
 function deleteMachine(machineId){
@@ -3443,6 +3469,7 @@ function editAreaPrompt(areaId){
   }
 
   document.getElementById('ms-area').textContent = '';
+  populateStatusSelect('m-area-status', 'area', a.status || 'Active');
   openModal('modal-add-area');
 }
 
